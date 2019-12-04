@@ -1,0 +1,320 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.40.1.212/W32 for ARM         06/Sep/2019  23:26:44
+# Copyright 1999-2019 IAR Systems AB.
+#
+#    Cpu mode     =  
+#    Endian       =  little
+#    Source file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_StartSensorTask.c
+#    Command line =
+#        -f C:\Users\ilkorea\AppData\Local\Temp\EW7971.tmp
+#        (D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_StartSensorTask.c
+#        -D USE_HAL_DRIVER -D STM32F103xB -lc
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List
+#        -o
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.3\arm\inc\c\DLib_Config_Full.h"
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Device/ST/STM32F1xx/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/SEGGER\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9/Config\
+#        -On -I "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.3\arm\CMSIS\Core\Include\" -I "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.3\arm\CMSIS\DSP\Include\")
+#    Locale       =  C
+#    List file    =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List\0_StartSensorTask.lst
+#    Object file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj\0_StartSensorTask.o
+#
+###############################################################################
+
+D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_StartSensorTask.c
+      1          #include "0_StartSensorTask.h"
+      2          #include "0_GlobalValue.h"
+      3          #include "0_SensorCal.h"
+      4          #include "0_Util.h"
+      5          
+      6          
+      7          /*********************************************************************
+      8          *	Private variables
+      9          **********************************************************************/
+     10          TEST_DATA TestData;
+     11          
+     12          uint32_t	adc_value[11];
+     13          uint8_t 	adc_count = 0;
+     14          uint8_t		adc_delay_break = FALSE;
+     15          uint8_t   	adcNumber;
+     16          
+     17          ADC_HandleTypeDef * adc[2] = {&hadc1, &hadc2};
+     18          
+     19          GPIO_TypeDef * 		MUX_ADD[4] 	   = { MUX_ADD0_GPIO_Port,	MUX_ADD1_GPIO_Port,	MUX_ADD2_GPIO_Port,	MUX_ADD3_GPIO_Port };
+     20          uint16_t	 		MUX_ADD_PIN[4] = { MUX_ADD0_Pin,		MUX_ADD1_Pin,		MUX_ADD2_Pin,		MUX_ADD3_Pin };
+     21          
+     22          GPIO_TypeDef * 		MUX_EN[2] = { MUX_EN0_GPIO_Port, MUX_EN1_GPIO_Port };
+     23          uint16_t	 		MUX_EN_PIN[2] = { MUX_EN0_Pin, MUX_EN1_Pin };
+     24          
+     25          uint8_t   			mux_enable;
+     26          
+     27          
+     28          void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+     29          {  
+     30          	//adc_delay_break = TRUE;
+     31          	osSemaphoreRelease(myAdcBinarySemHandle);
+     32          }
+     33          
+     34          /*********************************************************************
+     35          *	StartSensorTask
+     36          * 32개 센서 입력 task
+     37          **********************************************************************/
+     38          void StartSensorTask(void const * argument)
+     39          {
+     40          	/* init code for USB_DEVICE */
+     41          //	MX_USB_DEVICE_Init();
+     42          
+     43          	/* USER CODE BEGIN 5 */
+     44          	HAL_ADC_Stop(&hadc1);
+     45          	HAL_ADC_Stop(&hadc2);
+     46          	HAL_ADCEx_Calibration_Start(&hadc1);
+     47          	HAL_ADCEx_Calibration_Start(&hadc2);	
+     48          
+     49          	HAL_GPIO_WritePin(MUX_EN[0], MUX_EN_PIN[0], GPIO_PIN_SET);	// disable		
+     50          	HAL_GPIO_WritePin(MUX_EN[1], MUX_EN_PIN[1], GPIO_PIN_SET);	// disable		
+     51          
+     52          	adc_count = 0;
+     53          
+     54          	doFindMyID();
+     55          	
+     56          	//Task 부팅 완료 플레그 
+     57          	SysProperties.bootingWate[1] = TRUE;
+     58            
+     59              while(1)
+     60              {
+     61                  if( (SysProperties.bootingWate[0] == TRUE) &&     // 0 : DiaplayTask, 
+     62                      (SysProperties.bootingWate[1] == TRUE) &&     // 1 : SensorTask
+     63                      (SysProperties.bootingWate[2] == TRUE))       // 2 : UartTask
+     64                  {
+     65                    break;
+     66                  }
+     67                  osDelay(2);
+     68              }
+     69          
+     70          
+     71          	/* Infinite loop */
+     72          	for(;;)
+     73          	{
+     74          		doReadADC();
+     75          		osDelay(1);
+     76          	}
+     77          	/* USER CODE END 5 */ 
+     78          }
+     79          
+     80          void doReadADC(void)
+     81          {
+     82          	uint8_t 	channel;
+     83          	uint8_t 	mux_add;
+     84          	uint8_t 	inout;
+     85          	uint32_t 	midAdc;
+     86          	float 		calAdc;
+     87          	float		beforeRevision;
+     88          
+     89          	mux_enable = adcNumber / 16;
+     90          	mux_add    = adcNumber % 16;
+     91          	inout      = adcNumber % 2;
+     92          	channel    = adcNumber / 2;
+     93          
+     94          	HAL_GPIO_WritePin(MUX_EN[mux_enable], MUX_EN_PIN[mux_enable], GPIO_PIN_RESET);	// enable
+     95          
+     96          	doMuxAddressSet(mux_add);
+     97          	//osDelay(1);
+     98          	//HAL_Delay(1);
+     99          
+    100          	HAL_ADC_Start_IT(adc[mux_enable]);
+    101          	HAL_GPIO_WritePin(MUX_EN[0], MUX_EN_PIN[0], GPIO_PIN_SET);	// disable		
+    102          	HAL_GPIO_WritePin(MUX_EN[1], MUX_EN_PIN[1], GPIO_PIN_SET);	// disable		
+    103          
+    104          	if(myAdcBinarySemHandle != NULL)
+    105          	{
+    106          		if(osSemaphoreWait(myAdcBinarySemHandle, 0) == osOK)
+    107          		{
+    108          			adc_value[adc_count] = HAL_ADC_GetValue(adc[mux_enable]);
+    109          			adc_count++;
+    110          			
+    111          			if(adc_count < 11)
+    112          				return;
+    113          			else
+    114          				adc_count = 0;
+    115          
+    116          			midAdc = midADC(adc_value);					// ADC 중간값 저장 
+    117          			calAdc = Calc_Temp_NTC(midAdc);				// ADC로 계산된 온도값 저장 
+    118          
+    119          			if((calAdc >= -10) && (calAdc <= 150))
+    120          			{
+    121          				TestData.AdcMidValue[inout][channel].UI32 	= midAdc;
+    122          
+    123          				//교정 과정 실행 
+    124          				beforeRevision = calAdc + TestData.ntcCalibrationTable[inout][channel].Float 	//RTD - NTC 로 계산된 보정 상수 
+    125          										+ TestData.ntcCalibrationConstant.Float;				//사용자가 임의로 추가한 증감 상수 
+    126          										
+    127          				if(TestData.revisionApplyFlag == TRUE)	//보정 적용 상태 
+    128          				{
+    129          					if(inout == 0)		//접촉온도 위치에 보정온도를 삽입 
+    130          					{
+    131          						TestData.Temperature[inout][channel].Float = DoRevisionTemperature(TestData.Temperature[0][channel].Float,
+    132          																						   TestData.Temperature[1][channel].Float);
+    133          					}
+    134          					else				//환경온도 위치는 환경온도 고정 
+    135          					{
+    136          						TestData.Temperature[inout][channel].Float = beforeRevision;
+    137          					}
+    138          				}
+    139          				else									//보정 미적용 상태 
+    140          				{
+    141          					TestData.Temperature[inout][channel].Float = beforeRevision;
+    142          				}
+    143          			}
+    144          			adcNumber++;
+    145          			if(adcNumber > 31)
+    146          			{
+    147          				adcNumber = 0;
+    148          			}
+    149          		}
+    150          	}
+    151          }
+    152          
+    153          float DoRevisionTemperature(float beforeRevision, float environmentTemp)
+    154          {
+    155          	if(TestData.revisionConstant.Float == 0)
+    156          	{
+    157          		return (beforeRevision - TestData.revisionConstant.Float * environmentTemp)/(1 - TestData.revisionConstant.Float);
+    158          	}
+    159          	else
+    160          	{
+    161          		return beforeRevision;
+    162          	}
+    163          }
+    164          
+    165          void doMuxAddressSet(uint8_t add)
+    166          {
+    167          	uint8_t i;
+    168          
+    169          	for(i = 0; i < 4; i++)
+    170          	{
+    171          		if((add & 0x01) == 001)
+    172          		{
+    173          			HAL_GPIO_WritePin(MUX_ADD[i], MUX_ADD_PIN[i], GPIO_PIN_SET);
+    174          		}
+    175          		else
+    176          		{
+    177          			HAL_GPIO_WritePin(MUX_ADD[i] ,MUX_ADD_PIN[i], GPIO_PIN_RESET);
+    178          		}
+    179          		
+    180          		add = add >> 1;
+    181          	}
+    182          }
+    183          
+    184          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+      16   DoRevisionTemperature
+        16   -> __aeabi_fdiv
+        16   -> __aeabi_fmul
+        16   -> __aeabi_fsub
+        16 __aeabi_cfcmpeq
+       8   HAL_ADC_ConvCpltCallback
+         8   -> osSemaphoreRelease
+      16   StartSensorTask
+        16   -> HAL_ADCEx_Calibration_Start
+        16   -> HAL_ADC_Stop
+        16   -> HAL_GPIO_WritePin
+        16   -> doFindMyID
+        16   -> doReadADC
+        16   -> osDelay
+      16   doMuxAddressSet
+        16   -> HAL_GPIO_WritePin
+      48   doReadADC
+        48   -> Calc_Temp_NTC
+        48   -> DoRevisionTemperature
+        48   -> HAL_ADC_GetValue
+        48   -> HAL_ADC_Start_IT
+        48   -> HAL_GPIO_WritePin
+        48   -> __aeabi_fadd
+        48   -> doMuxAddressSet
+        48   -> midADC
+        48   -> osSemaphoreWait
+        48 __aeabi_cfcmple
+        48 __aeabi_cfrcmple
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable4
+       4  ??DataTable4_1
+       4  ??DataTable4_10
+       4  ??DataTable4_11
+       4  ??DataTable4_12
+       4  ??DataTable4_13
+       4  ??DataTable4_14
+       4  ??DataTable4_15
+       4  ??DataTable4_2
+       4  ??DataTable4_3
+       4  ??DataTable4_4
+       4  ??DataTable4_5
+       4  ??DataTable4_6
+       4  ??DataTable4_7
+       4  ??DataTable4_8
+       4  ??DataTable4_9
+      66  DoRevisionTemperature
+      14  HAL_ADC_ConvCpltCallback
+      16  MUX_ADD
+       8  MUX_ADD_PIN
+       8  MUX_EN
+       4  MUX_EN_PIN
+     110  StartSensorTask
+     572  TestData
+       8  adc
+       1  adcNumber
+       1  adc_count
+       1  adc_delay_break
+      44  adc_value
+      86  doMuxAddressSet
+     432  doReadADC
+       1  mux_enable
+
+ 
+ 620 bytes in section .bss
+  44 bytes in section .data
+ 772 bytes in section .text
+ 
+ 772 bytes of CODE memory
+ 664 bytes of DATA memory
+
+Errors: none
+Warnings: none

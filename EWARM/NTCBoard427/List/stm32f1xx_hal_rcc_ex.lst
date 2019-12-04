@@ -1,0 +1,976 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.40.1.212/W32 for ARM         06/Sep/2019  23:26:46
+# Copyright 1999-2019 IAR Systems AB.
+#
+#    Cpu mode     =  
+#    Endian       =  little
+#    Source file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_rcc_ex.c
+#    Command line =
+#        -f C:\Users\ilkorea\AppData\Local\Temp\EW8255.tmp
+#        (D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_rcc_ex.c
+#        -D USE_HAL_DRIVER -D STM32F103xB -lc
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List
+#        -o
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.3\arm\inc\c\DLib_Config_Full.h"
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Device/ST/STM32F1xx/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/SEGGER\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9/Config\
+#        -On -I "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.3\arm\CMSIS\Core\Include\" -I "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.3\arm\CMSIS\DSP\Include\")
+#    Locale       =  C
+#    List file    =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List\stm32f1xx_hal_rcc_ex.lst
+#    Object file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj\stm32f1xx_hal_rcc_ex.o
+#
+###############################################################################
+
+D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_rcc_ex.c
+      1          /**
+      2            ******************************************************************************
+      3            * @file    stm32f1xx_hal_rcc_ex.c
+      4            * @author  MCD Application Team
+      5            * @brief   Extended RCC HAL module driver.
+      6            *          This file provides firmware functions to manage the following 
+      7            *          functionalities RCC extension peripheral:
+      8            *           + Extended Peripheral Control functions
+      9            *  
+     10            ******************************************************************************
+     11            * @attention
+     12            *
+     13            * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
+     14            *
+     15            * Redistribution and use in source and binary forms, with or without modification,
+     16            * are permitted provided that the following conditions are met:
+     17            *   1. Redistributions of source code must retain the above copyright notice,
+     18            *      this list of conditions and the following disclaimer.
+     19            *   2. Redistributions in binary form must reproduce the above copyright notice,
+     20            *      this list of conditions and the following disclaimer in the documentation
+     21            *      and/or other materials provided with the distribution.
+     22            *   3. Neither the name of STMicroelectronics nor the names of its contributors
+     23            *      may be used to endorse or promote products derived from this software
+     24            *      without specific prior written permission.
+     25            *
+     26            * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     27            * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     28            * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+     29            * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+     30            * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     31            * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+     32            * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+     33            * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+     34            * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+     35            * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     36            *
+     37            ******************************************************************************  
+     38            */ 
+     39          
+     40          /* Includes ------------------------------------------------------------------*/
+     41          #include "stm32f1xx_hal.h"
+     42          
+     43          /** @addtogroup STM32F1xx_HAL_Driver
+     44            * @{
+     45            */
+     46          
+     47          #ifdef HAL_RCC_MODULE_ENABLED
+     48          
+     49          /** @defgroup RCCEx RCCEx
+     50            * @brief RCC Extension HAL module driver.
+     51            * @{
+     52            */
+     53          
+     54          /* Private typedef -----------------------------------------------------------*/
+     55          /* Private define ------------------------------------------------------------*/
+     56          /** @defgroup RCCEx_Private_Constants RCCEx Private Constants
+     57            * @{
+     58            */
+     59          /**
+     60            * @}
+     61            */
+     62          
+     63          /* Private macro -------------------------------------------------------------*/
+     64          /** @defgroup RCCEx_Private_Macros RCCEx Private Macros
+     65            * @{
+     66            */
+     67          /**
+     68            * @}
+     69            */
+     70          
+     71          /* Private variables ---------------------------------------------------------*/
+     72          /* Private function prototypes -----------------------------------------------*/
+     73          /* Private functions ---------------------------------------------------------*/
+     74          
+     75          /** @defgroup RCCEx_Exported_Functions RCCEx Exported Functions
+     76            * @{
+     77            */
+     78          
+     79          /** @defgroup RCCEx_Exported_Functions_Group1 Peripheral Control functions 
+     80            *  @brief  Extended Peripheral Control functions  
+     81            *
+     82          @verbatim   
+     83           ===============================================================================
+     84                          ##### Extended Peripheral Control functions  #####
+     85           ===============================================================================  
+     86              [..]
+     87              This subsection provides a set of functions allowing to control the RCC Clocks 
+     88              frequencies.
+     89              [..] 
+     90              (@) Important note: Care must be taken when HAL_RCCEx_PeriphCLKConfig() is used to
+     91                  select the RTC clock source; in this case the Backup domain will be reset in  
+     92                  order to modify the RTC Clock source, as consequence RTC registers (including 
+     93                  the backup registers) are set to their reset values.
+     94                
+     95          @endverbatim
+     96            * @{
+     97            */
+     98          
+     99          /**
+    100            * @brief  Initializes the RCC extended peripherals clocks according to the specified parameters in the
+    101            *         RCC_PeriphCLKInitTypeDef.
+    102            * @param  PeriphClkInit pointer to an RCC_PeriphCLKInitTypeDef structure that
+    103            *         contains the configuration information for the Extended Peripherals clocks(RTC clock).
+    104            *
+    105            * @note   Care must be taken when HAL_RCCEx_PeriphCLKConfig() is used to select 
+    106            *         the RTC clock source; in this case the Backup domain will be reset in  
+    107            *         order to modify the RTC Clock source, as consequence RTC registers (including 
+    108            *         the backup registers) are set to their reset values.
+    109            *
+    110            * @note   In case of STM32F105xC or STM32F107xC devices, PLLI2S will be enabled if requested on 
+    111            *         one of 2 I2S interfaces. When PLLI2S is enabled, you need to call HAL_RCCEx_DisablePLLI2S to
+    112            *         manually disable it.
+    113            *
+    114            * @retval HAL status
+    115            */
+    116          HAL_StatusTypeDef HAL_RCCEx_PeriphCLKConfig(RCC_PeriphCLKInitTypeDef  *PeriphClkInit)
+    117          {
+    118            uint32_t tickstart = 0U, temp_reg = 0U;
+    119          #if defined(STM32F105xC) || defined(STM32F107xC)
+    120            uint32_t  pllactive = 0U;
+    121          #endif /* STM32F105xC || STM32F107xC */
+    122          
+    123            /* Check the parameters */
+    124            assert_param(IS_RCC_PERIPHCLOCK(PeriphClkInit->PeriphClockSelection));
+    125            
+    126            /*------------------------------- RTC/LCD Configuration ------------------------*/ 
+    127            if ((((PeriphClkInit->PeriphClockSelection) & RCC_PERIPHCLK_RTC) == RCC_PERIPHCLK_RTC))
+    128            {
+    129              /* check for RTC Parameters used to output RTCCLK */
+    130              assert_param(IS_RCC_RTCCLKSOURCE(PeriphClkInit->RTCClockSelection));
+    131          
+    132              FlagStatus       pwrclkchanged = RESET;
+    133          
+    134              /* As soon as function is called to change RTC clock source, activation of the 
+    135                 power domain is done. */
+    136              /* Requires to enable write access to Backup Domain of necessary */
+    137              if(__HAL_RCC_PWR_IS_CLK_DISABLED())
+    138              {
+    139              __HAL_RCC_PWR_CLK_ENABLE();
+    140                pwrclkchanged = SET;
+    141              }
+    142              
+    143              if(HAL_IS_BIT_CLR(PWR->CR, PWR_CR_DBP))
+    144              {
+    145                /* Enable write access to Backup domain */
+    146                SET_BIT(PWR->CR, PWR_CR_DBP);
+    147                
+    148                /* Wait for Backup domain Write protection disable */
+    149                tickstart = HAL_GetTick();
+    150                
+    151                while(HAL_IS_BIT_CLR(PWR->CR, PWR_CR_DBP))
+    152                {
+    153                  if((HAL_GetTick() - tickstart) > RCC_DBP_TIMEOUT_VALUE)
+    154                  {
+    155                    return HAL_TIMEOUT;
+    156                  }
+    157                }
+    158              }
+    159                
+    160              /* Reset the Backup domain only if the RTC Clock source selection is modified from reset value */ 
+    161              temp_reg = (RCC->BDCR & RCC_BDCR_RTCSEL);
+    162              if((temp_reg != 0x00000000U) && (temp_reg != (PeriphClkInit->RTCClockSelection & RCC_BDCR_RTCSEL)))
+    163              {
+    164                /* Store the content of BDCR register before the reset of Backup Domain */
+    165                temp_reg = (RCC->BDCR & ~(RCC_BDCR_RTCSEL));
+    166                /* RTC Clock selection can be changed only if the Backup Domain is reset */
+    167                __HAL_RCC_BACKUPRESET_FORCE();
+    168                __HAL_RCC_BACKUPRESET_RELEASE();
+    169                /* Restore the Content of BDCR register */
+    170                RCC->BDCR = temp_reg;
+    171          
+    172                /* Wait for LSERDY if LSE was enabled */
+    173                if (HAL_IS_BIT_SET(temp_reg, RCC_BDCR_LSEON))
+    174                {
+    175                  /* Get Start Tick */
+    176                  tickstart = HAL_GetTick();
+    177                
+    178                  /* Wait till LSE is ready */  
+    179                  while(__HAL_RCC_GET_FLAG(RCC_FLAG_LSERDY) == RESET)
+    180                  {
+    181                    if((HAL_GetTick() - tickstart) > RCC_LSE_TIMEOUT_VALUE)
+    182                    {
+    183                      return HAL_TIMEOUT;
+    184                    }      
+    185                  }  
+    186                }
+    187              }
+    188              __HAL_RCC_RTC_CONFIG(PeriphClkInit->RTCClockSelection); 
+    189          
+    190              /* Require to disable power clock if necessary */
+    191              if(pwrclkchanged == SET)
+    192              {
+    193                __HAL_RCC_PWR_CLK_DISABLE();
+    194              }
+    195            }
+    196          
+    197            /*------------------------------ ADC clock Configuration ------------------*/ 
+    198            if(((PeriphClkInit->PeriphClockSelection) & RCC_PERIPHCLK_ADC) == RCC_PERIPHCLK_ADC)
+    199            {
+    200              /* Check the parameters */
+    201              assert_param(IS_RCC_ADCPLLCLK_DIV(PeriphClkInit->AdcClockSelection));
+    202              
+    203              /* Configure the ADC clock source */
+    204              __HAL_RCC_ADC_CONFIG(PeriphClkInit->AdcClockSelection);
+    205            }
+    206          
+    207          #if defined(STM32F105xC) || defined(STM32F107xC)
+    208            /*------------------------------ I2S2 Configuration ------------------------*/ 
+    209            if(((PeriphClkInit->PeriphClockSelection) & RCC_PERIPHCLK_I2S2) == RCC_PERIPHCLK_I2S2)
+    210            {
+    211              /* Check the parameters */
+    212              assert_param(IS_RCC_I2S2CLKSOURCE(PeriphClkInit->I2s2ClockSelection));
+    213          
+    214              /* Configure the I2S2 clock source */
+    215              __HAL_RCC_I2S2_CONFIG(PeriphClkInit->I2s2ClockSelection);
+    216            }
+    217          
+    218            /*------------------------------ I2S3 Configuration ------------------------*/ 
+    219            if(((PeriphClkInit->PeriphClockSelection) & RCC_PERIPHCLK_I2S3) == RCC_PERIPHCLK_I2S3)
+    220            {
+    221              /* Check the parameters */
+    222              assert_param(IS_RCC_I2S3CLKSOURCE(PeriphClkInit->I2s3ClockSelection));
+    223              
+    224              /* Configure the I2S3 clock source */
+    225              __HAL_RCC_I2S3_CONFIG(PeriphClkInit->I2s3ClockSelection);
+    226            }
+    227          
+    228            /*------------------------------ PLL I2S Configuration ----------------------*/ 
+    229            /* Check that PLLI2S need to be enabled */
+    230            if (HAL_IS_BIT_SET(RCC->CFGR2, RCC_CFGR2_I2S2SRC) || HAL_IS_BIT_SET(RCC->CFGR2, RCC_CFGR2_I2S3SRC))
+    231            {
+    232              /* Update flag to indicate that PLL I2S should be active */
+    233              pllactive = 1;
+    234            }
+    235          
+    236            /* Check if PLL I2S need to be enabled */
+    237            if (pllactive == 1)
+    238            {
+    239              /* Enable PLL I2S only if not active */
+    240              if (HAL_IS_BIT_CLR(RCC->CR, RCC_CR_PLL3ON))
+    241              {
+    242                /* Check the parameters */
+    243                assert_param(IS_RCC_PLLI2S_MUL(PeriphClkInit->PLLI2S.PLLI2SMUL));
+    244                assert_param(IS_RCC_HSE_PREDIV2(PeriphClkInit->PLLI2S.HSEPrediv2Value));
+    245          
+    246                /* Prediv2 can be written only when the PLL2 is disabled. */
+    247                /* Return an error only if new value is different from the programmed value */
+    248                if (HAL_IS_BIT_SET(RCC->CR,RCC_CR_PLL2ON) && \
+    249                  (__HAL_RCC_HSE_GET_PREDIV2() != PeriphClkInit->PLLI2S.HSEPrediv2Value))
+    250                {
+    251                  return HAL_ERROR;
+    252                }
+    253          
+    254                /* Configure the HSE prediv2 factor --------------------------------*/
+    255                __HAL_RCC_HSE_PREDIV2_CONFIG(PeriphClkInit->PLLI2S.HSEPrediv2Value);
+    256          
+    257                /* Configure the main PLLI2S multiplication factors. */
+    258                __HAL_RCC_PLLI2S_CONFIG(PeriphClkInit->PLLI2S.PLLI2SMUL);
+    259                
+    260                /* Enable the main PLLI2S. */
+    261                __HAL_RCC_PLLI2S_ENABLE();
+    262                
+    263                /* Get Start Tick*/
+    264                tickstart = HAL_GetTick();
+    265                
+    266                /* Wait till PLLI2S is ready */
+    267                while(__HAL_RCC_GET_FLAG(RCC_FLAG_PLLI2SRDY)  == RESET)
+    268                {
+    269                  if((HAL_GetTick() - tickstart ) > PLLI2S_TIMEOUT_VALUE)
+    270                  {
+    271                    return HAL_TIMEOUT;
+    272                  }
+    273                }
+    274              }
+    275              else
+    276              {
+    277                /* Return an error only if user wants to change the PLLI2SMUL whereas PLLI2S is active */
+    278                if (READ_BIT(RCC->CFGR2, RCC_CFGR2_PLL3MUL) != PeriphClkInit->PLLI2S.PLLI2SMUL)
+    279                {
+    280                    return HAL_ERROR;
+    281                }
+    282              }
+    283            }
+    284          #endif /* STM32F105xC || STM32F107xC */
+    285          
+    286          #if defined(STM32F102x6) || defined(STM32F102xB) || defined(STM32F103x6)\
+    287           || defined(STM32F103xB) || defined(STM32F103xE) || defined(STM32F103xG)\
+    288           || defined(STM32F105xC) || defined(STM32F107xC)
+    289            /*------------------------------ USB clock Configuration ------------------*/ 
+    290            if(((PeriphClkInit->PeriphClockSelection) & RCC_PERIPHCLK_USB) == RCC_PERIPHCLK_USB)
+    291            {
+    292              /* Check the parameters */
+    293              assert_param(IS_RCC_USBPLLCLK_DIV(PeriphClkInit->UsbClockSelection));
+    294              
+    295              /* Configure the USB clock source */
+    296              __HAL_RCC_USB_CONFIG(PeriphClkInit->UsbClockSelection);
+    297            }
+    298          #endif /* STM32F102x6 || STM32F102xB || STM32F103x6 || STM32F103xB || STM32F103xE || STM32F103xG || STM32F105xC || STM32F107xC */
+    299          
+    300            return HAL_OK;
+    301          }
+    302          
+    303          /**
+    304            * @brief  Get the PeriphClkInit according to the internal
+    305            * RCC configuration registers.
+    306            * @param  PeriphClkInit pointer to an RCC_PeriphCLKInitTypeDef structure that 
+    307            *         returns the configuration information for the Extended Peripherals clocks(RTC, I2S, ADC clocks).
+    308            * @retval None
+    309            */
+    310          void HAL_RCCEx_GetPeriphCLKConfig(RCC_PeriphCLKInitTypeDef  *PeriphClkInit)
+    311          {
+    312            uint32_t srcclk = 0U;
+    313            
+    314            /* Set all possible values for the extended clock type parameter------------*/
+    315            PeriphClkInit->PeriphClockSelection = RCC_PERIPHCLK_RTC;
+    316          
+    317            /* Get the RTC configuration -----------------------------------------------*/
+    318            srcclk = __HAL_RCC_GET_RTC_SOURCE();
+    319            /* Source clock is LSE or LSI*/
+    320            PeriphClkInit->RTCClockSelection = srcclk;
+    321          
+    322            /* Get the ADC clock configuration -----------------------------------------*/
+    323            PeriphClkInit->PeriphClockSelection |= RCC_PERIPHCLK_ADC;
+    324            PeriphClkInit->AdcClockSelection = __HAL_RCC_GET_ADC_SOURCE();
+    325          
+    326          #if defined(STM32F105xC) || defined(STM32F107xC)
+    327            /* Get the I2S2 clock configuration -----------------------------------------*/
+    328            PeriphClkInit->PeriphClockSelection |= RCC_PERIPHCLK_I2S2;
+    329            PeriphClkInit->I2s2ClockSelection = __HAL_RCC_GET_I2S2_SOURCE();
+    330          
+    331            /* Get the I2S3 clock configuration -----------------------------------------*/
+    332            PeriphClkInit->PeriphClockSelection |= RCC_PERIPHCLK_I2S3;
+    333            PeriphClkInit->I2s3ClockSelection = __HAL_RCC_GET_I2S3_SOURCE();
+    334          
+    335          #endif /* STM32F105xC || STM32F107xC */
+    336          
+    337          #if defined(STM32F103xE) || defined(STM32F103xG)
+    338            /* Get the I2S2 clock configuration -----------------------------------------*/
+    339            PeriphClkInit->PeriphClockSelection |= RCC_PERIPHCLK_I2S2;
+    340            PeriphClkInit->I2s2ClockSelection = RCC_I2S2CLKSOURCE_SYSCLK;
+    341          
+    342            /* Get the I2S3 clock configuration -----------------------------------------*/
+    343            PeriphClkInit->PeriphClockSelection |= RCC_PERIPHCLK_I2S3;
+    344            PeriphClkInit->I2s3ClockSelection = RCC_I2S3CLKSOURCE_SYSCLK;
+    345          
+    346          #endif /* STM32F103xE || STM32F103xG */
+    347          
+    348          #if defined(STM32F102x6) || defined(STM32F102xB) || defined(STM32F103x6)\
+    349           || defined(STM32F103xB) || defined(STM32F103xE) || defined(STM32F103xG)\
+    350           || defined(STM32F105xC) || defined(STM32F107xC)
+    351            /* Get the USB clock configuration -----------------------------------------*/
+    352            PeriphClkInit->PeriphClockSelection |= RCC_PERIPHCLK_USB;
+    353            PeriphClkInit->UsbClockSelection = __HAL_RCC_GET_USB_SOURCE();
+    354          #endif /* STM32F102x6 || STM32F102xB || STM32F103x6 || STM32F103xB || STM32F103xE || STM32F103xG || STM32F105xC || STM32F107xC */
+    355          }
+    356          
+    357          /**
+    358            * @brief  Returns the peripheral clock frequency
+    359            * @note   Returns 0 if peripheral clock is unknown
+    360            * @param  PeriphClk Peripheral clock identifier
+    361            *         This parameter can be one of the following values:
+    362            *            @arg @ref RCC_PERIPHCLK_RTC  RTC peripheral clock
+    363            *            @arg @ref RCC_PERIPHCLK_ADC  ADC peripheral clock
+    364            @if STM32F103xE
+    365            *            @arg @ref RCC_PERIPHCLK_I2S2 I2S2 peripheral clock
+    366            *            @arg @ref RCC_PERIPHCLK_I2S3 I2S3 peripheral clock
+    367            *            @arg @ref RCC_PERIPHCLK_I2S3 I2S3 peripheral clock
+    368            @endif
+    369            @if STM32F103xG
+    370            *            @arg @ref RCC_PERIPHCLK_I2S2 I2S2 peripheral clock
+    371            *            @arg @ref RCC_PERIPHCLK_I2S3 I2S3 peripheral clock
+    372            *            @arg @ref RCC_PERIPHCLK_I2S3 I2S3 peripheral clock
+    373            *            @arg @ref RCC_PERIPHCLK_I2S2 I2S2 peripheral clock
+    374            @endif
+    375            @if STM32F105xC
+    376            *            @arg @ref RCC_PERIPHCLK_I2S2 I2S2 peripheral clock
+    377            *            @arg @ref RCC_PERIPHCLK_I2S3 I2S3 peripheral clock
+    378            *            @arg @ref RCC_PERIPHCLK_I2S3 I2S3 peripheral clock
+    379            *            @arg @ref RCC_PERIPHCLK_I2S2 I2S2 peripheral clock
+    380            *            @arg @ref RCC_PERIPHCLK_I2S3 I2S3 peripheral clock
+    381            *            @arg @ref RCC_PERIPHCLK_I2S3 I2S3 peripheral clock
+    382            *            @arg @ref RCC_PERIPHCLK_I2S2 I2S2 peripheral clock
+    383            *            @arg @ref RCC_PERIPHCLK_USB  USB peripheral clock
+    384            @endif
+    385            @if STM32F107xC
+    386            *            @arg @ref RCC_PERIPHCLK_I2S2 I2S2 peripheral clock
+    387            *            @arg @ref RCC_PERIPHCLK_I2S3 I2S3 peripheral clock
+    388            *            @arg @ref RCC_PERIPHCLK_I2S3 I2S3 peripheral clock
+    389            *            @arg @ref RCC_PERIPHCLK_I2S2 I2S2 peripheral clock
+    390            *            @arg @ref RCC_PERIPHCLK_I2S3 I2S3 peripheral clock
+    391            *            @arg @ref RCC_PERIPHCLK_I2S3 I2S3 peripheral clock
+    392            *            @arg @ref RCC_PERIPHCLK_I2S2 I2S2 peripheral clock
+    393            *            @arg @ref RCC_PERIPHCLK_USB  USB peripheral clock
+    394            @endif
+    395            @if STM32F102xx
+    396            *            @arg @ref RCC_PERIPHCLK_USB  USB peripheral clock
+    397            @endif
+    398            @if STM32F103xx
+    399            *            @arg @ref RCC_PERIPHCLK_USB  USB peripheral clock
+    400            @endif
+    401            * @retval Frequency in Hz (0: means that no available frequency for the peripheral)
+    402            */
+    403          uint32_t HAL_RCCEx_GetPeriphCLKFreq(uint32_t PeriphClk)
+    404          {
+    405          #if defined(STM32F105xC) || defined(STM32F107xC)
+    406            const uint8_t aPLLMULFactorTable[14] = {0, 0, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0, 13};
+    407            const uint8_t aPredivFactorTable[16] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+    408          
+    409            uint32_t prediv1 = 0U, pllclk = 0U, pllmul = 0U;
+    410            uint32_t pll2mul = 0U, pll3mul = 0U, prediv2 = 0U;
+    411          #endif /* STM32F105xC || STM32F107xC */
+    412          #if defined(STM32F102x6) || defined(STM32F102xB) || defined(STM32F103x6) || \
+    413              defined(STM32F103xB) || defined(STM32F103xE) || defined(STM32F103xG)
+    414            const uint8_t aPLLMULFactorTable[16] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16};
+    415            const uint8_t aPredivFactorTable[2] = {1, 2};
+    416          
+    417            uint32_t prediv1 = 0U, pllclk = 0U, pllmul = 0U;
+    418          #endif /* STM32F102x6 || STM32F102xB || STM32F103x6 || STM32F103xB || STM32F103xE || STM32F103xG */
+    419            uint32_t temp_reg = 0U, frequency = 0U;
+    420          
+    421            /* Check the parameters */
+    422            assert_param(IS_RCC_PERIPHCLOCK(PeriphClk));
+    423            
+    424            switch (PeriphClk)
+    425            {
+    426          #if defined(STM32F102x6) || defined(STM32F102xB) || defined(STM32F103x6)\
+    427           || defined(STM32F103xB) || defined(STM32F103xE) || defined(STM32F103xG)\
+    428           || defined(STM32F105xC) || defined(STM32F107xC)
+    429            case RCC_PERIPHCLK_USB:  
+    430              {
+    431                /* Get RCC configuration ------------------------------------------------------*/
+    432                temp_reg = RCC->CFGR;
+    433            
+    434                /* Check if PLL is enabled */
+    435                if (HAL_IS_BIT_SET(RCC->CR,RCC_CR_PLLON))
+    436                {
+    437                  pllmul = aPLLMULFactorTable[(uint32_t)(temp_reg & RCC_CFGR_PLLMULL) >> RCC_CFGR_PLLMULL_Pos];
+    438                  if ((temp_reg & RCC_CFGR_PLLSRC) != RCC_PLLSOURCE_HSI_DIV2)
+    439                  {
+    440          #if defined(STM32F105xC) || defined(STM32F107xC) || defined(STM32F100xB)\
+    441           || defined(STM32F100xE)
+    442                    prediv1 = aPredivFactorTable[(uint32_t)(RCC->CFGR2 & RCC_CFGR2_PREDIV1) >> RCC_CFGR2_PREDIV1_Pos];
+    443          #else
+    444                    prediv1 = aPredivFactorTable[(uint32_t)(RCC->CFGR & RCC_CFGR_PLLXTPRE) >> RCC_CFGR_PLLXTPRE_Pos];
+    445          #endif /* STM32F105xC || STM32F107xC || STM32F100xB || STM32F100xE */
+    446          
+    447          #if defined(STM32F105xC) || defined(STM32F107xC)
+    448                    if(HAL_IS_BIT_SET(RCC->CFGR2, RCC_CFGR2_PREDIV1SRC))
+    449                    {
+    450                      /* PLL2 selected as Prediv1 source */
+    451                      /* PLLCLK = PLL2CLK / PREDIV1 * PLLMUL with PLL2CLK = HSE/PREDIV2 * PLL2MUL */
+    452                      prediv2 = ((RCC->CFGR2 & RCC_CFGR2_PREDIV2) >> RCC_CFGR2_PREDIV2_Pos) + 1;
+    453                      pll2mul = ((RCC->CFGR2 & RCC_CFGR2_PLL2MUL) >> RCC_CFGR2_PLL2MUL_Pos) + 2;
+    454                      pllclk = (uint32_t)((((HSE_VALUE / prediv2) * pll2mul) / prediv1) * pllmul);
+    455                    }
+    456                    else
+    457                    {
+    458                      /* HSE used as PLL clock source : PLLCLK = HSE/PREDIV1 * PLLMUL */
+    459                      pllclk = (uint32_t)((HSE_VALUE / prediv1) * pllmul);
+    460                    }
+    461                    
+    462                    /* If PLLMUL was set to 13 means that it was to cover the case PLLMUL 6.5 (avoid using float) */
+    463                    /* In this case need to divide pllclk by 2 */
+    464                    if (pllmul == aPLLMULFactorTable[(uint32_t)(RCC_CFGR_PLLMULL6_5) >> RCC_CFGR_PLLMULL_Pos])
+    465                    {
+    466                        pllclk = pllclk / 2;
+    467                    }
+    468          #else
+    469                    if ((temp_reg & RCC_CFGR_PLLSRC) != RCC_PLLSOURCE_HSI_DIV2)
+    470                    {
+    471                      /* HSE used as PLL clock source : PLLCLK = HSE/PREDIV1 * PLLMUL */
+    472                      pllclk = (uint32_t)((HSE_VALUE / prediv1) * pllmul);
+    473                    }
+    474          #endif /* STM32F105xC || STM32F107xC */
+    475                  }
+    476                  else
+    477                  {
+    478                    /* HSI used as PLL clock source : PLLCLK = HSI/2 * PLLMUL */
+    479                    pllclk = (uint32_t)((HSI_VALUE >> 1) * pllmul);
+    480                  }
+    481          
+    482                  /* Calcul of the USB frequency*/
+    483          #if defined(STM32F105xC) || defined(STM32F107xC)
+    484                  /* USBCLK = PLLVCO = (2 x PLLCLK) / USB prescaler */
+    485                  if (__HAL_RCC_GET_USB_SOURCE() == RCC_USBCLKSOURCE_PLL_DIV2)
+    486                  {
+    487                    /* Prescaler of 2 selected for USB */ 
+    488                    frequency = pllclk;
+    489                  }
+    490                  else
+    491                  {
+    492                    /* Prescaler of 3 selected for USB */ 
+    493                    frequency = (2 * pllclk) / 3;
+    494                  }
+    495          #else
+    496                  /* USBCLK = PLLCLK / USB prescaler */
+    497                  if (__HAL_RCC_GET_USB_SOURCE() == RCC_USBCLKSOURCE_PLL)
+    498                  {
+    499                    /* No prescaler selected for USB */
+    500                    frequency = pllclk;
+    501                  }
+    502                  else
+    503                  {
+    504                    /* Prescaler of 1.5 selected for USB */ 
+    505                    frequency = (pllclk * 2) / 3;
+    506                  }
+    507          #endif
+    508                }
+    509                break;
+    510              }
+    511          #endif /* STM32F102x6 || STM32F102xB || STM32F103x6 || STM32F103xB || STM32F103xE || STM32F103xG || STM32F105xC || STM32F107xC */
+    512          #if defined(STM32F103xE) || defined(STM32F103xG) || defined(STM32F105xC) || defined(STM32F107xC)
+    513            case RCC_PERIPHCLK_I2S2:  
+    514              {
+    515          #if defined(STM32F103xE) || defined(STM32F103xG)
+    516                /* SYSCLK used as source clock for I2S2 */
+    517                frequency = HAL_RCC_GetSysClockFreq();
+    518          #else
+    519                if (__HAL_RCC_GET_I2S2_SOURCE() == RCC_I2S2CLKSOURCE_SYSCLK)
+    520                {
+    521                  /* SYSCLK used as source clock for I2S2 */
+    522                  frequency = HAL_RCC_GetSysClockFreq();
+    523                }
+    524                else
+    525                {
+    526                   /* Check if PLLI2S is enabled */
+    527                  if (HAL_IS_BIT_SET(RCC->CR, RCC_CR_PLL3ON))
+    528                  {
+    529                    /* PLLI2SVCO = 2 * PLLI2SCLK = 2 * (HSE/PREDIV2 * PLL3MUL) */
+    530                    prediv2 = ((RCC->CFGR2 & RCC_CFGR2_PREDIV2) >> RCC_CFGR2_PREDIV2_Pos) + 1;
+    531                    pll3mul = ((RCC->CFGR2 & RCC_CFGR2_PLL3MUL) >> RCC_CFGR2_PLL3MUL_Pos) + 2;
+    532                    frequency = (uint32_t)(2 * ((HSE_VALUE / prediv2) * pll3mul));
+    533                  }
+    534                }
+    535          #endif /* STM32F103xE || STM32F103xG */
+    536                break;
+    537              }
+    538            case RCC_PERIPHCLK_I2S3:
+    539              {
+    540          #if defined(STM32F103xE) || defined(STM32F103xG)
+    541                /* SYSCLK used as source clock for I2S3 */
+    542                frequency = HAL_RCC_GetSysClockFreq();
+    543          #else
+    544                if (__HAL_RCC_GET_I2S3_SOURCE() == RCC_I2S3CLKSOURCE_SYSCLK)
+    545                {
+    546                  /* SYSCLK used as source clock for I2S3 */
+    547                  frequency = HAL_RCC_GetSysClockFreq();
+    548                }
+    549                else
+    550                {
+    551                   /* Check if PLLI2S is enabled */
+    552                  if (HAL_IS_BIT_SET(RCC->CR, RCC_CR_PLL3ON))
+    553                  {
+    554                    /* PLLI2SVCO = 2 * PLLI2SCLK = 2 * (HSE/PREDIV2 * PLL3MUL) */
+    555                    prediv2 = ((RCC->CFGR2 & RCC_CFGR2_PREDIV2) >> RCC_CFGR2_PREDIV2_Pos) + 1;
+    556                    pll3mul = ((RCC->CFGR2 & RCC_CFGR2_PLL3MUL) >> RCC_CFGR2_PLL3MUL_Pos) + 2;
+    557                    frequency = (uint32_t)(2 * ((HSE_VALUE / prediv2) * pll3mul));
+    558                  }
+    559                }
+    560          #endif /* STM32F103xE || STM32F103xG */
+    561                break;
+    562              }
+    563          #endif /* STM32F103xE || STM32F103xG || STM32F105xC || STM32F107xC */
+    564            case RCC_PERIPHCLK_RTC:  
+    565              {
+    566                /* Get RCC BDCR configuration ------------------------------------------------------*/
+    567                temp_reg = RCC->BDCR;
+    568          
+    569                /* Check if LSE is ready if RTC clock selection is LSE */
+    570                if (((temp_reg & RCC_BDCR_RTCSEL) == RCC_RTCCLKSOURCE_LSE) && (HAL_IS_BIT_SET(temp_reg, RCC_BDCR_LSERDY)))
+    571                {
+    572                  frequency = LSE_VALUE;
+    573                }
+    574                /* Check if LSI is ready if RTC clock selection is LSI */
+    575                else if (((temp_reg & RCC_BDCR_RTCSEL) == RCC_RTCCLKSOURCE_LSI) && (HAL_IS_BIT_SET(RCC->CSR, RCC_CSR_LSIRDY)))
+    576                {
+    577                  frequency = LSI_VALUE;
+    578                }
+    579                else if (((temp_reg & RCC_BDCR_RTCSEL) == RCC_RTCCLKSOURCE_HSE_DIV128) && (HAL_IS_BIT_SET(RCC->CR, RCC_CR_HSERDY)))
+    580                {
+    581                  frequency = HSE_VALUE / 128U;
+    582                }
+    583                /* Clock not enabled for RTC*/
+    584                else
+    585                {
+    586                  frequency = 0U;
+    587                }
+    588                break;
+    589              }
+    590            case RCC_PERIPHCLK_ADC:  
+    591              {
+    592                frequency = HAL_RCC_GetPCLK2Freq() / (((__HAL_RCC_GET_ADC_SOURCE() >> RCC_CFGR_ADCPRE_Pos) + 1) * 2);
+    593                break;
+    594              }
+    595            default: 
+    596              {
+    597                break;
+    598              }
+    599            }
+    600            return(frequency);
+    601          }
+    602          
+    603          /**
+    604            * @}
+    605            */
+    606          
+    607          #if defined(STM32F105xC) || defined(STM32F107xC)
+    608          /** @defgroup RCCEx_Exported_Functions_Group2 PLLI2S Management function
+    609            *  @brief  PLLI2S Management functions
+    610            *
+    611          @verbatim   
+    612           ===============================================================================
+    613                          ##### Extended PLLI2S Management functions  #####
+    614           ===============================================================================  
+    615              [..]
+    616              This subsection provides a set of functions allowing to control the PLLI2S
+    617              activation or deactivation
+    618          @endverbatim
+    619            * @{
+    620            */
+    621          
+    622          /**
+    623            * @brief  Enable PLLI2S
+    624            * @param  PLLI2SInit pointer to an RCC_PLLI2SInitTypeDef structure that
+    625            *         contains the configuration information for the PLLI2S
+    626            * @note   The PLLI2S configuration not modified if used by I2S2 or I2S3 Interface.
+    627            * @retval HAL status
+    628            */
+    629          HAL_StatusTypeDef HAL_RCCEx_EnablePLLI2S(RCC_PLLI2SInitTypeDef  *PLLI2SInit)
+    630          {
+    631            uint32_t tickstart = 0U;
+    632          
+    633            /* Check that PLL I2S has not been already enabled by I2S2 or I2S3*/
+    634            if (HAL_IS_BIT_CLR(RCC->CFGR2, RCC_CFGR2_I2S2SRC) && HAL_IS_BIT_CLR(RCC->CFGR2, RCC_CFGR2_I2S3SRC))
+    635            {
+    636              /* Check the parameters */
+    637              assert_param(IS_RCC_PLLI2S_MUL(PLLI2SInit->PLLI2SMUL));
+    638              assert_param(IS_RCC_HSE_PREDIV2(PLLI2SInit->HSEPrediv2Value));
+    639          
+    640              /* Prediv2 can be written only when the PLL2 is disabled. */
+    641              /* Return an error only if new value is different from the programmed value */
+    642              if (HAL_IS_BIT_SET(RCC->CR,RCC_CR_PLL2ON) && \
+    643                (__HAL_RCC_HSE_GET_PREDIV2() != PLLI2SInit->HSEPrediv2Value))
+    644              {
+    645                return HAL_ERROR;
+    646              }
+    647          
+    648              /* Disable the main PLLI2S. */
+    649              __HAL_RCC_PLLI2S_DISABLE();
+    650          
+    651              /* Get Start Tick*/
+    652              tickstart = HAL_GetTick();
+    653              
+    654              /* Wait till PLLI2S is ready */  
+    655              while(__HAL_RCC_GET_FLAG(RCC_FLAG_PLLI2SRDY)  != RESET)
+    656              {
+    657                if((HAL_GetTick() - tickstart ) > PLLI2S_TIMEOUT_VALUE)
+    658                {
+    659                  return HAL_TIMEOUT;
+    660                }
+    661              }
+    662          
+    663              /* Configure the HSE prediv2 factor --------------------------------*/
+    664              __HAL_RCC_HSE_PREDIV2_CONFIG(PLLI2SInit->HSEPrediv2Value);
+    665              
+    666          
+    667              /* Configure the main PLLI2S multiplication factors. */
+    668              __HAL_RCC_PLLI2S_CONFIG(PLLI2SInit->PLLI2SMUL);
+    669              
+    670              /* Enable the main PLLI2S. */
+    671              __HAL_RCC_PLLI2S_ENABLE();
+    672              
+    673              /* Get Start Tick*/
+    674              tickstart = HAL_GetTick();
+    675              
+    676              /* Wait till PLLI2S is ready */
+    677              while(__HAL_RCC_GET_FLAG(RCC_FLAG_PLLI2SRDY)  == RESET)
+    678              {
+    679                if((HAL_GetTick() - tickstart ) > PLLI2S_TIMEOUT_VALUE)
+    680                {
+    681                  return HAL_TIMEOUT;
+    682                }
+    683              }
+    684            }
+    685            else
+    686            {
+    687              /* PLLI2S cannot be modified as already used by I2S2 or I2S3 */
+    688              return HAL_ERROR;
+    689            }
+    690          
+    691            return HAL_OK;
+    692          }
+    693          
+    694          /**
+    695            * @brief  Disable PLLI2S
+    696            * @note   PLLI2S is not disabled if used by I2S2 or I2S3 Interface.
+    697            * @retval HAL status
+    698            */
+    699          HAL_StatusTypeDef HAL_RCCEx_DisablePLLI2S(void)
+    700          {
+    701            uint32_t tickstart = 0U;
+    702          
+    703            /* Disable PLL I2S as not requested by I2S2 or I2S3*/
+    704            if (HAL_IS_BIT_CLR(RCC->CFGR2, RCC_CFGR2_I2S2SRC) && HAL_IS_BIT_CLR(RCC->CFGR2, RCC_CFGR2_I2S3SRC))
+    705            {
+    706              /* Disable the main PLLI2S. */
+    707              __HAL_RCC_PLLI2S_DISABLE();
+    708          
+    709              /* Get Start Tick*/
+    710              tickstart = HAL_GetTick();
+    711              
+    712              /* Wait till PLLI2S is ready */  
+    713              while(__HAL_RCC_GET_FLAG(RCC_FLAG_PLLI2SRDY)  != RESET)
+    714              {
+    715                if((HAL_GetTick() - tickstart ) > PLLI2S_TIMEOUT_VALUE)
+    716                {
+    717                  return HAL_TIMEOUT;
+    718                }
+    719              }
+    720            }
+    721            else
+    722            {
+    723              /* PLLI2S is currently used by I2S2 or I2S3. Cannot be disabled.*/
+    724              return HAL_ERROR;
+    725            }
+    726            
+    727            return HAL_OK;
+    728          }
+    729          
+    730          /**
+    731            * @}
+    732            */
+    733          
+    734          /** @defgroup RCCEx_Exported_Functions_Group3 PLL2 Management function
+    735            *  @brief  PLL2 Management functions
+    736            *
+    737          @verbatim   
+    738           ===============================================================================
+    739                          ##### Extended PLL2 Management functions  #####
+    740           ===============================================================================  
+    741              [..]
+    742              This subsection provides a set of functions allowing to control the PLL2
+    743              activation or deactivation
+    744          @endverbatim
+    745            * @{
+    746            */
+    747          
+    748          /**
+    749            * @brief  Enable PLL2
+    750            * @param  PLL2Init pointer to an RCC_PLL2InitTypeDef structure that
+    751            *         contains the configuration information for the PLL2
+    752            * @note   The PLL2 configuration not modified if used indirectly as system clock.
+    753            * @retval HAL status
+    754            */
+    755          HAL_StatusTypeDef HAL_RCCEx_EnablePLL2(RCC_PLL2InitTypeDef  *PLL2Init)
+    756          {
+    757            uint32_t tickstart = 0U;
+    758          
+    759            /* This bit can not be cleared if the PLL2 clock is used indirectly as system 
+    760              clock (i.e. it is used as PLL clock entry that is used as system clock). */
+    761            if((__HAL_RCC_GET_PLL_OSCSOURCE() == RCC_PLLSOURCE_HSE) && \
+    762                  (__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_PLLCLK) && \
+    763                  ((READ_BIT(RCC->CFGR2,RCC_CFGR2_PREDIV1SRC)) == RCC_CFGR2_PREDIV1SRC_PLL2))
+    764            {
+    765              return HAL_ERROR;
+    766            }
+    767            else
+    768            {
+    769              /* Check the parameters */
+    770              assert_param(IS_RCC_PLL2_MUL(PLL2Init->PLL2MUL));
+    771              assert_param(IS_RCC_HSE_PREDIV2(PLL2Init->HSEPrediv2Value));
+    772          
+    773              /* Prediv2 can be written only when the PLLI2S is disabled. */
+    774              /* Return an error only if new value is different from the programmed value */
+    775              if (HAL_IS_BIT_SET(RCC->CR,RCC_CR_PLL3ON) && \
+    776                (__HAL_RCC_HSE_GET_PREDIV2() != PLL2Init->HSEPrediv2Value))
+    777              {
+    778                return HAL_ERROR;
+    779              }
+    780          
+    781              /* Disable the main PLL2. */
+    782              __HAL_RCC_PLL2_DISABLE();
+    783              
+    784              /* Get Start Tick*/
+    785              tickstart = HAL_GetTick();
+    786              
+    787              /* Wait till PLL2 is disabled */
+    788              while(__HAL_RCC_GET_FLAG(RCC_FLAG_PLL2RDY) != RESET)
+    789              {
+    790                if((HAL_GetTick() - tickstart ) > PLL2_TIMEOUT_VALUE)
+    791                {
+    792                  return HAL_TIMEOUT;
+    793                }
+    794              }
+    795              
+    796              /* Configure the HSE prediv2 factor --------------------------------*/
+    797              __HAL_RCC_HSE_PREDIV2_CONFIG(PLL2Init->HSEPrediv2Value);
+    798          
+    799              /* Configure the main PLL2 multiplication factors. */
+    800              __HAL_RCC_PLL2_CONFIG(PLL2Init->PLL2MUL);
+    801              
+    802              /* Enable the main PLL2. */
+    803              __HAL_RCC_PLL2_ENABLE();
+    804              
+    805              /* Get Start Tick*/
+    806              tickstart = HAL_GetTick();
+    807              
+    808              /* Wait till PLL2 is ready */
+    809              while(__HAL_RCC_GET_FLAG(RCC_FLAG_PLL2RDY)  == RESET)
+    810              {
+    811                if((HAL_GetTick() - tickstart ) > PLL2_TIMEOUT_VALUE)
+    812                {
+    813                  return HAL_TIMEOUT;
+    814                }
+    815              }
+    816            }
+    817          
+    818            return HAL_OK;
+    819          }
+    820          
+    821          /**
+    822            * @brief  Disable PLL2
+    823            * @note   PLL2 is not disabled if used indirectly as system clock.
+    824            * @retval HAL status
+    825            */
+    826          HAL_StatusTypeDef HAL_RCCEx_DisablePLL2(void)
+    827          {
+    828            uint32_t tickstart = 0U;
+    829          
+    830            /* This bit can not be cleared if the PLL2 clock is used indirectly as system 
+    831              clock (i.e. it is used as PLL clock entry that is used as system clock). */
+    832            if((__HAL_RCC_GET_PLL_OSCSOURCE() == RCC_PLLSOURCE_HSE) && \
+    833                  (__HAL_RCC_GET_SYSCLK_SOURCE() == RCC_SYSCLKSOURCE_STATUS_PLLCLK) && \
+    834                  ((READ_BIT(RCC->CFGR2,RCC_CFGR2_PREDIV1SRC)) == RCC_CFGR2_PREDIV1SRC_PLL2))
+    835            {
+    836              return HAL_ERROR;
+    837            }
+    838            else
+    839            {
+    840              /* Disable the main PLL2. */
+    841              __HAL_RCC_PLL2_DISABLE();
+    842          
+    843              /* Get Start Tick*/
+    844              tickstart = HAL_GetTick();
+    845              
+    846              /* Wait till PLL2 is disabled */  
+    847              while(__HAL_RCC_GET_FLAG(RCC_FLAG_PLL2RDY)  != RESET)
+    848              {
+    849                if((HAL_GetTick() - tickstart ) > PLL2_TIMEOUT_VALUE)
+    850                {
+    851                  return HAL_TIMEOUT;
+    852                }
+    853              }
+    854            }
+    855          
+    856            return HAL_OK;
+    857          }
+    858          
+    859          /**
+    860            * @}
+    861            */
+    862          #endif /* STM32F105xC || STM32F107xC */
+    863          
+    864          /**
+    865            * @}
+    866            */
+    867          
+    868          /**
+    869            * @}
+    870            */
+    871          
+    872          #endif /* HAL_RCC_MODULE_ENABLED */
+    873          
+    874          /**
+    875            * @}
+    876            */
+    877          
+    878          /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+    879          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       4   HAL_RCCEx_GetPeriphCLKConfig
+      48   HAL_RCCEx_GetPeriphCLKFreq
+        48   -> HAL_RCC_GetPCLK2Freq
+        48   -> __aeabi_memcpy4
+      32   HAL_RCCEx_PeriphCLKConfig
+        32   -> HAL_GetTick
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable2
+       4  ??DataTable2_1
+       4  ??DataTable2_10
+       4  ??DataTable2_2
+       4  ??DataTable2_3
+       4  ??DataTable2_4
+       4  ??DataTable2_5
+       4  ??DataTable2_6
+       4  ??DataTable2_7
+       4  ??DataTable2_8
+       4  ??DataTable2_9
+      16  ?_0
+       2  ?_1
+      56  HAL_RCCEx_GetPeriphCLKConfig
+     262  HAL_RCCEx_GetPeriphCLKFreq
+     280  HAL_RCCEx_PeriphCLKConfig
+
+ 
+  18 bytes in section .rodata
+ 642 bytes in section .text
+ 
+ 642 bytes of CODE  memory
+  18 bytes of CONST memory
+
+Errors: none
+Warnings: none

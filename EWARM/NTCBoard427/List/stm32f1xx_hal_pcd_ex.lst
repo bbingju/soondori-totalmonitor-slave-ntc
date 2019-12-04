@@ -1,0 +1,327 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.40.1.212/W32 for ARM         06/Sep/2019  23:26:46
+# Copyright 1999-2019 IAR Systems AB.
+#
+#    Cpu mode     =  
+#    Endian       =  little
+#    Source file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_pcd_ex.c
+#    Command line =
+#        -f C:\Users\ilkorea\AppData\Local\Temp\EW8196.tmp
+#        (D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_pcd_ex.c
+#        -D USE_HAL_DRIVER -D STM32F103xB -lc
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List
+#        -o
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.3\arm\inc\c\DLib_Config_Full.h"
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Device/ST/STM32F1xx/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/SEGGER\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9/Config\
+#        -On -I "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.3\arm\CMSIS\Core\Include\" -I "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.3\arm\CMSIS\DSP\Include\")
+#    Locale       =  C
+#    List file    =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List\stm32f1xx_hal_pcd_ex.lst
+#    Object file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj\stm32f1xx_hal_pcd_ex.o
+#
+###############################################################################
+
+D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_pcd_ex.c
+      1          /**
+      2            ******************************************************************************
+      3            * @file    stm32f1xx_hal_pcd_ex.c
+      4            * @author  MCD Application Team
+      5            * @brief   Extended PCD HAL module driver.
+      6            *          This file provides firmware functions to manage the following 
+      7            *          functionalities of the USB Peripheral Controller:
+      8            *           + Extended features functions: Update FIFO configuration, 
+      9            *           PMA configuration for EPs  
+     10            *
+     11            ******************************************************************************
+     12            * @attention
+     13            *
+     14            * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
+     15            *
+     16            * Redistribution and use in source and binary forms, with or without modification,
+     17            * are permitted provided that the following conditions are met:
+     18            *   1. Redistributions of source code must retain the above copyright notice,
+     19            *      this list of conditions and the following disclaimer.
+     20            *   2. Redistributions in binary form must reproduce the above copyright notice,
+     21            *      this list of conditions and the following disclaimer in the documentation
+     22            *      and/or other materials provided with the distribution.
+     23            *   3. Neither the name of STMicroelectronics nor the names of its contributors
+     24            *      may be used to endorse or promote products derived from this software
+     25            *      without specific prior written permission.
+     26            *
+     27            * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     28            * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     29            * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+     30            * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+     31            * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     32            * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+     33            * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+     34            * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+     35            * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+     36            * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     37            *
+     38            ******************************************************************************
+     39            */
+     40          
+     41          /* Includes ------------------------------------------------------------------*/
+     42          #include "stm32f1xx_hal.h"
+     43          
+     44          /** @addtogroup STM32F1xx_HAL_Driver
+     45            * @{
+     46            */
+     47          
+     48          #ifdef HAL_PCD_MODULE_ENABLED
+     49          
+     50          #if defined(STM32F102x6) || defined(STM32F102xB) || \
+     51              defined(STM32F103x6) || defined(STM32F103xB) || \
+     52              defined(STM32F103xE) || defined(STM32F103xG) || \
+     53              defined(STM32F105xC) || defined(STM32F107xC)
+     54          
+     55          
+     56          /** @defgroup PCDEx PCDEx
+     57            * @brief PCD Extended HAL module driver
+     58            * @{
+     59            */
+     60          
+     61          
+     62          /* Private types -------------------------------------------------------------*/
+     63          /* Private variables ---------------------------------------------------------*/
+     64          /* Private constants ---------------------------------------------------------*/
+     65          /* Private macros ------------------------------------------------------------*/
+     66          /* Private functions ---------------------------------------------------------*/
+     67          /* Exported functions --------------------------------------------------------*/
+     68          /** @defgroup PCDEx_Exported_Functions PCDEx Exported Functions
+     69            * @{
+     70            */
+     71          
+     72          /** @defgroup PCDEx_Exported_Functions_Group1 Peripheral Control functions
+     73            * @brief    PCDEx control functions 
+     74            *
+     75          @verbatim
+     76           ===============================================================================
+     77                        ##### Extended Peripheral Control functions #####
+     78           ===============================================================================
+     79              [..]  This section provides functions allowing to:
+     80                (+) Update FIFO (USB_OTG_FS)
+     81                (+) Update PMA configuration (USB)
+     82          
+     83          @endverbatim
+     84            * @{
+     85            */
+     86          
+     87          #if defined (USB_OTG_FS)
+     88          /**
+     89            * @brief  Set Tx FIFO
+     90            * @param  hpcd: PCD handle
+     91            * @param  fifo: The number of Tx fifo
+     92            * @param  size: Fifo size
+     93            * @retval HAL status
+     94            */
+     95          HAL_StatusTypeDef HAL_PCDEx_SetTxFiFo(PCD_HandleTypeDef *hpcd, uint8_t fifo, uint16_t size)
+     96          {
+     97            uint8_t index = 0;
+     98            uint32_t Tx_Offset = 0U;
+     99            
+    100            /*  TXn min size = 16 words. (n  : Transmit FIFO index)
+    101                When a TxFIFO is not used, the Configuration should be as follows: 
+    102                    case 1 :  n > m    and Txn is not used    (n,m  : Transmit FIFO indexes)
+    103                   --> Txm can use the space allocated for Txn.
+    104                   case2  :  n < m    and Txn is not used    (n,m  : Transmit FIFO indexes)
+    105                   --> Txn should be configured with the minimum space of 16 words
+    106               The FIFO is used optimally when used TxFIFOs are allocated in the top 
+    107                   of the FIFO.Ex: use EP1 and EP2 as IN instead of EP1 and EP3 as IN ones.
+    108               When DMA is used 3n * FIFO locations should be reserved for internal DMA registers */
+    109            
+    110            Tx_Offset = hpcd->Instance->GRXFSIZ;
+    111            
+    112            if(fifo == 0U)
+    113            {
+    114              hpcd->Instance->DIEPTXF0_HNPTXFSIZ = (size << 16U) | Tx_Offset;
+    115            }
+    116            else
+    117            {
+    118              Tx_Offset += (hpcd->Instance->DIEPTXF0_HNPTXFSIZ) >> 16U;
+    119              for(index = 0; index < (fifo - 1); index++)
+    120              {
+    121                Tx_Offset += (hpcd->Instance->DIEPTXF[index] >> 16U);
+    122              }
+    123              
+    124              /* Multiply Tx_Size by 2 to get higher performance */
+    125              hpcd->Instance->DIEPTXF[fifo - 1U] = (size << 16U) | Tx_Offset;
+    126              
+    127            }
+    128            
+    129            return HAL_OK;
+    130          }
+    131          
+    132          /**
+    133            * @brief  Set Rx FIFO
+    134            * @param  hpcd: PCD handle
+    135            * @param  size: Size of Rx fifo
+    136            * @retval HAL status
+    137            */
+    138          HAL_StatusTypeDef HAL_PCDEx_SetRxFiFo(PCD_HandleTypeDef *hpcd, uint16_t size)
+    139          {
+    140            hpcd->Instance->GRXFSIZ = size;
+    141            return HAL_OK;
+    142          }
+    143          #endif /* USB_OTG_FS */
+    144          
+    145          #if defined (USB)
+    146          /**
+    147            * @brief  Configure PMA for EP
+    148            * @param  hpcd : Device instance
+    149            * @param  ep_addr: endpoint address
+    150            * @param  ep_kind: endpoint Kind
+    151            *                  USB_SNG_BUF: Single Buffer used
+    152            *                  USB_DBL_BUF: Double Buffer used
+    153            * @param  pmaadress: EP address in The PMA: In case of single buffer endpoint
+    154            *                   this parameter is 16-bit value providing the address
+    155            *                   in PMA allocated to endpoint.
+    156            *                   In case of double buffer endpoint this parameter
+    157            *                   is a 32-bit value providing the endpoint buffer 0 address
+    158            *                   in the LSB part of 32-bit value and endpoint buffer 1 address
+    159            *                   in the MSB part of 32-bit value.
+    160            * @retval HAL status
+    161            */
+    162          
+    163          HAL_StatusTypeDef  HAL_PCDEx_PMAConfig(PCD_HandleTypeDef *hpcd, 
+    164                                                 uint16_t ep_addr,
+    165                                                 uint16_t ep_kind,
+    166                                                 uint32_t pmaadress)
+    167          
+    168          {
+    169            PCD_EPTypeDef *ep = NULL;
+    170            
+    171            /* initialize ep structure*/
+    172            if ((ep_addr & 0x80U) == 0x80U)
+    173            {
+    174              ep = &hpcd->IN_ep[ep_addr & 0x7FU];
+    175            }
+    176            else
+    177            {
+    178              ep = &hpcd->OUT_ep[ep_addr];
+    179            }
+    180            
+    181            /* Here we check if the endpoint is single or double Buffer*/
+    182            if (ep_kind == PCD_SNG_BUF)
+    183            {
+    184              /*Single Buffer*/
+    185              ep->doublebuffer = 0U;
+    186              /*Configure te PMA*/
+    187              ep->pmaadress = (uint16_t)pmaadress;
+    188            }
+    189            else /*USB_DBL_BUF*/
+    190            {
+    191              /*Double Buffer Endpoint*/
+    192              ep->doublebuffer = 1U;
+    193              /*Configure the PMA*/
+    194              ep->pmaaddr0 =  pmaadress & 0x0000FFFFU;
+    195              ep->pmaaddr1 =  (pmaadress & 0xFFFF0000U) >> 16U;
+    196            }
+    197            
+    198            return HAL_OK; 
+    199          }
+    200          #endif /* USB */
+    201          /**
+    202            * @}
+    203            */
+    204          
+    205          /** @defgroup PCDEx_Exported_Functions_Group2 Peripheral State functions
+    206            * @brief    Manage device connection state  
+    207            * @{
+    208            */
+    209          /**
+    210            * @brief  Software Device Connection,  
+    211            *         this function is not required by USB OTG FS peripheral, it is used 
+    212            *         only by USB Device FS peripheral.
+    213            * @param  hpcd: PCD handle
+    214            * @param  state: connection state (0 : disconnected / 1: connected)
+    215            * @retval None
+    216            */
+    217          __weak void HAL_PCDEx_SetConnectionState(PCD_HandleTypeDef *hpcd, uint8_t state)
+    218          {
+    219            /* Prevent unused argument(s) compilation warning */
+    220            UNUSED(hpcd);
+    221            UNUSED(state);
+    222            /* NOTE : This function Should not be modified, when the callback is needed,
+    223                      the HAL_PCDEx_SetConnectionState could be implemented in the user file
+    224             */ 
+    225          }
+    226          /**
+    227            * @}
+    228            */
+    229          
+    230          /**
+    231            * @}
+    232            */
+    233          
+    234          /**
+    235            * @}
+    236            */
+    237          
+    238          #endif /* STM32F102x6 || STM32F102xB || */
+    239                 /* STM32F103x6 || STM32F103xB || */
+    240                 /* STM32F103xE || STM32F103xG || */
+    241                 /* STM32F105xC || STM32F107xC    */
+    242          
+    243          #endif /* HAL_PCD_MODULE_ENABLED */
+    244          
+    245          
+    246          /**
+    247            * @}
+    248            */
+    249          
+    250          /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   HAL_PCDEx_PMAConfig
+       0   HAL_PCDEx_SetConnectionState
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      76  HAL_PCDEx_PMAConfig
+       2  HAL_PCDEx_SetConnectionState
+
+ 
+ 78 bytes in section .text
+ 
+ 76 bytes of CODE memory (+ 2 bytes shared)
+
+Errors: none
+Warnings: none

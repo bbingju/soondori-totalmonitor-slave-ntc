@@ -1,0 +1,274 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.40.1.212/W32 for ARM         06/Sep/2019  23:26:44
+# Copyright 1999-2019 IAR Systems AB.
+#
+#    Cpu mode     =  
+#    Endian       =  little
+#    Source file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_StartDisplayTask.c
+#    Command line =
+#        -f C:\Users\ilkorea\AppData\Local\Temp\EW7960.tmp
+#        (D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_StartDisplayTask.c
+#        -D USE_HAL_DRIVER -D STM32F103xB -lc
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List
+#        -o
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.3\arm\inc\c\DLib_Config_Full.h"
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Device/ST/STM32F1xx/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/SEGGER\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9/Config\
+#        -On -I "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.3\arm\CMSIS\Core\Include\" -I "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.3\arm\CMSIS\DSP\Include\")
+#    Locale       =  C
+#    List file    =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List\0_StartDisplayTask.lst
+#    Object file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj\0_StartDisplayTask.o
+#
+###############################################################################
+
+D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_StartDisplayTask.c
+      1          #include "0_StartDisplayTask.h"
+      2          #include "0_GlobalValue.h"
+      3          #include "0_SensorCal.h"
+      4          #include "0_Util.h"
+      5          
+      6          /*********************************************************************
+      7          *	Private variables
+      8          **********************************************************************/
+      9          uint8_t nvicResetFlag = 0;
+     10          
+     11          GPIO_TypeDef * 		SLOT_EN[4] 	   = { SLOT_EN_00_GPIO_Port, SLOT_EN_01_GPIO_Port, SLOT_EN_02_GPIO_Port, SLOT_EN_03_GPIO_Port };
+     12          uint16_t	 		SLOT_EN_PIN[4] = { SLOT_EN_00_Pin, 		 SLOT_EN_01_Pin, 	   SLOT_EN_02_Pin, 		 SLOT_EN_03_Pin };
+     13          
+     14          /*********************************************************************
+     15          *	StartDisplayTask
+     16          * LED 및 RELAY 동작 TASK
+     17          **********************************************************************/
+     18          void StartDisplayTask(void const * argument)
+     19          {
+     20          	/* USER CODE BEGIN 5 */
+     21          	portTickType	xLastWakeTime;	
+     22          	uint8_t 		i;//, j;
+     23          	uint8_t			overTempDisplay = 0;
+     24          	//GPIO_PinState A;//, B;
+     25          
+     26              //Task 부팅 완료 플레그 
+     27              SysProperties.bootingWate[0] = TRUE;
+     28          
+     29              while(1)
+     30              {
+     31                  if( (SysProperties.bootingWate[0] == TRUE) &&     // 0 : DiaplayTask, 
+     32                      (SysProperties.bootingWate[1] == TRUE) &&     // 1 : SensorTask
+     33                      (SysProperties.bootingWate[2] == TRUE))       // 2 : UartTask
+     34                  {
+     35                    break;
+     36                  }
+     37                  osDelay(2);
+     38              }
+     39          
+     40          	/* Infinite loop */
+     41          	for(;;)
+     42          	{
+     43          	  xLastWakeTime = osKernelSysTick();
+     44          
+     45          		doCheckOverTemp();
+     46                      
+     47          		for(i = 0; i < 16; i++)
+     48          		{
+     49          			//센서 연결됨    
+     50                      if(TestData.overTempFlag[i] == TM_NORMAL_TEMP)
+     51          			{
+     52          				if(TestData.AdcMidValue[0][i].UI32 > 3500)				//센서 연결 안됨 
+     53          				{ 
+     54          					if(TestData.displayModeFlag[i] == LDM_DONOT_CONNECT)
+     55          					{
+     56          						doLedDisplay(i, _LED_ON);											
+     57          					}
+     58          					else
+     59          					{
+     60          						TestData.displayModeChangeCount[i]++;
+     61          						if(TestData.displayModeChangeCount[i] > 3)
+     62          						{
+     63          							TestData.displayModeFlag[i] = LDM_DONOT_CONNECT;
+     64          							TestData.displayModeChangeCount[i] = 0;
+     65          							doLedDisplay(i, _LED_ON);
+     66          						}
+     67          					}
+     68          				}
+     69          				else if(TestData.AdcMidValue[0][i].UI32 < 10)				//센서 쇼트됨
+     70          				{
+     71          					if(TestData.displayModeFlag[i] == LDM_SENSOR_CLOSE)
+     72          					{
+     73          						doLedFlickingDisplay(i, (overTempDisplay % 4), 2); //led 고속 점멸 
+     74          					}
+     75          					else
+     76          					{
+     77          						TestData.displayModeChangeCount[i]++;
+     78          						if(TestData.displayModeChangeCount[i] > 3)
+     79          						{
+     80          							TestData.displayModeFlag[i] = LDM_SENSOR_CLOSE;
+     81          							TestData.displayModeChangeCount[i] = 0;
+     82          							doLedFlickingDisplay(i, (overTempDisplay % 4), 2);	//led 고속 점멸 
+     83          						}
+     84          					}
+     85          				}
+     86          				else	//정상 온도 
+     87          				{
+     88          					if(TestData.displayModeFlag[i] == LDM_NORMAL_TEMP)
+     89          					{
+     90          						doLedDisplay(i, _LED_OFF);										
+     91          					}
+     92          					else
+     93          					{
+     94          						TestData.displayModeChangeCount[i]++;
+     95          						if(TestData.displayModeChangeCount[i] > 3)
+     96          						{
+     97          							TestData.displayModeFlag[i] = LDM_NORMAL_TEMP;
+     98          							TestData.displayModeChangeCount[i] = 0;
+     99          							doLedDisplay(i, _LED_OFF);								
+    100          						}
+    101          					}
+    102          				}
+    103          			}
+    104          			else	//경고온도 초과 
+    105          			{
+    106          				if(TestData.displayModeFlag[i] == LDM_OVER_TEMP)
+    107          				{
+    108          					doLedFlickingDisplay(i, overTempDisplay, 10);	
+    109          				}
+    110          				else
+    111          				{
+    112          					TestData.displayModeChangeCount[i]++;
+    113          					if(TestData.displayModeChangeCount[i] > 3)
+    114          					{
+    115          						TestData.displayModeFlag[i] = LDM_OVER_TEMP;
+    116          						TestData.displayModeChangeCount[i] = 0;
+    117          						doLedFlickingDisplay(i, overTempDisplay, 10);
+    118          					}
+    119          				}
+    120          			}
+    121          		}
+    122          		
+    123          		overTempDisplay++;
+    124          		if(overTempDisplay > 20)
+    125          		{
+    126          			overTempDisplay = 0;
+    127          		}
+    128          
+    129                  //SYSTEM RESET
+    130          /*        if(HAL_GPIO_ReadPin(SLOT_EN[SysProperties.boardID - '0'], SLOT_EN_PIN[SysProperties.boardID - '0']) == GPIO_PIN_RESET)
+    131                  {
+    132                      HAL_UART_Receive_DMA(&huart1, receiveData, UART_RX_DMA_SIZE);
+    133                  }*/
+    134          		
+    135                  osDelayUntil(&xLastWakeTime, 50);
+    136          	}
+    137          	/* USER CODE END 5 */ 
+    138          }
+    139          
+    140          void doLedFlickingDisplay(uint8_t channel, uint8_t overTempDisplayCt, uint8_t maxCount)
+    141          {
+    142          	if(overTempDisplayCt < maxCount)												//경고온도 초과 
+    143          	{
+    144          		doLedDisplay(channel, _LED_ON);
+    145          	}
+    146          	else if((overTempDisplayCt >= maxCount) && (overTempDisplayCt < (maxCount * 2)))
+    147          	{
+    148          		doLedDisplay(channel, _LED_OFF);
+    149          	}
+    150          }
+    151          
+    152          void doCheckOverTemp(void)
+    153          {
+    154          	uint8_t 	overTemp = 0;
+    155          	uint8_t 	i = 0;
+    156          
+    157          	for(i = 0; i < 16; i++)
+    158          	{
+    159          		if(TestData.Temperature[0][i].Float > TestData.Threshold[0][i].Float)
+    160          		{
+    161          			TestData.overTempFlag[i] = TM_OVER_TEMP;
+    162          			overTemp++;
+    163          		}
+    164          		else
+    165          		{
+    166          			TestData.overTempFlag[i] = TM_NORMAL_TEMP;
+    167          		}
+    168          	}
+    169          	
+    170          	if(overTemp == 0)	//경고온도 초과된 센서가 0개일때 
+    171          	{
+    172          		doRelayPlay(_OFF);
+    173          	}
+    174          	else
+    175          	{
+    176          		doRelayPlay(_ON);
+    177          	}
+    178          }
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+      24   StartDisplayTask
+        24   -> doCheckOverTemp
+        24   -> doLedDisplay
+        24   -> doLedFlickingDisplay
+        24   -> osDelay
+        24   -> osDelayUntil
+        24   -> osKernelSysTick
+      16   doCheckOverTemp
+        16   -> doRelayPlay
+        16 __aeabi_cfcmple
+      16   doLedFlickingDisplay
+        16   -> doLedDisplay
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable1
+       4  ??DataTable1_1
+      16  SLOT_EN
+       8  SLOT_EN_PIN
+     582  StartDisplayTask
+     100  doCheckOverTemp
+      70  doLedFlickingDisplay
+       1  nvicResetFlag
+
+ 
+   1 byte  in section .bss
+  24 bytes in section .data
+ 760 bytes in section .text
+ 
+ 760 bytes of CODE memory
+  25 bytes of DATA memory
+
+Errors: none
+Warnings: none

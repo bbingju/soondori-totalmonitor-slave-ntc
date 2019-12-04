@@ -1,0 +1,239 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.40.1.212/W32 for ARM         06/Sep/2019  23:26:44
+# Copyright 1999-2019 IAR Systems AB.
+#
+#    Cpu mode     =  
+#    Endian       =  little
+#    Source file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_soonQueue.c
+#    Command line =
+#        -f C:\Users\ilkorea\AppData\Local\Temp\EW795E.tmp
+#        (D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_soonQueue.c
+#        -D USE_HAL_DRIVER -D STM32F103xB -lc
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List
+#        -o
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.3\arm\inc\c\DLib_Config_Full.h"
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Device/ST/STM32F1xx/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/SEGGER\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9/Config\
+#        -On -I "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.3\arm\CMSIS\Core\Include\" -I "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.3\arm\CMSIS\DSP\Include\")
+#    Locale       =  C
+#    List file    =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List\0_soonQueue.lst
+#    Object file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj\0_soonQueue.o
+#
+###############################################################################
+
+D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_soonQueue.c
+      1          #include "0_soonQueue.h"
+      2          #include "0_GlobalDefine.h"
+      3          
+      4          
+      5          /*********************************************************************
+      6          **********************************************************************
+      7          *	Bluetooth 통신용 Queue 함수들 
+      8          **********************************************************************
+      9          **********************************************************************/
+     10          
+     11          /*********************************************************************
+     12          *	TxQueue_empty
+     13          *	큐가 비어 잇ㅅ는지 확인 하는 함수
+     14          *	*q	: 사용 되는 Queue 주소 
+     15          **********************************************************************/
+     16          uint8_t TxQueue_empty(TX_QUEUE_STRUCT *q)
+     17          {
+     18          	if( q->head == q->tail)
+     19          		return TRUE;
+     20          	return FALSE;
+     21          }
+     22          
+     23          /*********************************************************************
+     24          *	TxQueue_Init
+     25          *	큐가 초기화 함수 
+     26          *	*q	: 사용 되는 Queue 주소 
+     27          **********************************************************************/
+     28          void TxQueue_Init(TX_QUEUE_STRUCT *q)
+     29          {
+     30          	q->size = UART_TX_BUF_MAX;
+     31          	q->count = 0;
+     32          	q->head = 0;
+     33          	q->tail = 0;
+     34          }
+     35          
+     36          /*********************************************************************
+     37          *	TxQueue_Send
+     38          *	큐로 데이터를 입력, 1byte 단위로 입력 
+     39          *	*q		: 사용 되는 Queue 주소 
+     40          *	data	: 입려되는 데이터 
+     41          **********************************************************************/
+     42          void TxQueue_Send(TX_QUEUE_STRUCT *q, uint8_t data)
+     43          {
+     44          	q->ar[q->head++]	= data;
+     45          	q->head = q->head % UART_TX_BUF_MAX;
+     46          	q->count++;
+     47          }
+     48          
+     49          /*********************************************************************
+     50          *	TxQueue_Recive
+     51          *	큐로 데이터를 출력, 1byte 단위로 출력
+     52          *	*q		: 사용 되는 Queue 주소 
+     53          *	return	: 1byte 단위로 출력 
+     54          **********************************************************************/
+     55          uint8_t TxQueue_Recive(TX_QUEUE_STRUCT *q)
+     56          {
+     57          	uint8_t data;
+     58          	if( TxQueue_empty(q) == TRUE)
+     59          		return -1;
+     60          
+     61          	data	= q->ar[q->tail++];
+     62          	q->tail = q->tail % UART_TX_BUF_MAX;
+     63          	q->count--;
+     64          	return data;
+     65          }
+     66          
+     67          /*********************************************************************
+     68          *	RxQueue_empty
+     69          *	큐가 비어 잇ㅅ는지 확인 하는 함수
+     70          *	*q	: 사용 되는 Queue 주소 
+     71          **********************************************************************/
+     72          uint8_t RxQueue_empty(RX_QUEUE_STRUCT *q)
+     73          {
+     74          	if( q->head == q->tail)
+     75          		return TRUE;
+     76          	return FALSE;
+     77          }
+     78          
+     79          /*********************************************************************
+     80          *	RxQueue_Init
+     81          *	큐가 초기화 함수 
+     82          *	*q	: 사용 되는 Queue 주소 
+     83          **********************************************************************/
+     84          void RxQueue_Init(RX_QUEUE_STRUCT *q)
+     85          {
+     86          	q->size = UART_RX_BUF_MAX;
+     87          	q->count = 0;
+     88          	q->head = 0;
+     89          	q->tail = 0;
+     90          }
+     91          
+     92          /*********************************************************************
+     93          *	RxQueue_Send
+     94          *	큐로 데이터를 입력, 1byte 단위로 입력 
+     95          *	*q		: 사용 되는 Queue 주소 
+     96          *	data	: 입려되는 데이터 
+     97          **********************************************************************/
+     98          void RxQueue_Send(RX_QUEUE_STRUCT *q, uint8_t data)
+     99          {
+    100          	q->ar[q->head++]	= data;
+    101          	q->head = q->head % UART_RX_BUF_MAX;
+    102          	q->count++;
+    103          }
+    104          
+    105          /*********************************************************************
+    106          *	RxQueue_Recive
+    107          *	큐로 데이터를 출력, 1byte 단위로 출력
+    108          *	*q		: 사용 되는 Queue 주소 
+    109          *	return	: 1byte 단위로 출력 
+    110          **********************************************************************/
+    111          uint8_t RxQueue_Recive(RX_QUEUE_STRUCT *q)
+    112          {
+    113          	uint8_t data;
+    114          	if( RxQueue_empty(q) == TRUE)
+    115          		return -1;
+    116          
+    117          	data	= q->ar[q->tail++];
+    118          	q->tail = q->tail % UART_RX_BUF_MAX;
+    119          	q->count--;
+    120          	return data;
+    121          }
+    122          
+    123          /*********************************************************************
+    124          *	RxQueue_Clear
+    125          *	큐데이터 클리어 
+    126          *	*q		: 사용 되는 Queue 주소 
+    127          **********************************************************************/
+    128          void RxQueue_Clear(RX_QUEUE_STRUCT *q)
+    129          {
+    130          	while(RxQueue_empty(q) == FALSE)
+    131          	{
+    132          		RxQueue_Recive(q);
+    133          	}
+    134          }
+    135          
+    136          uint8_t RxQueue_Count(RX_QUEUE_STRUCT *q)
+    137          {
+    138          	return q->count;
+    139          }
+    140          
+    141          
+    142          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   RxQueue_Clear
+         8   -> RxQueue_Recive
+         8   -> RxQueue_empty
+       0   RxQueue_Count
+       0   RxQueue_Init
+       8   RxQueue_Recive
+         8   -> RxQueue_empty
+       4   RxQueue_Send
+       0   RxQueue_empty
+       0   TxQueue_Init
+       8   TxQueue_Recive
+         8   -> TxQueue_empty
+       4   TxQueue_Send
+       0   TxQueue_empty
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+      24  RxQueue_Clear
+       6  RxQueue_Count
+      18  RxQueue_Init
+      54  RxQueue_Recive
+      38  RxQueue_Send
+      18  RxQueue_empty
+      18  TxQueue_Init
+      54  TxQueue_Recive
+      38  TxQueue_Send
+      18  TxQueue_empty
+
+ 
+ 286 bytes in section .text
+ 
+ 286 bytes of CODE memory
+
+Errors: none
+Warnings: none

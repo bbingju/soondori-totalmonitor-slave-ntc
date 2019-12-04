@@ -1,0 +1,656 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.40.1.212/W32 for ARM         06/Sep/2019  23:26:44
+# Copyright 1999-2019 IAR Systems AB.
+#
+#    Cpu mode     =  
+#    Endian       =  little
+#    Source file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_StartUartTask.c
+#    Command line =
+#        -f C:\Users\ilkorea\AppData\Local\Temp\EW7972.tmp
+#        (D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_StartUartTask.c
+#        -D USE_HAL_DRIVER -D STM32F103xB -lc
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List
+#        -o
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.3\arm\inc\c\DLib_Config_Full.h"
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Device/ST/STM32F1xx/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/SEGGER\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9/Config\
+#        -On -I "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.3\arm\CMSIS\Core\Include\" -I "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.3\arm\CMSIS\DSP\Include\")
+#    Locale       =  C
+#    List file    =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List\0_StartUartTask.lst
+#    Object file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj\0_StartUartTask.o
+#
+###############################################################################
+
+D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_StartUartTask.c
+      1          #include "0_StartUartTask.h"
+      2          #include "0_GlobalValue.h"
+      3          #include "0_Util.h"
+      4          #include "stm32f1xx_hal_usart.h"
+      5          #include "string.h"           //memset 용 include
+      6          #include "0_soonQueue.h"
+      7          #include "0_soonFlashMemory.h"
+      8          
+      9          /*********************************************************************
+     10          *	Private variables
+     11          **********************************************************************/
+     12          uint8_t receiveData[20] = { 0 };
+     13          uint8_t transmtData[140] = { 0 };
+     14          uint8_t temp[140];
+     15          uint8_t RxData[20];
+     16          uint8_t count = 0;
+     17          
+     18          uint8_t getSemaCount = 0;
+     19          
+     20          uint8_t ereaserDataFalg = 0;
+     21          
+     22          uniInt16 crcSave;
+     23          
+     24          RX_QUEUE_STRUCT UartRxQueue;
+     25          
+     26          void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+     27          {
+     28              osSemaphoreRelease(CountingSemUartRxHandle);
+     29          }
+     30          
+     31          void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+     32          {
+     33              HAL_GPIO_WritePin(UART1_TX_EN_GPIO_Port, UART1_TX_EN_Pin, GPIO_PIN_RESET);  //TX 완료후 스위치IC OFF
+     34              HAL_Delay(1);
+     35              osSemaphoreRelease(BinarySemUartTxHandle);
+     36          }
+     37          
+     38          /*********************************************************************
+     39          *	StartUartTask
+     40          * 
+     41          **********************************************************************/
+     42          void StartUartTask(void const * argument)
+     43          {
+     44          	/* USER CODE BEGIN 5 */
+     45              uint8_t i;
+                             ^
+Warning[Pe177]: variable "i" was declared but never referenced
+     46              
+     47              HAL_UART_Receive_DMA(&huart1, receiveData, UART_RX_DMA_SIZE);
+     48              RxQueue_Clear(&UartRxQueue);
+     49          
+     50              ereaserDataFalg = FALSE;
+     51          
+     52          	doFindMyID();
+     53                  
+     54              //Task 부팅 완료 플레그 
+     55              SysProperties.bootingWate[2] = TRUE;
+     56            
+     57              while(1)
+     58              {
+     59                  if( (SysProperties.bootingWate[0] == TRUE) &&     // 0 : DiaplayTask, 
+     60                      (SysProperties.bootingWate[1] == TRUE) &&     // 1 : SensorTask
+     61                      (SysProperties.bootingWate[2] == TRUE))       // 2 : UartTask
+     62                  {
+     63                    break;
+     64                  }
+     65                  osDelay(2);
+     66              }
+     67            
+     68              /* Infinite loop */
+     69              for(;;)
+     70              {
+     71          		HAL_UART_Receive_DMA(&huart1, receiveData, UART_RX_DMA_SIZE);
+     72          
+     73          		do
+     74                  {
+     75          			UartRxFunction();
+     76          			UnpackingRxQueue();
+     77          			getSemaCount = osSemaphoreGetCount(CountingSemUartRxHandle);
+     78          			
+     79          			if(count == (UART_RX_DMA_SIZE - 1))
+     80          	        {
+     81          				/*if(RxData[1] != SysProperties.boardID)
+     82          				{
+     83          					//util_mem_set((void*)&RxData[0], 0x00, sizeof(RxData));
+     84          				}
+     85          				else*/
+     86          				if(RxData[1] == SysProperties.boardID)
+     87          				{
+     88          					JumpToFunction();
+     89          				}
+     90          				count = 0;
+     91          	        }
+     92          
+     93          			if((getSemaCount == 0) && (RxQueue_Count(&UartRxQueue) == 0))
+     94          			{
+     95          				break;
+     96          			}
+     97          
+     98          			osDelay(2);
+     99                  }while(1);
+    100                 
+    101                  osDelay(10);
+    102              }
+    103              /* USER CODE END 5 */ 
+    104          }
+    105          
+    106          void UartRxFunction(void)
+    107          {
+    108          	uint8_t i;
+    109          	
+    110          	if(CountingSemUartRxHandle != NULL)
+    111          	{
+    112          		if(osSemaphoreWait(CountingSemUartRxHandle, 0) == osOK)	   
+    113          		{	
+    114          			for(i = 0; i < UART_RX_DMA_SIZE; i++)
+    115          			{
+    116          				//osDelay(1);
+    117          				RxQueue_Send(&UartRxQueue, receiveData[i]);
+    118          			}
+    119          		}
+    120          	}
+    121          	HAL_UART_Receive_DMA(&huart1, receiveData, UART_RX_DMA_SIZE);				 
+    122          	//osDelay(1);
+    123          }
+    124          
+    125          void UnpackingRxQueue(void)
+    126          {
+    127          	uint16_t	etxLength  = 0;
+    128          
+    129          	if(RxQueue_empty(&UartRxQueue) == FALSE)  //Rx 버퍼에 입력 데이터가 잇는지 확인 
+    130          	{
+    131          		if((UartRxQueue.tail + huart1.RxXferSize - 1) >= UART_RX_BUF_MAX)  
+    132          		{	
+    133          			etxLength = UartRxQueue.tail + huart1.RxXferSize - 1 - UART_RX_BUF_MAX;  
+    134          		}
+    135          		else										
+    136          		{	
+    137          			etxLength = UartRxQueue.tail + huart1.RxXferSize - 1;					 
+    138          		}
+    139          		
+    140          		if((RxQueue_Count(&UartRxQueue) >= UART_RX_DMA_SIZE) )//|| (RxQueue_Count(&UartRxQueue) >= 132))
+    141          		{
+    142          			//osDelay(1);
+    143          			if((UartRxQueue.ar[UartRxQueue.tail] == CMD_STX) && (UartRxQueue.ar[etxLength] == CMD_ETX) )
+    144          			{
+    145          				count = 0;
+    146          				RxData[0] = RxQueue_Recive(&UartRxQueue);						
+    147          				//osDelay(1);
+    148          				if(RxData[0] == CMD_STX)
+    149          				{
+    150          					do{
+    151          						count++;
+    152          						osDelay(1);
+    153          						RxData[count] = RxQueue_Recive(&UartRxQueue);				
+    154          						if((RxQueue_empty(&UartRxQueue) == TRUE) || (count >= huart1.RxXferSize))
+    155          						{
+    156          							break;
+    157          						}
+    158          					}while(1);
+    159          				}
+    160          			}
+    161          			else
+    162          			{
+    163          				temp[0] = RxQueue_Recive(&UartRxQueue);
+    164          			}
+    165          		}
+    166          		else
+    167          		{
+    168          			RxQueue_Clear(&UartRxQueue);
+    169          		}
+    170          	}
+    171          	//osDelay(1);
+    172          }
+    173          
+    174          void JumpToFunction(void)
+    175          {
+    176          	//if(SysProperties.boardID == RX_DATA_ID)
+    177          	if((RxData[0] == CMD_STX) && (RxData[13] == CMD_ETX))
+    178          	{
+    179          		switch(RX_DATA_CMD)
+    180          		{
+    181          			case CMD_BOARD_TYPE:
+    182          				doBoardTypeReq();
+    183          				break;
+    184          			case CMD_BOARD_EN_REQ:
+    185          				break;
+    186          			case CMD_BOARD_EN_SET:
+    187          				break;
+    188          			case CMD_BOARD_RESET:
+    189          				HAL_NVIC_SystemReset();
+    190          				break;
+    191          			case CMD_SLOT_ID_REQ:
+    192          				doReqSlotID();
+    193          				break;
+    194          			case CMD_HW_VER:
+    195          				break;
+    196          			case CMD_FW_VER:
+    197          				break;
+    198          			case CMD_UUID_REQ:
+    199          				break;
+    200          			case CMD_TEMP_REQ:
+    201          				doTempReq();
+    202          				break;
+    203          			case CMD_TEMP_STATE_REQ:
+    204          				doTempStateReq();
+    205          				break;
+    206          			case CMD_ADC_REQ:
+    207          				break;
+    208          			case CMD_THRESHOLD_REQ:
+    209          				doTresholdReq();
+    210          				break;
+    211          			case CMD_THRESHOLD_SET:
+    212          				doTresholdSet();
+    213          				break;
+    214          			case CMD_RELAY_REQ:
+    215          				break;
+    216          			case CMD_RELAY_SET:
+    217          				break;
+    218          			case CMD_REVISION_APPLY_SET:
+    219          				doRevisionApplySet();
+    220          				break;
+    221          			case CMD_REVISION_CONSTANT_SET:
+    222          				doRevisionConstantSet();
+    223          				break;
+    224          			case CMD_REVISION_APPLY_REQ:
+    225          				doRevisionApplyReq();
+    226          				break;
+    227          			case CMD_REVISION_CONSTANT_REQ:
+    228          				doRevisionConstantReq();
+    229          				break;
+    230          			case CMD_CALIBRATION_NTC_CON_TABLE_CAL:
+    231          				doCalibrationNTCTableCal();
+    232          				break;
+    233          			case CMD_CALIBRATION_NTC_CONSTANT_SET:
+    234          				doCalibrationNTCConstantSet();
+    235          				break;
+    236          			case CMD_CALIBRATION_NTC_CON_TABLE_REQ:
+    237          				doCalibrationNTCTableReq();
+    238          				break;
+    239          			case CMD_CALIBRATION_NTC_CONSTANT_REQ:
+    240          				doCalibrationNTCConstantReq();
+    241          				break;
+    242          		}    
+    243          	}
+    244          }
+    245          
+    246          void doReqSlotID(void)
+    247          {
+    248              temp[0] = SysProperties.boardID;
+    249          	doMakeSendSlotData(transmtData, SysProperties.boardID, CMD_SLOT_ID_REQ, &temp[0], 1, SEND_DATA_LENGTH);
+    250          	doSendUartToMCU(transmtData, 12);
+    251          }
+    252          
+    253          /*********************************************************************
+    254          *   doBoardTypeReq
+    255          *  	보드의 타입을 리턴 
+    256          **********************************************************************/
+    257          void doBoardTypeReq(void)
+    258          {
+    259              temp[0] = SBT_NTC;   //보드 다입은 NTC 로 고정 
+    260          	
+    261          	doMakeSendTempData(transmtData, CMD_BOARD_TYPE, &temp[0], 1, SEND_DATA_LENGTH);
+    262          	doSendUartToMCU(transmtData, 12);
+    263          }
+    264          
+    265          void doTempReq()
+    266          {
+    267              util_mem_cpy(&temp[0], &TestData.Temperature[0][0].Float, 128);
+    268          
+    269          	doMakeSendTempData(transmtData, CMD_TEMP_REQ, &temp[0], 128, 134);
+    270              crcSave.UI8[0] = transmtData[131];
+    271              crcSave.UI8[1] = transmtData[132];
+    272              
+    273              doSendUartToMCU(transmtData, 134);
+    274          }
+    275          
+    276          void doTempStateReq(void)
+    277          {
+    278              util_mem_cpy(&temp[0], &TestData.displayModeFlag[0], 16);
+    279          
+    280          	doMakeSendTempData(transmtData, CMD_TEMP_STATE_REQ, &temp[0], 16, 38);
+    281              doSendUartToMCU(transmtData, 38);
+    282          }
+    283          
+    284          void doTresholdSet(void)
+    285          {
+    286          	uni4Byte 	setTresholdTemp;
+    287          	uint8_t		i, j;
+    288          
+    289          	setTresholdTemp.UI8[0] = RxData[4];
+    290          	setTresholdTemp.UI8[1] = RxData[5];
+    291          	setTresholdTemp.UI8[2] = RxData[6];
+    292          	setTresholdTemp.UI8[3] = RxData[7];
+    293          	
+    294          	if(RxData[3] == 0xFF)	//전체 변경 
+    295          	{
+    296          		for(j = 0; j < 2; j++)
+    297          		{
+    298          			for(i = 0; i < 16; i++)
+    299          			{
+    300          				TestData.Threshold[j][i].Float = setTresholdTemp.Float;
+    301          			}
+    302          		}
+    303          	}
+    304          	else
+    305          	{
+    306          		TestData.Threshold[0][RxData[3]].Float = setTresholdTemp.Float;
+    307          	}
+    308          
+    309          	doFlashWriteRevision();
+    310          	
+    311              util_mem_cpy(&temp[0], &TestData.Threshold[0][0].UI8[0], 128); 
+    312          	doMakeSendTempData(transmtData, CMD_THRESHOLD_SET, &temp[0], 128, 134);
+    313              doSendUartToMCU(transmtData, 134);
+    314          }
+    315          
+    316          void doTresholdReq(void)
+    317          {
+    318              util_mem_cpy(&temp[0], &TestData.Threshold[0][0].UI8[0], 128); 
+    319          
+    320          	doMakeSendTempData(transmtData, CMD_THRESHOLD_REQ, &temp[0], 128, 134);
+    321              doSendUartToMCU(transmtData, 134);
+    322          }
+    323          
+    324          void doRevisionApplySet(void)
+    325          {
+    326          	TestData.revisionApplyFlag = RxData[3];
+    327          	doFlashWriteRevision();
+    328          	
+    329          	util_mem_set(transmtData, 0x00, sizeof(transmtData));	
+    330          	doMakeSendTempData(transmtData, CMD_REVISION_APPLY_SET, &TestData.revisionApplyFlag, 1, 12);
+    331          	doSendUartToMCU(transmtData, 12);
+    332          }
+    333          
+    334           void doRevisionConstantSet(void)
+    335          {
+    336          	TestData.revisionConstant.UI8[0] = RxData[3];
+    337          	TestData.revisionConstant.UI8[1] = RxData[4];
+    338          	TestData.revisionConstant.UI8[2] = RxData[5];
+    339          	TestData.revisionConstant.UI8[3] = RxData[6];
+    340          	doFlashWriteRevision();
+    341          
+    342          	util_mem_set(transmtData, 0x00, sizeof(transmtData));	
+    343          	doMakeSendTempData(transmtData, CMD_REVISION_CONSTANT_SET, &TestData.revisionConstant.UI8[0], 4, 12);
+    344          	doSendUartToMCU(transmtData, 12);
+    345          }
+    346          
+    347          void doRevisionApplyReq(void)
+    348          {
+    349          	util_mem_set(transmtData, 0x00, sizeof(transmtData));	
+    350          	doMakeSendTempData(transmtData, CMD_REVISION_APPLY_REQ, &TestData.revisionApplyFlag, 1, 12);
+    351          	doSendUartToMCU(transmtData, 12);
+    352          }
+    353          
+    354          void doRevisionConstantReq(void)
+    355          {
+    356          	util_mem_set(transmtData, 0x00, sizeof(transmtData));	
+    357          	doMakeSendTempData(transmtData, CMD_REVISION_CONSTANT_SET, &TestData.revisionConstant.UI8[0], 4, 12);
+    358          	doSendUartToMCU(transmtData, 12);
+    359          }
+    360          
+    361          void doCalibrationNTCTableCal(void)
+    362          {
+    363          	uni4Byte	readRTDTemp;
+    364          	uint8_t		i, j;
+    365          
+    366          	readRTDTemp.UI8[0] = RxData[3];
+    367          	readRTDTemp.UI8[1] = RxData[4];
+    368          	readRTDTemp.UI8[2] = RxData[5];
+    369          	readRTDTemp.UI8[3] = RxData[6];
+    370          
+    371          	for(j = 0; j < 2; j++)
+    372          	{
+    373          		for(i = 0; i < 16; i++)
+    374          		{
+    375          			if(TestData.Temperature[j][i].Float != 0)
+    376          			{
+    377          				TestData.ntcCalibrationTable[j][i].Float = readRTDTemp.Float - TestData.Temperature[j][i].Float;
+    378          			}
+    379          		}
+    380          	}
+    381          	doFlashWriteRevision();
+    382          
+    383          	doMakeSendTempData(transmtData, CMD_CALIBRATION_NTC_CON_TABLE_CAL, &TestData.ntcCalibrationTable[0][0].UI8[0], 64, 134);
+    384          	doSendUartToMCU(transmtData, 134);
+    385          }
+    386          
+    387          void doCalibrationNTCConstantSet(void)
+    388          {
+    389          	TestData.ntcCalibrationConstant.UI8[0] = RxData[3];
+    390          	TestData.ntcCalibrationConstant.UI8[1] = RxData[4];
+    391          	TestData.ntcCalibrationConstant.UI8[2] = RxData[5];
+    392          	TestData.ntcCalibrationConstant.UI8[3] = RxData[6];
+    393          
+    394          	doFlashWriteRevision();
+    395          
+    396          	doMakeSendTempData(transmtData, CMD_CALIBRATION_NTC_CONSTANT_SET, &TestData.ntcCalibrationConstant.UI8[0], 4, 12);
+    397          	doSendUartToMCU(transmtData, 12);
+    398          }
+    399          
+    400          void doCalibrationNTCTableReq(void)
+    401          {
+    402          	doMakeSendTempData(transmtData, CMD_CALIBRATION_NTC_CON_TABLE_CAL, &TestData.ntcCalibrationTable[0][0].UI8[0], 64, 134);
+    403          	doSendUartToMCU(transmtData, 134);
+    404          }
+    405          
+    406          void doCalibrationNTCConstantReq(void)
+    407          {
+    408          	doMakeSendTempData(transmtData, CMD_CALIBRATION_NTC_CONSTANT_SET, &TestData.ntcCalibrationConstant.UI8[0], 4, 12);
+    409          	doSendUartToMCU(transmtData, 12);
+    410          }
+    411          
+    412          void doSendUartToMCU(uint8_t * txData, uint8_t length)
+    413          {
+    414              if(BinarySemUartTxHandle != NULL)
+    415              {
+    416                  if(osSemaphoreWait(BinarySemUartTxHandle, 0) == osOK)   
+    417                  {   
+    418                      HAL_GPIO_WritePin(UART1_TX_EN_GPIO_Port, UART1_TX_EN_Pin, GPIO_PIN_SET);
+    419                      HAL_Delay(1);
+    420                      HAL_UART_Transmit_DMA(&huart1, txData, length);
+    421                  }
+    422              }
+    423          }
+    424          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   HAL_UART_RxCpltCallback
+         8   -> osSemaphoreRelease
+       8   HAL_UART_TxCpltCallback
+         8   -> HAL_Delay
+         8   -> HAL_GPIO_WritePin
+         8   -> osSemaphoreRelease
+       8   JumpToFunction
+         8   -> HAL_NVIC_SystemReset
+         8   -> doBoardTypeReq
+         8   -> doCalibrationNTCConstantReq
+         8   -> doCalibrationNTCConstantSet
+         8   -> doCalibrationNTCTableCal
+         8   -> doCalibrationNTCTableReq
+         8   -> doReqSlotID
+         8   -> doRevisionApplyReq
+         8   -> doRevisionApplySet
+         8   -> doRevisionConstantReq
+         8   -> doRevisionConstantSet
+         8   -> doTempReq
+         8   -> doTempStateReq
+         8   -> doTresholdReq
+         8   -> doTresholdSet
+      32   StartUartTask
+        32   -> HAL_UART_Receive_DMA
+        32   -> JumpToFunction
+        32   -> RxQueue_Clear
+        32   -> RxQueue_Count
+        32   -> UartRxFunction
+        32   -> UnpackingRxQueue
+        32   -> doFindMyID
+        32   -> osDelay
+        32   -> osSemaphoreGetCount
+       8   UartRxFunction
+         8   -> HAL_UART_Receive_DMA
+         8   -> RxQueue_Send
+         8   -> osSemaphoreWait
+      24   UnpackingRxQueue
+        24   -> RxQueue_Clear
+        24   -> RxQueue_Count
+        24   -> RxQueue_Recive
+        24   -> RxQueue_empty
+        24   -> osDelay
+      16   doBoardTypeReq
+        16   -> doMakeSendTempData
+        16   -> doSendUartToMCU
+      16   doCalibrationNTCConstantReq
+        16   -> doMakeSendTempData
+        16   -> doSendUartToMCU
+      16   doCalibrationNTCConstantSet
+        16   -> doFlashWriteRevision
+        16   -> doMakeSendTempData
+        16   -> doSendUartToMCU
+      24   doCalibrationNTCTableCal
+        24   -> __aeabi_fsub
+        24   -> doFlashWriteRevision
+        24   -> doMakeSendTempData
+        24   -> doSendUartToMCU
+        24 __aeabi_cfcmpeq
+      16   doCalibrationNTCTableReq
+        16   -> doMakeSendTempData
+        16   -> doSendUartToMCU
+      16   doReqSlotID
+        16   -> doMakeSendSlotData
+        16   -> doSendUartToMCU
+      16   doRevisionApplyReq
+        16   -> doMakeSendTempData
+        16   -> doSendUartToMCU
+        16   -> util_mem_set
+      16   doRevisionApplySet
+        16   -> doFlashWriteRevision
+        16   -> doMakeSendTempData
+        16   -> doSendUartToMCU
+        16   -> util_mem_set
+      16   doRevisionConstantReq
+        16   -> doMakeSendTempData
+        16   -> doSendUartToMCU
+        16   -> util_mem_set
+      16   doRevisionConstantSet
+        16   -> doFlashWriteRevision
+        16   -> doMakeSendTempData
+        16   -> doSendUartToMCU
+        16   -> util_mem_set
+      16   doSendUartToMCU
+        16   -> HAL_Delay
+        16   -> HAL_GPIO_WritePin
+        16   -> HAL_UART_Transmit_DMA
+        16   -> osSemaphoreWait
+      16   doTempReq
+        16   -> doMakeSendTempData
+        16   -> doSendUartToMCU
+        16   -> util_mem_cpy
+      16   doTempStateReq
+        16   -> doMakeSendTempData
+        16   -> doSendUartToMCU
+        16   -> util_mem_cpy
+      16   doTresholdReq
+        16   -> doMakeSendTempData
+        16   -> doSendUartToMCU
+        16   -> util_mem_cpy
+      32   doTresholdSet
+        32   -> doFlashWriteRevision
+        32   -> doMakeSendTempData
+        32   -> doSendUartToMCU
+        32   -> util_mem_cpy
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable20
+       4  ??DataTable20_1
+       4  ??DataTable20_10
+       4  ??DataTable20_11
+       4  ??DataTable20_12
+       4  ??DataTable20_13
+       4  ??DataTable20_14
+       4  ??DataTable20_15
+       4  ??DataTable20_16
+       4  ??DataTable20_17
+       4  ??DataTable20_18
+       4  ??DataTable20_19
+       4  ??DataTable20_2
+       4  ??DataTable20_20
+       4  ??DataTable20_3
+       4  ??DataTable20_4
+       4  ??DataTable20_5
+       4  ??DataTable20_6
+       4  ??DataTable20_7
+       4  ??DataTable20_8
+       4  ??DataTable20_9
+      16  HAL_UART_RxCpltCallback
+      36  HAL_UART_TxCpltCallback
+     200  JumpToFunction
+      20  RxData
+     194  StartUartTask
+      74  UartRxFunction
+     128  UartRxQueue
+     194  UnpackingRxQueue
+       1  count
+       2  crcSave
+      38  doBoardTypeReq
+      30  doCalibrationNTCConstantReq
+      64  doCalibrationNTCConstantSet
+     170  doCalibrationNTCTableCal
+      30  doCalibrationNTCTableReq
+      46  doReqSlotID
+      40  doRevisionApplyReq
+      56  doRevisionApplySet
+      40  doRevisionConstantReq
+      74  doRevisionConstantSet
+      60  doSendUartToMCU
+      64  doTempReq
+      42  doTempStateReq
+      42  doTresholdReq
+     152  doTresholdSet
+       1  ereaserDataFalg
+       1  getSemaCount
+      20  receiveData
+     140  temp
+     140  transmtData
+
+ 
+   453 bytes in section .bss
+ 1'746 bytes in section .text
+ 
+ 1'746 bytes of CODE memory
+   453 bytes of DATA memory
+
+Errors: none
+Warnings: 1

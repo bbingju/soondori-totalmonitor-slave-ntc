@@ -1,0 +1,347 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.40.1.212/W32 for ARM         06/Sep/2019  23:26:46
+# Copyright 1999-2019 IAR Systems AB.
+#
+#    Cpu mode     =  
+#    Endian       =  little
+#    Source file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\stm32f1xx_it.c
+#    Command line =
+#        -f C:\Users\ilkorea\AppData\Local\Temp\EW83F0.tmp
+#        (D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\stm32f1xx_it.c
+#        -D USE_HAL_DRIVER -D STM32F103xB -lc
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List
+#        -o
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.3\arm\inc\c\DLib_Config_Full.h"
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Device/ST/STM32F1xx/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/SEGGER\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9/Config\
+#        -On -I "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.3\arm\CMSIS\Core\Include\" -I "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.3\arm\CMSIS\DSP\Include\")
+#    Locale       =  C
+#    List file    =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List\stm32f1xx_it.lst
+#    Object file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj\stm32f1xx_it.o
+#
+###############################################################################
+
+D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\stm32f1xx_it.c
+      1          /* USER CODE BEGIN Header */
+      2          /**
+      3            ******************************************************************************
+      4            * @file    stm32f1xx_it.c
+      5            * @brief   Interrupt Service Routines.
+      6            ******************************************************************************
+      7            * @attention
+      8            *
+      9            * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+     10            * All rights reserved.</center></h2>
+     11            *
+     12            * This software component is licensed by ST under Ultimate Liberty license
+     13            * SLA0044, the "License"; You may not use this file except in compliance with
+     14            * the License. You may obtain a copy of the License at:
+     15            *                             www.st.com/SLA0044
+     16            *
+     17            ******************************************************************************
+     18            */
+     19          /* USER CODE END Header */
+     20          
+     21          /* Includes ------------------------------------------------------------------*/
+     22          #include "main.h"
+     23          #include "stm32f1xx_it.h"
+     24          #include "cmsis_os.h"
+     25          /* Private includes ----------------------------------------------------------*/
+     26          /* USER CODE BEGIN Includes */
+     27          /* USER CODE END Includes */
+     28          
+     29          /* Private typedef -----------------------------------------------------------*/
+     30          /* USER CODE BEGIN TD */
+     31          
+     32          /* USER CODE END TD */
+     33          
+     34          /* Private define ------------------------------------------------------------*/
+     35          /* USER CODE BEGIN PD */
+     36           
+     37          /* USER CODE END PD */
+     38          
+     39          /* Private macro -------------------------------------------------------------*/
+     40          /* USER CODE BEGIN PM */
+     41          
+     42          /* USER CODE END PM */
+     43          
+     44          /* Private variables ---------------------------------------------------------*/
+     45          /* USER CODE BEGIN PV */
+     46          
+     47          /* USER CODE END PV */
+     48          
+     49          /* Private function prototypes -----------------------------------------------*/
+     50          /* USER CODE BEGIN PFP */
+     51          
+     52          /* USER CODE END PFP */
+     53          
+     54          /* Private user code ---------------------------------------------------------*/
+     55          /* USER CODE BEGIN 0 */
+     56          
+     57          /* USER CODE END 0 */
+     58          
+     59          /* External variables --------------------------------------------------------*/
+     60          extern ADC_HandleTypeDef hadc1;
+     61          extern ADC_HandleTypeDef hadc2;
+     62          extern DMA_HandleTypeDef hdma_usart1_rx;
+     63          extern DMA_HandleTypeDef hdma_usart1_tx;
+     64          extern UART_HandleTypeDef huart1;
+     65          extern TIM_HandleTypeDef htim1;
+     66          
+     67          /* USER CODE BEGIN EV */
+     68          
+     69          /* USER CODE END EV */
+     70          
+     71          /******************************************************************************/
+     72          /*           Cortex-M3 Processor Interruption and Exception Handlers          */ 
+     73          /******************************************************************************/
+     74          /**
+     75            * @brief This function handles Non maskable interrupt.
+     76            */
+     77          void NMI_Handler(void)
+     78          {
+     79            /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
+     80          
+     81            /* USER CODE END NonMaskableInt_IRQn 0 */
+     82            /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
+     83          
+     84            /* USER CODE END NonMaskableInt_IRQn 1 */
+     85          }
+     86          
+     87          /**
+     88            * @brief This function handles Hard fault interrupt.
+     89            */
+     90          void HardFault_Handler(void)
+     91          {
+     92            /* USER CODE BEGIN HardFault_IRQn 0 */
+     93          
+     94            /* USER CODE END HardFault_IRQn 0 */
+     95            while (1)
+     96            {
+     97              /* USER CODE BEGIN W1_HardFault_IRQn 0 */
+     98              /* USER CODE END W1_HardFault_IRQn 0 */
+     99            }
+    100          }
+    101          
+    102          /**
+    103            * @brief This function handles Memory management fault.
+    104            */
+    105          void MemManage_Handler(void)
+    106          {
+    107            /* USER CODE BEGIN MemoryManagement_IRQn 0 */
+    108          
+    109            /* USER CODE END MemoryManagement_IRQn 0 */
+    110            while (1)
+    111            {
+    112              /* USER CODE BEGIN W1_MemoryManagement_IRQn 0 */
+    113              /* USER CODE END W1_MemoryManagement_IRQn 0 */
+    114            }
+    115          }
+    116          
+    117          /**
+    118            * @brief This function handles Prefetch fault, memory access fault.
+    119            */
+    120          void BusFault_Handler(void)
+    121          {
+    122            /* USER CODE BEGIN BusFault_IRQn 0 */
+    123          
+    124            /* USER CODE END BusFault_IRQn 0 */
+    125            while (1)
+    126            {
+    127              /* USER CODE BEGIN W1_BusFault_IRQn 0 */
+    128              /* USER CODE END W1_BusFault_IRQn 0 */
+    129            }
+    130          }
+    131          
+    132          /**
+    133            * @brief This function handles Undefined instruction or illegal state.
+    134            */
+    135          void UsageFault_Handler(void)
+    136          {
+    137            /* USER CODE BEGIN UsageFault_IRQn 0 */
+    138          
+    139            /* USER CODE END UsageFault_IRQn 0 */
+    140            while (1)
+    141            {
+    142              /* USER CODE BEGIN W1_UsageFault_IRQn 0 */
+    143              /* USER CODE END W1_UsageFault_IRQn 0 */
+    144            }
+    145          }
+    146          
+    147          /**
+    148            * @brief This function handles Debug monitor.
+    149            */
+    150          void DebugMon_Handler(void)
+    151          {
+    152            /* USER CODE BEGIN DebugMonitor_IRQn 0 */
+    153          
+    154            /* USER CODE END DebugMonitor_IRQn 0 */
+    155            /* USER CODE BEGIN DebugMonitor_IRQn 1 */
+    156          
+    157            /* USER CODE END DebugMonitor_IRQn 1 */
+    158          }
+    159          
+    160          /******************************************************************************/
+    161          /* STM32F1xx Peripheral Interrupt Handlers                                    */
+    162          /* Add here the Interrupt Handlers for the used peripherals.                  */
+    163          /* For the available peripheral interrupt handler names,                      */
+    164          /* please refer to the startup file (startup_stm32f1xx.s).                    */
+    165          /******************************************************************************/
+    166          
+    167          /**
+    168            * @brief This function handles DMA1 channel4 global interrupt.
+    169            */
+    170          void DMA1_Channel4_IRQHandler(void)
+    171          {
+    172            /* USER CODE BEGIN DMA1_Channel4_IRQn 0 */
+    173          
+    174            /* USER CODE END DMA1_Channel4_IRQn 0 */
+    175            HAL_DMA_IRQHandler(&hdma_usart1_tx);
+    176            /* USER CODE BEGIN DMA1_Channel4_IRQn 1 */
+    177          
+    178            /* USER CODE END DMA1_Channel4_IRQn 1 */
+    179          }
+    180          
+    181          /**
+    182            * @brief This function handles DMA1 channel5 global interrupt.
+    183            */
+    184          void DMA1_Channel5_IRQHandler(void)
+    185          {
+    186            /* USER CODE BEGIN DMA1_Channel5_IRQn 0 */
+    187          
+    188            /* USER CODE END DMA1_Channel5_IRQn 0 */
+    189            HAL_DMA_IRQHandler(&hdma_usart1_rx);
+    190            /* USER CODE BEGIN DMA1_Channel5_IRQn 1 */
+    191          
+    192            /* USER CODE END DMA1_Channel5_IRQn 1 */
+    193          }
+    194          
+    195          /**
+    196            * @brief This function handles ADC1 and ADC2 global interrupts.
+    197            */
+    198          void ADC1_2_IRQHandler(void)
+    199          {
+    200            /* USER CODE BEGIN ADC1_2_IRQn 0 */
+    201          
+    202            /* USER CODE END ADC1_2_IRQn 0 */
+    203            HAL_ADC_IRQHandler(&hadc1);
+    204            HAL_ADC_IRQHandler(&hadc2);
+    205            /* USER CODE BEGIN ADC1_2_IRQn 1 */
+    206          
+    207            /* USER CODE END ADC1_2_IRQn 1 */
+    208          }
+    209          
+    210          /**
+    211            * @brief This function handles TIM1 update interrupt.
+    212            */
+    213          void TIM1_UP_IRQHandler(void)
+    214          {
+    215            /* USER CODE BEGIN TIM1_UP_IRQn 0 */
+    216          
+    217            /* USER CODE END TIM1_UP_IRQn 0 */
+    218            HAL_TIM_IRQHandler(&htim1);
+    219            /* USER CODE BEGIN TIM1_UP_IRQn 1 */
+    220          
+    221            /* USER CODE END TIM1_UP_IRQn 1 */
+    222          }
+    223          
+    224          /**
+    225            * @brief This function handles USART1 global interrupt.
+    226            */
+    227          void USART1_IRQHandler(void)
+    228          {
+    229            /* USER CODE BEGIN USART1_IRQn 0 */
+    230          
+    231            /* USER CODE END USART1_IRQn 0 */
+    232            HAL_UART_IRQHandler(&huart1);
+    233            /* USER CODE BEGIN USART1_IRQn 1 */
+    234          
+    235            /* USER CODE END USART1_IRQn 1 */
+    236          }
+    237          
+    238          /* USER CODE BEGIN 1 */
+    239          
+    240          /* USER CODE END 1 */
+    241          /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   ADC1_2_IRQHandler
+         8   -> HAL_ADC_IRQHandler
+       0   BusFault_Handler
+       8   DMA1_Channel4_IRQHandler
+         8   -> HAL_DMA_IRQHandler
+       8   DMA1_Channel5_IRQHandler
+         8   -> HAL_DMA_IRQHandler
+       0   DebugMon_Handler
+       0   HardFault_Handler
+       0   MemManage_Handler
+       0   NMI_Handler
+       8   TIM1_UP_IRQHandler
+         8   -> HAL_TIM_IRQHandler
+       8   USART1_IRQHandler
+         8   -> HAL_UART_IRQHandler
+       0   UsageFault_Handler
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable5
+       4  ??DataTable5_1
+       4  ??DataTable5_2
+       4  ??DataTable5_3
+       4  ??DataTable5_4
+       4  ??DataTable5_5
+      16  ADC1_2_IRQHandler
+       2  BusFault_Handler
+      10  DMA1_Channel4_IRQHandler
+      10  DMA1_Channel5_IRQHandler
+       2  DebugMon_Handler
+       2  HardFault_Handler
+       2  MemManage_Handler
+       2  NMI_Handler
+      10  TIM1_UP_IRQHandler
+      10  USART1_IRQHandler
+       2  UsageFault_Handler
+
+ 
+ 92 bytes in section .text
+ 
+ 92 bytes of CODE memory
+
+Errors: none
+Warnings: none

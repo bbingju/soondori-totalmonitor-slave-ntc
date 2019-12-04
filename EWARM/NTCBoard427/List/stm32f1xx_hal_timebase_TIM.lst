@@ -1,0 +1,206 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.40.1.212/W32 for ARM         06/Sep/2019  23:26:46
+# Copyright 1999-2019 IAR Systems AB.
+#
+#    Cpu mode     =  
+#    Endian       =  little
+#    Source file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\stm32f1xx_hal_timebase_TIM.c
+#    Command line =
+#        -f C:\Users\ilkorea\AppData\Local\Temp\EW8371.tmp
+#        (D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\stm32f1xx_hal_timebase_TIM.c
+#        -D USE_HAL_DRIVER -D STM32F103xB -lc
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List
+#        -o
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.3\arm\inc\c\DLib_Config_Full.h"
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Device/ST/STM32F1xx/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/SEGGER\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9/Config\
+#        -On -I "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.3\arm\CMSIS\Core\Include\" -I "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.3\arm\CMSIS\DSP\Include\")
+#    Locale       =  C
+#    List file    =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List\stm32f1xx_hal_timebase_TIM.lst
+#    Object file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj\stm32f1xx_hal_timebase_TIM.o
+#
+###############################################################################
+
+D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\stm32f1xx_hal_timebase_TIM.c
+      1          /* USER CODE BEGIN Header */
+      2          /**
+      3            ******************************************************************************
+      4            * @file    stm32f1xx_hal_timebase_TIM.c 
+      5            * @brief   HAL time base based on the hardware TIM.
+      6            ******************************************************************************
+      7            * @attention
+      8            *
+      9            * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+     10            * All rights reserved.</center></h2>
+     11            *
+     12            * This software component is licensed by ST under Ultimate Liberty license
+     13            * SLA0044, the "License"; You may not use this file except in compliance with
+     14            * the License. You may obtain a copy of the License at:
+     15            *                             www.st.com/SLA0044
+     16            *
+     17            ******************************************************************************
+     18            */
+     19          /* USER CODE END Header */
+     20          
+     21          /* Includes ------------------------------------------------------------------*/
+     22          #include "stm32f1xx_hal.h"
+     23          #include "stm32f1xx_hal_tim.h"
+     24           
+     25          /* Private typedef -----------------------------------------------------------*/
+     26          /* Private define ------------------------------------------------------------*/
+     27          /* Private macro -------------------------------------------------------------*/
+     28          /* Private variables ---------------------------------------------------------*/
+     29          TIM_HandleTypeDef        htim1; 
+     30          /* Private function prototypes -----------------------------------------------*/
+     31          /* Private functions ---------------------------------------------------------*/
+     32          
+     33          /**
+     34            * @brief  This function configures the TIM1 as a time base source. 
+     35            *         The time source is configured  to have 1ms time base with a dedicated 
+     36            *         Tick interrupt priority. 
+     37            * @note   This function is called  automatically at the beginning of program after
+     38            *         reset by HAL_Init() or at any time when clock is configured, by HAL_RCC_ClockConfig(). 
+     39            * @param  TickPriority: Tick interrupt priority.
+     40            * @retval HAL status
+     41            */
+     42          HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
+     43          {
+     44            RCC_ClkInitTypeDef    clkconfig;
+     45            uint32_t              uwTimclock = 0;
+     46            uint32_t              uwPrescalerValue = 0;
+     47            uint32_t              pFLatency;
+     48            
+     49            /*Configure the TIM1 IRQ priority */
+     50            HAL_NVIC_SetPriority(TIM1_UP_IRQn, TickPriority ,0); 
+     51            
+     52            /* Enable the TIM1 global Interrupt */
+     53            HAL_NVIC_EnableIRQ(TIM1_UP_IRQn); 
+     54            
+     55            /* Enable TIM1 clock */
+     56            __HAL_RCC_TIM1_CLK_ENABLE();
+     57            
+     58            /* Get clock configuration */
+     59            HAL_RCC_GetClockConfig(&clkconfig, &pFLatency);
+     60            
+     61            /* Compute TIM1 clock */
+     62            uwTimclock = HAL_RCC_GetPCLK2Freq();
+     63             
+     64            /* Compute the prescaler value to have TIM1 counter clock equal to 1MHz */
+     65            uwPrescalerValue = (uint32_t) ((uwTimclock / 1000000) - 1);
+     66            
+     67            /* Initialize TIM1 */
+     68            htim1.Instance = TIM1;
+     69            
+     70            /* Initialize TIMx peripheral as follow:
+     71            + Period = [(TIM1CLK/1000) - 1]. to have a (1/1000) s time base.
+     72            + Prescaler = (uwTimclock/1000000 - 1) to have a 1MHz counter clock.
+     73            + ClockDivision = 0
+     74            + Counter direction = Up
+     75            */
+     76            htim1.Init.Period = (1000000 / 1000) - 1;
+     77            htim1.Init.Prescaler = uwPrescalerValue;
+     78            htim1.Init.ClockDivision = 0;
+     79            htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+     80            if(HAL_TIM_Base_Init(&htim1) == HAL_OK)
+     81            {
+     82              /* Start the TIM time Base generation in interrupt mode */
+     83              return HAL_TIM_Base_Start_IT(&htim1);
+     84            }
+     85            
+     86            /* Return function status */
+     87            return HAL_ERROR;
+     88          }
+     89          
+     90          /**
+     91            * @brief  Suspend Tick increment.
+     92            * @note   Disable the tick increment by disabling TIM1 update interrupt.
+     93            * @param  None
+     94            * @retval None
+     95            */
+     96          void HAL_SuspendTick(void)
+     97          {
+     98            /* Disable TIM1 update Interrupt */
+     99            __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_UPDATE);                                                  
+    100          }
+    101          
+    102          /**
+    103            * @brief  Resume Tick increment.
+    104            * @note   Enable the tick increment by Enabling TIM1 update interrupt.
+    105            * @param  None
+    106            * @retval None
+    107            */
+    108          void HAL_ResumeTick(void)
+    109          {
+    110            /* Enable TIM1 Update interrupt */
+    111            __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);
+    112          }
+    113          
+    114          /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+      56   HAL_InitTick
+        56   -> HAL_NVIC_EnableIRQ
+        56   -> HAL_NVIC_SetPriority
+        56   -> HAL_RCC_GetClockConfig
+        56   -> HAL_RCC_GetPCLK2Freq
+        56   -> HAL_TIM_Base_Init
+        56   -> HAL_TIM_Base_Start_IT
+       0   HAL_ResumeTick
+       0   HAL_SuspendTick
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable2
+       4  ??DataTable2_1
+       4  ??DataTable2_2
+       4  ??DataTable2_3
+     132  HAL_InitTick
+      16  HAL_ResumeTick
+      16  HAL_SuspendTick
+      64  htim1
+
+ 
+  64 bytes in section .bss
+ 180 bytes in section .text
+ 
+ 180 bytes of CODE memory
+  64 bytes of DATA memory
+
+Errors: none
+Warnings: none

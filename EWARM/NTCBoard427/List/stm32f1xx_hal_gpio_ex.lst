@@ -1,0 +1,223 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.40.1.212/W32 for ARM         06/Sep/2019  23:26:45
+# Copyright 1999-2019 IAR Systems AB.
+#
+#    Cpu mode     =  
+#    Endian       =  little
+#    Source file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_gpio_ex.c
+#    Command line =
+#        -f C:\Users\ilkorea\AppData\Local\Temp\EW80B8.tmp
+#        (D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_gpio_ex.c
+#        -D USE_HAL_DRIVER -D STM32F103xB -lc
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List
+#        -o
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.3\arm\inc\c\DLib_Config_Full.h"
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Device/ST/STM32F1xx/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/SEGGER\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9/Config\
+#        -On -I "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.3\arm\CMSIS\Core\Include\" -I "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.3\arm\CMSIS\DSP\Include\")
+#    Locale       =  C
+#    List file    =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List\stm32f1xx_hal_gpio_ex.lst
+#    Object file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj\stm32f1xx_hal_gpio_ex.o
+#
+###############################################################################
+
+D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Drivers\STM32F1xx_HAL_Driver\Src\stm32f1xx_hal_gpio_ex.c
+      1          /**
+      2            ******************************************************************************
+      3            * @file    stm32f1xx_hal_gpio_ex.c
+      4            * @author  MCD Application Team
+      5            * @brief   GPIO Extension HAL module driver.
+      6            *         This file provides firmware functions to manage the following
+      7            *          functionalities of the General Purpose Input/Output (GPIO) extension peripheral.
+      8            *           + Extended features functions
+      9            *
+     10            @verbatim
+     11            ==============================================================================
+     12                              ##### GPIO Peripheral extension features #####
+     13            ==============================================================================
+     14            [..] GPIO module on STM32F1 family, manage also the AFIO register:
+     15                 (+) Possibility to use the EVENTOUT Cortex feature
+     16          
+     17                               ##### How to use this driver #####
+     18            ==============================================================================
+     19            [..] This driver provides functions to use EVENTOUT Cortex feature
+     20              (#) Configure EVENTOUT Cortex feature using the function HAL_GPIOEx_ConfigEventout()
+     21              (#) Activate EVENTOUT Cortex feature using the HAL_GPIOEx_EnableEventout()
+     22              (#) Deactivate EVENTOUT Cortex feature using the HAL_GPIOEx_DisableEventout()
+     23          
+     24            @endverbatim
+     25            ******************************************************************************
+     26            * @attention
+     27            *
+     28            * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
+     29            *
+     30            * Redistribution and use in source and binary forms, with or without modification,
+     31            * are permitted provided that the following conditions are met:
+     32            *   1. Redistributions of source code must retain the above copyright notice,
+     33            *      this list of conditions and the following disclaimer.
+     34            *   2. Redistributions in binary form must reproduce the above copyright notice,
+     35            *      this list of conditions and the following disclaimer in the documentation
+     36            *      and/or other materials provided with the distribution.
+     37            *   3. Neither the name of STMicroelectronics nor the names of its contributors
+     38            *      may be used to endorse or promote products derived from this software
+     39            *      without specific prior written permission.
+     40            *
+     41            * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+     42            * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+     43            * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+     44            * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+     45            * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+     46            * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+     47            * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+     48            * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+     49            * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+     50            * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     51            *
+     52            ******************************************************************************
+     53            */
+     54          
+     55          /* Includes ------------------------------------------------------------------*/
+     56          #include "stm32f1xx_hal.h"
+     57          
+     58          /** @addtogroup STM32F1xx_HAL_Driver
+     59            * @{
+     60            */
+     61          
+     62          /** @defgroup GPIOEx GPIOEx
+     63            * @brief GPIO HAL module driver
+     64            * @{
+     65            */
+     66          
+     67          #ifdef HAL_GPIO_MODULE_ENABLED
+     68          
+     69          /** @defgroup GPIOEx_Exported_Functions GPIOEx Exported Functions
+     70            * @{
+     71            */
+     72          
+     73          /** @defgroup GPIOEx_Exported_Functions_Group1 Extended features functions
+     74           *  @brief    Extended features functions
+     75           *
+     76          @verbatim
+     77            ==============================================================================
+     78                           ##### Extended features functions #####
+     79            ==============================================================================
+     80              [..]  This section provides functions allowing to:
+     81              (+) Configure EVENTOUT Cortex feature using the function HAL_GPIOEx_ConfigEventout()
+     82              (+) Activate EVENTOUT Cortex feature using the HAL_GPIOEx_EnableEventout()
+     83              (+) Deactivate EVENTOUT Cortex feature using the HAL_GPIOEx_DisableEventout()
+     84          
+     85          @endverbatim
+     86            * @{
+     87            */
+     88          
+     89          /**
+     90            * @brief  Configures the port and pin on which the EVENTOUT Cortex signal will be connected.
+     91            * @param  GPIO_PortSource Select the port used to output the Cortex EVENTOUT signal.
+     92            *   This parameter can be a value of @ref GPIOEx_EVENTOUT_PORT.
+     93            * @param  GPIO_PinSource Select the pin used to output the Cortex EVENTOUT signal.
+     94            *   This parameter can be a value of @ref GPIOEx_EVENTOUT_PIN.
+     95            * @retval None
+     96            */
+     97          void HAL_GPIOEx_ConfigEventout(uint32_t GPIO_PortSource, uint32_t GPIO_PinSource)
+     98          {
+     99            /* Verify the parameters */
+    100            assert_param(IS_AFIO_EVENTOUT_PORT(GPIO_PortSource));
+    101            assert_param(IS_AFIO_EVENTOUT_PIN(GPIO_PinSource));
+    102          
+    103            /* Apply the new configuration */
+    104            MODIFY_REG(AFIO->EVCR, (AFIO_EVCR_PORT) | (AFIO_EVCR_PIN), (GPIO_PortSource) | (GPIO_PinSource));
+    105          }
+    106          
+    107          /**
+    108            * @brief  Enables the Event Output.
+    109            * @retval None
+    110            */
+    111          void HAL_GPIOEx_EnableEventout(void)
+    112          {
+    113            SET_BIT(AFIO->EVCR, AFIO_EVCR_EVOE);
+    114          }
+    115          
+    116          /**
+    117            * @brief  Disables the Event Output.
+    118            * @retval None
+    119            */
+    120          void HAL_GPIOEx_DisableEventout(void)
+    121          {
+    122            CLEAR_BIT(AFIO->EVCR, AFIO_EVCR_EVOE);
+    123          }
+    124          
+    125          /**
+    126            * @}
+    127            */
+    128          
+    129          /**
+    130            * @}
+    131            */
+    132          
+    133          #endif /* HAL_GPIO_MODULE_ENABLED */
+    134          
+    135          /**
+    136            * @}
+    137            */
+    138          
+    139          /**
+    140            * @}
+    141            */
+    142          
+    143          /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       4   HAL_GPIOEx_ConfigEventout
+       0   HAL_GPIOEx_DisableEventout
+       0   HAL_GPIOEx_EnableEventout
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable2
+      22  HAL_GPIOEx_ConfigEventout
+      12  HAL_GPIOEx_DisableEventout
+      12  HAL_GPIOEx_EnableEventout
+
+ 
+ 50 bytes in section .text
+ 
+ 50 bytes of CODE memory
+
+Errors: none
+Warnings: none

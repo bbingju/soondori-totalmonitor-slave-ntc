@@ -1,0 +1,153 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.40.1.212/W32 for ARM         06/Sep/2019  23:26:44
+# Copyright 1999-2019 IAR Systems AB.
+#
+#    Cpu mode     =  
+#    Endian       =  little
+#    Source file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\freertos.c
+#    Command line =
+#        -f C:\Users\ilkorea\AppData\Local\Temp\EW7CD2.tmp
+#        (D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\freertos.c
+#        -D USE_HAL_DRIVER -D STM32F103xB -lc
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List
+#        -o
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.3\arm\inc\c\DLib_Config_Full.h"
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Device/ST/STM32F1xx/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/SEGGER\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9/Config\
+#        -On -I "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.3\arm\CMSIS\Core\Include\" -I "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.3\arm\CMSIS\DSP\Include\")
+#    Locale       =  C
+#    List file    =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List\freertos.lst
+#    Object file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj\freertos.o
+#
+###############################################################################
+
+D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\freertos.c
+      1          /* USER CODE BEGIN Header */
+      2          /**
+      3            ******************************************************************************
+      4            * File Name          : freertos.c
+      5            * Description        : Code for freertos applications
+      6            ******************************************************************************
+      7            * This notice applies to any and all portions of this file
+      8            * that are not between comment pairs USER CODE BEGIN and
+      9            * USER CODE END. Other portions of this file, whether 
+     10            * inserted by the user or by software development tools
+     11            * are owned by their respective copyright owners.
+     12            *
+     13            * Copyright (c) 2019 STMicroelectronics International N.V. 
+     14            * All rights reserved.
+     15            *
+     16            * Redistribution and use in source and binary forms, with or without 
+     17            * modification, are permitted, provided that the following conditions are met:
+     18            *
+     19            * 1. Redistribution of source code must retain the above copyright notice, 
+     20            *    this list of conditions and the following disclaimer.
+     21            * 2. Redistributions in binary form must reproduce the above copyright notice,
+     22            *    this list of conditions and the following disclaimer in the documentation
+     23            *    and/or other materials provided with the distribution.
+     24            * 3. Neither the name of STMicroelectronics nor the names of other 
+     25            *    contributors to this software may be used to endorse or promote products 
+     26            *    derived from this software without specific written permission.
+     27            * 4. This software, including modifications and/or derivative works of this 
+     28            *    software, must execute solely and exclusively on microcontroller or
+     29            *    microprocessor devices manufactured by or for STMicroelectronics.
+     30            * 5. Redistribution and use of this software other than as permitted under 
+     31            *    this license is void and will automatically terminate your rights under 
+     32            *    this license. 
+     33            *
+     34            * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
+     35            * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
+     36            * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+     37            * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
+     38            * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+     39            * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+     40            * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+     41            * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+     42            * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+     43            * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+     44            * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+     45            * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     46            *
+     47            ******************************************************************************
+     48            */
+     49          /* USER CODE END Header */
+     50          
+     51          /* Includes ------------------------------------------------------------------*/
+     52          #include "FreeRTOS.h"
+     53          #include "task.h"
+     54          #include "main.h"
+     55          
+     56          /* Private includes ----------------------------------------------------------*/
+     57          /* USER CODE BEGIN Includes */     
+     58          
+     59          /* USER CODE END Includes */
+     60          
+     61          /* Private typedef -----------------------------------------------------------*/
+     62          /* USER CODE BEGIN PTD */
+     63          
+     64          /* USER CODE END PTD */
+     65          
+     66          /* Private define ------------------------------------------------------------*/
+     67          /* USER CODE BEGIN PD */
+     68          
+     69          /* USER CODE END PD */
+     70          
+     71          /* Private macro -------------------------------------------------------------*/
+     72          /* USER CODE BEGIN PM */
+     73          
+     74          /* USER CODE END PM */
+     75          
+     76          /* Private variables ---------------------------------------------------------*/
+     77          /* USER CODE BEGIN Variables */
+     78          
+     79          /* USER CODE END Variables */
+     80          
+     81          /* Private function prototypes -----------------------------------------------*/
+     82          /* USER CODE BEGIN FunctionPrototypes */
+     83             
+     84          /* USER CODE END FunctionPrototypes */
+     85          
+     86          /* Private application code --------------------------------------------------*/
+     87          /* USER CODE BEGIN Application */
+     88               
+     89          /* USER CODE END Application */
+     90          
+     91          /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+
+ 
+ 
+ 0 bytes of memory
+
+Errors: none
+Warnings: none

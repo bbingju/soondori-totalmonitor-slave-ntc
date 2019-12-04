@@ -1,0 +1,485 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.40.1.212/W32 for ARM         06/Sep/2019  23:26:45
+# Copyright 1999-2019 IAR Systems AB.
+#
+#    Cpu mode     =  
+#    Endian       =  little
+#    Source file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\stm32f1xx_hal_msp.c
+#    Command line =
+#        -f C:\Users\ilkorea\AppData\Local\Temp\EW80D9.tmp
+#        (D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\stm32f1xx_hal_msp.c
+#        -D USE_HAL_DRIVER -D STM32F103xB -lc
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List
+#        -o
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.3\arm\inc\c\DLib_Config_Full.h"
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Device/ST/STM32F1xx/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/SEGGER\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9/Config\
+#        -On -I "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.3\arm\CMSIS\Core\Include\" -I "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.3\arm\CMSIS\DSP\Include\")
+#    Locale       =  C
+#    List file    =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List\stm32f1xx_hal_msp.lst
+#    Object file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj\stm32f1xx_hal_msp.o
+#
+###############################################################################
+
+D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\stm32f1xx_hal_msp.c
+      1          /* USER CODE BEGIN Header */
+      2          /**
+      3            ******************************************************************************
+      4            * File Name          : stm32f1xx_hal_msp.c
+      5            * Description        : This file provides code for the MSP Initialization 
+      6            *                      and de-Initialization codes.
+      7            ******************************************************************************
+      8            * @attention
+      9            *
+     10            * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+     11            * All rights reserved.</center></h2>
+     12            *
+     13            * This software component is licensed by ST under Ultimate Liberty license
+     14            * SLA0044, the "License"; You may not use this file except in compliance with
+     15            * the License. You may obtain a copy of the License at:
+     16            *                             www.st.com/SLA0044
+     17            *
+     18            ******************************************************************************
+     19            */
+     20          /* USER CODE END Header */
+     21          
+     22          /* Includes ------------------------------------------------------------------*/
+     23          #include "main.h"
+     24          /* USER CODE BEGIN Includes */
+     25          
+     26          /* USER CODE END Includes */
+     27          extern DMA_HandleTypeDef hdma_usart1_rx;
+     28          
+     29          extern DMA_HandleTypeDef hdma_usart1_tx;
+     30          
+     31          /* Private typedef -----------------------------------------------------------*/
+     32          /* USER CODE BEGIN TD */
+     33          
+     34          /* USER CODE END TD */
+     35          
+     36          /* Private define ------------------------------------------------------------*/
+     37          /* USER CODE BEGIN Define */
+     38           
+     39          /* USER CODE END Define */
+     40          
+     41          /* Private macro -------------------------------------------------------------*/
+     42          /* USER CODE BEGIN Macro */
+     43          
+     44          /* USER CODE END Macro */
+     45          
+     46          /* Private variables ---------------------------------------------------------*/
+     47          /* USER CODE BEGIN PV */
+     48          
+     49          /* USER CODE END PV */
+     50          
+     51          /* Private function prototypes -----------------------------------------------*/
+     52          /* USER CODE BEGIN PFP */
+     53          
+     54          /* USER CODE END PFP */
+     55          
+     56          /* External functions --------------------------------------------------------*/
+     57          /* USER CODE BEGIN ExternalFunctions */
+     58          
+     59          /* USER CODE END ExternalFunctions */
+     60          
+     61          /* USER CODE BEGIN 0 */
+     62          
+     63          /* USER CODE END 0 */
+     64          /**
+     65            * Initializes the Global MSP.
+     66            */
+     67          void HAL_MspInit(void)
+     68          {
+     69            /* USER CODE BEGIN MspInit 0 */
+     70          
+     71            /* USER CODE END MspInit 0 */
+     72          
+     73            __HAL_RCC_AFIO_CLK_ENABLE();
+     74            __HAL_RCC_PWR_CLK_ENABLE();
+     75          
+     76            /* System interrupt init*/
+     77            /* PendSV_IRQn interrupt configuration */
+     78            HAL_NVIC_SetPriority(PendSV_IRQn, 15, 0);
+     79          
+     80            /** ENABLE: Full SWJ (JTAG-DP + SW-DP): Reset State 
+     81            */
+     82            __HAL_AFIO_REMAP_SWJ_ENABLE();
+     83          
+     84            /* USER CODE BEGIN MspInit 1 */
+     85          
+     86            /* USER CODE END MspInit 1 */
+     87          }
+     88          
+     89          /**
+     90          * @brief ADC MSP Initialization
+     91          * This function configures the hardware resources used in this example
+     92          * @param hadc: ADC handle pointer
+     93          * @retval None
+     94          */
+     95          void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
+     96          {
+     97            GPIO_InitTypeDef GPIO_InitStruct = {0};
+     98            if(hadc->Instance==ADC1)
+     99            {
+    100            /* USER CODE BEGIN ADC1_MspInit 0 */
+    101          
+    102            /* USER CODE END ADC1_MspInit 0 */
+    103              /* Peripheral clock enable */
+    104              __HAL_RCC_ADC1_CLK_ENABLE();
+    105            
+    106              __HAL_RCC_GPIOA_CLK_ENABLE();
+    107              /**ADC1 GPIO Configuration    
+    108              PA0-WKUP     ------> ADC1_IN0 
+    109              */
+    110              GPIO_InitStruct.Pin = GPIO_PIN_0;
+    111              GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    112              HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    113          
+    114              /* ADC1 interrupt Init */
+    115              HAL_NVIC_SetPriority(ADC1_2_IRQn, 7, 0);
+    116              HAL_NVIC_EnableIRQ(ADC1_2_IRQn);
+    117            /* USER CODE BEGIN ADC1_MspInit 1 */
+    118          
+    119            /* USER CODE END ADC1_MspInit 1 */
+    120            }
+    121            else if(hadc->Instance==ADC2)
+    122            {
+    123            /* USER CODE BEGIN ADC2_MspInit 0 */
+    124          
+    125            /* USER CODE END ADC2_MspInit 0 */
+    126              /* Peripheral clock enable */
+    127              __HAL_RCC_ADC2_CLK_ENABLE();
+    128            
+    129              __HAL_RCC_GPIOA_CLK_ENABLE();
+    130              /**ADC2 GPIO Configuration    
+    131              PA1     ------> ADC2_IN1 
+    132              */
+    133              GPIO_InitStruct.Pin = GPIO_PIN_1;
+    134              GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    135              HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    136          
+    137              /* ADC2 interrupt Init */
+    138              HAL_NVIC_SetPriority(ADC1_2_IRQn, 7, 0);
+    139              HAL_NVIC_EnableIRQ(ADC1_2_IRQn);
+    140            /* USER CODE BEGIN ADC2_MspInit 1 */
+    141          
+    142            /* USER CODE END ADC2_MspInit 1 */
+    143            }
+    144          
+    145          }
+    146          
+    147          /**
+    148          * @brief ADC MSP De-Initialization
+    149          * This function freeze the hardware resources used in this example
+    150          * @param hadc: ADC handle pointer
+    151          * @retval None
+    152          */
+    153          void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
+    154          {
+    155            if(hadc->Instance==ADC1)
+    156            {
+    157            /* USER CODE BEGIN ADC1_MspDeInit 0 */
+    158          
+    159            /* USER CODE END ADC1_MspDeInit 0 */
+    160              /* Peripheral clock disable */
+    161              __HAL_RCC_ADC1_CLK_DISABLE();
+    162            
+    163              /**ADC1 GPIO Configuration    
+    164              PA0-WKUP     ------> ADC1_IN0 
+    165              */
+    166              HAL_GPIO_DeInit(GPIOA, GPIO_PIN_0);
+    167          
+    168              /* ADC1 interrupt DeInit */
+    169            /* USER CODE BEGIN ADC1:ADC1_2_IRQn disable */
+    170              /**
+    171              * Uncomment the line below to disable the "ADC1_2_IRQn" interrupt
+    172              * Be aware, disabling shared interrupt may affect other IPs
+    173              */
+    174              /* HAL_NVIC_DisableIRQ(ADC1_2_IRQn); */
+    175            /* USER CODE END ADC1:ADC1_2_IRQn disable */
+    176          
+    177            /* USER CODE BEGIN ADC1_MspDeInit 1 */
+    178          
+    179            /* USER CODE END ADC1_MspDeInit 1 */
+    180            }
+    181            else if(hadc->Instance==ADC2)
+    182            {
+    183            /* USER CODE BEGIN ADC2_MspDeInit 0 */
+    184          
+    185            /* USER CODE END ADC2_MspDeInit 0 */
+    186              /* Peripheral clock disable */
+    187              __HAL_RCC_ADC2_CLK_DISABLE();
+    188            
+    189              /**ADC2 GPIO Configuration    
+    190              PA1     ------> ADC2_IN1 
+    191              */
+    192              HAL_GPIO_DeInit(GPIOA, GPIO_PIN_1);
+    193          
+    194              /* ADC2 interrupt DeInit */
+    195            /* USER CODE BEGIN ADC2:ADC1_2_IRQn disable */
+    196              /**
+    197              * Uncomment the line below to disable the "ADC1_2_IRQn" interrupt
+    198              * Be aware, disabling shared interrupt may affect other IPs
+    199              */
+    200              /* HAL_NVIC_DisableIRQ(ADC1_2_IRQn); */
+    201            /* USER CODE END ADC2:ADC1_2_IRQn disable */
+    202          
+    203            /* USER CODE BEGIN ADC2_MspDeInit 1 */
+    204          
+    205            /* USER CODE END ADC2_MspDeInit 1 */
+    206            }
+    207          
+    208          }
+    209          
+    210          /**
+    211          * @brief UART MSP Initialization
+    212          * This function configures the hardware resources used in this example
+    213          * @param huart: UART handle pointer
+    214          * @retval None
+    215          */
+    216          void HAL_UART_MspInit(UART_HandleTypeDef* huart)
+    217          {
+    218            GPIO_InitTypeDef GPIO_InitStruct = {0};
+    219            if(huart->Instance==USART1)
+    220            {
+    221            /* USER CODE BEGIN USART1_MspInit 0 */
+    222          
+    223            /* USER CODE END USART1_MspInit 0 */
+    224              /* Peripheral clock enable */
+    225              __HAL_RCC_USART1_CLK_ENABLE();
+    226            
+    227              __HAL_RCC_GPIOB_CLK_ENABLE();
+    228              /**USART1 GPIO Configuration    
+    229              PB6     ------> USART1_TX
+    230              PB7     ------> USART1_RX 
+    231              */
+    232              GPIO_InitStruct.Pin = GPIO_PIN_6;
+    233              GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    234              GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    235              HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    236          
+    237              GPIO_InitStruct.Pin = GPIO_PIN_7;
+    238              GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    239              GPIO_InitStruct.Pull = GPIO_NOPULL;
+    240              HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    241          
+    242              __HAL_AFIO_REMAP_USART1_ENABLE();
+    243          
+    244              /* USART1 DMA Init */
+    245              /* USART1_RX Init */
+    246              hdma_usart1_rx.Instance = DMA1_Channel5;
+    247              hdma_usart1_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    248              hdma_usart1_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+    249              hdma_usart1_rx.Init.MemInc = DMA_MINC_ENABLE;
+    250              hdma_usart1_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    251              hdma_usart1_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    252              hdma_usart1_rx.Init.Mode = DMA_NORMAL;
+    253              hdma_usart1_rx.Init.Priority = DMA_PRIORITY_VERY_HIGH;
+    254              if (HAL_DMA_Init(&hdma_usart1_rx) != HAL_OK)
+    255              {
+    256                Error_Handler();
+    257              }
+    258          
+    259              __HAL_LINKDMA(huart,hdmarx,hdma_usart1_rx);
+    260          
+    261              /* USART1_TX Init */
+    262              hdma_usart1_tx.Instance = DMA1_Channel4;
+    263              hdma_usart1_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+    264              hdma_usart1_tx.Init.PeriphInc = DMA_PINC_DISABLE;
+    265              hdma_usart1_tx.Init.MemInc = DMA_MINC_ENABLE;
+    266              hdma_usart1_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+    267              hdma_usart1_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+    268              hdma_usart1_tx.Init.Mode = DMA_NORMAL;
+    269              hdma_usart1_tx.Init.Priority = DMA_PRIORITY_LOW;
+    270              if (HAL_DMA_Init(&hdma_usart1_tx) != HAL_OK)
+    271              {
+    272                Error_Handler();
+    273              }
+    274          
+    275              __HAL_LINKDMA(huart,hdmatx,hdma_usart1_tx);
+    276          
+    277              /* USART1 interrupt Init */
+    278              HAL_NVIC_SetPriority(USART1_IRQn, 6, 0);
+    279              HAL_NVIC_EnableIRQ(USART1_IRQn);
+    280            /* USER CODE BEGIN USART1_MspInit 1 */
+    281          
+    282            /* USER CODE END USART1_MspInit 1 */
+    283            }
+    284          
+    285          }
+    286          
+    287          /**
+    288          * @brief UART MSP De-Initialization
+    289          * This function freeze the hardware resources used in this example
+    290          * @param huart: UART handle pointer
+    291          * @retval None
+    292          */
+    293          void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
+    294          {
+    295            if(huart->Instance==USART1)
+    296            {
+    297            /* USER CODE BEGIN USART1_MspDeInit 0 */
+    298          
+    299            /* USER CODE END USART1_MspDeInit 0 */
+    300              /* Peripheral clock disable */
+    301              __HAL_RCC_USART1_CLK_DISABLE();
+    302            
+    303              /**USART1 GPIO Configuration    
+    304              PB6     ------> USART1_TX
+    305              PB7     ------> USART1_RX 
+    306              */
+    307              HAL_GPIO_DeInit(GPIOB, GPIO_PIN_6|GPIO_PIN_7);
+    308          
+    309              /* USART1 DMA DeInit */
+    310              HAL_DMA_DeInit(huart->hdmarx);
+    311              HAL_DMA_DeInit(huart->hdmatx);
+    312          
+    313              /* USART1 interrupt DeInit */
+    314              HAL_NVIC_DisableIRQ(USART1_IRQn);
+    315            /* USER CODE BEGIN USART1_MspDeInit 1 */
+    316          
+    317            /* USER CODE END USART1_MspDeInit 1 */
+    318            }
+    319          
+    320          }
+    321          
+    322          /**
+    323          * @brief PCD MSP Initialization
+    324          * This function configures the hardware resources used in this example
+    325          * @param hpcd: PCD handle pointer
+    326          * @retval None
+    327          */
+    328          void HAL_PCD_MspInit(PCD_HandleTypeDef* hpcd)
+    329          {
+    330            if(hpcd->Instance==USB)
+    331            {
+    332            /* USER CODE BEGIN USB_MspInit 0 */
+    333          
+    334            /* USER CODE END USB_MspInit 0 */
+    335              /* Peripheral clock enable */
+    336              __HAL_RCC_USB_CLK_ENABLE();
+    337            /* USER CODE BEGIN USB_MspInit 1 */
+    338          
+    339            /* USER CODE END USB_MspInit 1 */
+    340            }
+    341          
+    342          }
+    343          
+    344          /**
+    345          * @brief PCD MSP De-Initialization
+    346          * This function freeze the hardware resources used in this example
+    347          * @param hpcd: PCD handle pointer
+    348          * @retval None
+    349          */
+    350          void HAL_PCD_MspDeInit(PCD_HandleTypeDef* hpcd)
+    351          {
+    352            if(hpcd->Instance==USB)
+    353            {
+    354            /* USER CODE BEGIN USB_MspDeInit 0 */
+    355          
+    356            /* USER CODE END USB_MspDeInit 0 */
+    357              /* Peripheral clock disable */
+    358              __HAL_RCC_USB_CLK_DISABLE();
+    359            /* USER CODE BEGIN USB_MspDeInit 1 */
+    360          
+    361            /* USER CODE END USB_MspDeInit 1 */
+    362            }
+    363          
+    364          }
+    365          
+    366          /* USER CODE BEGIN 1 */
+    367          
+    368          /* USER CODE END 1 */
+    369          
+    370          /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       8   HAL_ADC_MspDeInit
+         8   -> HAL_GPIO_DeInit
+      32   HAL_ADC_MspInit
+        32   -> HAL_GPIO_Init
+        32   -> HAL_NVIC_EnableIRQ
+        32   -> HAL_NVIC_SetPriority
+        32   -> memset
+       8   HAL_MspInit
+         8   -> HAL_NVIC_SetPriority
+       0   HAL_PCD_MspDeInit
+       4   HAL_PCD_MspInit
+       8   HAL_UART_MspDeInit
+         8   -> HAL_DMA_DeInit
+         8   -> HAL_GPIO_DeInit
+         8   -> HAL_NVIC_DisableIRQ
+      32   HAL_UART_MspInit
+        32   -> Error_Handler
+        32   -> HAL_DMA_Init
+        32   -> HAL_GPIO_Init
+        32   -> HAL_NVIC_EnableIRQ
+        32   -> HAL_NVIC_SetPriority
+        32   -> memset
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable6
+       4  ??DataTable6_1
+       4  ??DataTable6_10
+       4  ??DataTable6_11
+       4  ??DataTable6_12
+       4  ??DataTable6_2
+       4  ??DataTable6_3
+       4  ??DataTable6_4
+       4  ??DataTable6_5
+       4  ??DataTable6_6
+       4  ??DataTable6_7
+       4  ??DataTable6_8
+       4  ??DataTable6_9
+      60  HAL_ADC_MspDeInit
+     178  HAL_ADC_MspInit
+      66  HAL_MspInit
+      20  HAL_PCD_MspDeInit
+      34  HAL_PCD_MspInit
+      50  HAL_UART_MspDeInit
+     244  HAL_UART_MspInit
+
+ 
+ 704 bytes in section .text
+ 
+ 704 bytes of CODE memory
+
+Errors: none
+Warnings: none

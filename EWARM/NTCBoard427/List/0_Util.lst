@@ -1,0 +1,405 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.40.1.212/W32 for ARM         06/Sep/2019  23:26:44
+# Copyright 1999-2019 IAR Systems AB.
+#
+#    Cpu mode     =  
+#    Endian       =  little
+#    Source file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_Util.c
+#    Command line =
+#        -f C:\Users\ilkorea\AppData\Local\Temp\EW7BE4.tmp
+#        (D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_Util.c
+#        -D USE_HAL_DRIVER -D STM32F103xB -lc
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List
+#        -o
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.3\arm\inc\c\DLib_Config_Full.h"
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Device/ST/STM32F1xx/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/SEGGER\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9/Config\
+#        -On -I "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.3\arm\CMSIS\Core\Include\" -I "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.3\arm\CMSIS\DSP\Include\")
+#    Locale       =  C
+#    List file    =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List\0_Util.lst
+#    Object file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj\0_Util.o
+#
+###############################################################################
+
+D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_Util.c
+      1          #include "0_Util.h"
+      2          
+      3          uint8_t *bytes;
+      4          uint8_t BuzzerEnable;
+      5          
+      6          
+      7          GPIO_TypeDef * 	LED[16] = {	LED_01_GPIO_Port,	LED_02_GPIO_Port,	LED_03_GPIO_Port,	LED_04_GPIO_Port,
+      8          														LED_05_GPIO_Port,	LED_06_GPIO_Port,	LED_07_GPIO_Port,	LED_08_GPIO_Port,
+      9          														LED_09_GPIO_Port,	LED_10_GPIO_Port,	LED_11_GPIO_Port,	LED_12_GPIO_Port,
+     10          														LED_13_GPIO_Port,	LED_14_GPIO_Port,	LED_15_GPIO_Port,	LED_16_GPIO_Port };
+     11          uint16_t LED_PIN[16] = { 		LED_01_Pin,				LED_02_Pin,				LED_03_Pin,				LED_04_Pin,
+     12          														LED_05_Pin,				LED_06_Pin,				LED_07_Pin,				LED_08_Pin,
+     13          														LED_09_Pin,				LED_10_Pin,				LED_11_Pin,				LED_12_Pin,
+     14          														LED_13_Pin,				LED_14_Pin,				LED_15_Pin,				LED_16_Pin };
+     15          
+     16          
+     17          /*********************************************************************
+     18          *	 ByteArrayToFloat
+     19          *  String 를 배열로 복사 한다. 복사한 뒤 남은 배열은 0으로 초기화 한다.
+     20          *  byteArray			: 원본 배열을 받는다. 4바이트 
+     21          *	 return	    		: float 로 변환하여 반환 한다. 
+     22          **********************************************************************/
+     23          float ByteArrayToFloat(uint8_t *byteArray)
+     24          {
+     25          //	uint8_t data[4] = {0, 0, 0, 0};
+     26          	bytes = byteArray;
+     27          	uint32_t res = 0.0;
+     28          
+     29          	res  =  ((uint32_t)*byteArray 
+     30          				| ((uint32_t)*(byteArray + 1) << 8) 
+     31          				| ((uint32_t)*(byteArray + 2) << 16) 
+     32          				| ((uint32_t)*(byteArray + 3) << 24));
+     33          
+     34          	return	*((float*)&res);
+     35          }
+     36          
+     37          /*********************************************************************
+     38          *	 StringCopyToArray
+     39          *  String 를 배열로 복사 한다. 복사한 뒤 남은 배열은 0으로 초기화 한다.
+     40          *  TagetArray			: 이곳으로 복사한다.
+     41          *  OriginalString : 이것을 복사한다.
+     42          *  CopyLength     : 복사할 길이
+     43          *	 TotalLength    : 타겟 배열의 총 길이 
+     44          **********************************************************************/
+     45          uint8_t CopyToArray(	uint8_t* TagetArray, 	uint8_t* OriginalString, 
+     46          							uint8_t CopyLength, 	uint8_t TotalLength)
+     47          {
+     48          	uint8_t i = 0; 
+     49          
+     50          	for(i = 0; i < TotalLength; i++)
+     51          	{
+     52          		if(i < CopyLength)
+     53          		{
+     54          			*TagetArray++ = *OriginalString++;
+     55          		}
+     56          		else
+     57          		{
+     58          			*TagetArray++ = 0;
+     59          		}
+     60          	}
+     61          
+     62          	return TRUE;
+     63          }
+     64          
+     65          /*********************************************************************
+     66          *	doMakeSendData
+     67          *	명령을 받앗ㅅ을때 리턴해주는 문자열 생성 함수 
+     68          *	SendData		: 이곳으로 문자열을 생성한다.
+     69          *	Command 		: 1번 바이트의 command 의 바이트를 받는다. (0번 바이트부터 시작)
+     70          *	Data    		: 2번부터 기록될 문자열을 받는다.
+     71          *	DataLength		: Data 의 길이를 받는다.
+     72          *	BufferLength	: 전체 SendData의 길이를 받는다. etx의 위치를 확인 
+     73          **********************************************************************/
+     74          #if 0
+     75          void doMakeSendData(  uint8_t* SendData,  uint8_t Command, 
+     76                                      uint8_t* Data,      
+     77                                      uint8_t  DataLength,  uint8_t BufferLength)
+     78          {
+     79            //uint8_t i;
+     80            uniInt16 crc;
+     81            
+     82            *SendData++ = CMD_STX;
+     83            *SendData++ = Command;
+     84            CopyToArray(SendData, Data, DataLength, DATA_FULL_LENGTH);  
+     85            SendData += 5;
+     86          
+     87            crc.UI16 =  CRC16_Make(&SendData[0], DATA_FULL_LENGTH + 1);
+     88          
+     89            *SendData++ = crc.UI8[0];
+     90            *SendData++ = crc.UI8[1];
+     91            
+     92            *SendData = CMD_ETX;
+     93          }
+     94          #endif 
+     95          
+     96          void doMakeSendSlotData(	uint8_t* SendData,	    uint8_t SlotNumber,
+     97                                          uint8_t Command, 		uint8_t* Data, 			
+     98          							    uint8_t  DataLength,	uint8_t BufferLength)
+     99          {
+    100          	//uint8_t i;
+    101          	uniInt16 crc;
+    102          	
+    103          	*SendData++ = CMD_STX;
+    104          	*SendData++ = SlotNumber;
+    105          	*SendData++ = Command;
+    106          	CopyToArray(SendData, Data, DataLength, DATA_FULL_LENGTH);	
+    107          	SendData -= 2;
+    108          
+    109          	crc.UI16 =	CRC16_Make(&SendData[0], BufferLength - 4);
+    110          	SendData += (BufferLength - 4);
+    111          
+    112          	*SendData++ = crc.UI8[0];
+    113          	*SendData++ = crc.UI8[1];
+    114          	
+    115          	*SendData = CMD_ETX;
+    116          }
+    117          
+    118          void doMakeSendTempData(    uint8_t* SendData,  uint8_t Command, 
+    119                                              uint8_t* Data,      
+    120                                              uint8_t  DataLength,  uint8_t BufferLength)
+    121          {
+    122            //uint8_t i;
+    123            uniInt16 crc;
+    124            
+    125            *SendData++ = CMD_STX;
+    126            *SendData++ = SysProperties.boardID;
+    127            *SendData++ = Command;
+    128            CopyToArray(SendData, Data, DataLength, BufferLength - 4);  
+    129            SendData -= 2;
+    130          
+    131            crc.UI16 =  CRC16_Make(&SendData[0], BufferLength - 4);
+    132            SendData += (BufferLength - 4);
+    133          
+    134            *SendData++ = crc.UI8[0];
+    135            *SendData++ = crc.UI8[1];
+    136            
+    137            *SendData = CMD_ETX;
+    138          }
+    139          
+    140          /*********************************************************************
+    141          *	doNOP
+    142          *  	NOP 명령 반복 루틴
+    143          *  	count	 : 16비트 카운트 
+    144          **********************************************************************/
+    145          void doNOP(uint16_t count)
+    146          {
+    147          	uint16_t i;
+    148          	for(i = 0; i < count; i++)
+    149          		asm("NOP");
+    150          }
+    151          
+    152          uint32_t midADC(uint32_t * inData) /* using Bubble sort */ 
+    153          {
+    154          	uint8_t 	i, j; 
+    155          	uint32_t	sortData[11];
+    156          
+    157          	sortData[0] 	= *(inData++);
+    158          	sortData[1] 	= *(inData++);
+    159          	sortData[2] 	= *(inData++);
+    160          	sortData[3] 	= *(inData++);
+    161          	sortData[4] 	= *(inData++);
+    162          	sortData[5] 	= *(inData++);
+    163          	sortData[6] 	= *(inData++);
+    164          	sortData[7] 	= *(inData++);
+    165          	sortData[8] 	= *(inData++);
+    166          	sortData[9] 	= *(inData++);
+    167          	sortData[10]	= *(inData);
+    168          
+    169          	for(i = 0; i < 11 - 1; ++i) 
+    170          	{ 
+    171          		for(j = 11 - 1; i < j; --j) 
+    172          		{
+    173          			if(sortData[j - 1] > sortData[j]) 
+    174          				swap(&sortData[j - 1], &sortData[j]); 
+    175          		} 
+    176          	} 
+    177          	return sortData[6]; 
+    178          }
+    179          
+    180          void swap(uint32_t *a, uint32_t *b) 
+    181          { 
+    182          	uint32_t tmp = *a; 
+    183          	*a = *b; 
+    184          	*b = tmp; 
+    185          }
+    186          
+    187          void doLedDisplay(uint8_t channel, uint8_t state)
+    188          {
+    189          	HAL_GPIO_WritePin(LED[channel], LED_PIN[channel], (GPIO_PinState)state);
+    190          }
+    191          
+    192          void doRelayPlay(uint8_t state)
+    193          {
+    194          	if(state == _ON)
+    195          	{
+    196          		HAL_GPIO_WritePin(RELAY_SEL_GPIO_Port, RELAY_SEL_Pin, _RELAY_ON);
+    197          		HAL_GPIO_WritePin(LED_RELAY_GPIO_Port, LED_RELAY_Pin, _LED_ON);
+    198          		SysProperties.relayState = 1;
+    199          	}	
+    200          	else
+    201          	{
+    202          		HAL_GPIO_WritePin(RELAY_SEL_GPIO_Port, RELAY_SEL_Pin, _RELAY_OFF);
+    203          		HAL_GPIO_WritePin(LED_RELAY_GPIO_Port, LED_RELAY_Pin, _LED_OFF);
+    204          		SysProperties.relayState = 0;
+    205          	}
+    206          }
+    207          
+    208          // CRC16 
+    209          uint16_t CRC16_Make(uint8_t *byMsg, uint16_t len)
+    210          {
+    211          	uint16_t crc = 0xFFFF;
+    212              uint16_t i;
+    213              uint8_t  j;
+    214              
+    215          	for (i = 0; i < len; i++)
+    216          	{
+    217          		crc ^= byMsg[i];
+    218          		for (j = 0; j < 8; j++)
+    219          		{
+    220          			uint16_t flag = (uint16_t)(crc & 0x0001);
+    221          			crc >>= 1;
+    222          			if (flag > 0) crc ^= 0xA001;
+    223          		}
+    224          	}
+    225          	return crc;
+    226          }
+    227          
+    228          /*-----------------------------------------------------------------------*/
+    229          /* String functions                                                      */
+    230          /*-----------------------------------------------------------------------*/
+    231          
+    232          /* Copy memory to memory */
+    233          void util_mem_cpy (void* dst, const void* src, UINT cnt) {
+    234          	BYTE *d = (BYTE*)dst;
+    235          	const BYTE *s = (const BYTE*)src;
+    236          
+    237          	if (cnt) {
+    238          		do {
+    239          			*d++ = *s++;
+    240          		} while (--cnt);
+    241          	}
+    242          }
+    243          
+    244          /* Fill memory block */
+    245          void util_mem_set (void* dst, int val, UINT cnt) {
+    246          	BYTE *d = (BYTE*)dst;
+    247          
+    248          	do {
+    249          		*d++ = (BYTE)val;
+    250          	} while (--cnt);
+    251          }
+    252          
+    253          
+    254          void doFindMyID(void)
+    255          {
+    256          	while(1)
+    257          	{
+    258          		if( (HAL_GPIO_ReadPin(SLOT_EN_00_GPIO_Port, SLOT_EN_00_Pin) == GPIO_PIN_RESET) || 
+    259          			(HAL_GPIO_ReadPin(SLOT_EN_01_GPIO_Port, SLOT_EN_01_Pin) == GPIO_PIN_RESET) || 
+    260          			(HAL_GPIO_ReadPin(SLOT_EN_02_GPIO_Port, SLOT_EN_02_Pin) == GPIO_PIN_RESET) || 
+    261          			(HAL_GPIO_ReadPin(SLOT_EN_03_GPIO_Port, SLOT_EN_03_Pin) == GPIO_PIN_RESET) )
+    262          		{
+    263          			break;
+    264          		}
+    265          	}
+    266          
+    267          	if(HAL_GPIO_ReadPin(SLOT_EN_00_GPIO_Port, SLOT_EN_00_Pin) == GPIO_PIN_RESET)
+    268          	{
+    269          		SysProperties.boardID = '0';	//0: 사용 설정 안됨, 1 ~ 4 슬롯으로 설정 해야 함
+    270          	}
+    271          	else if(HAL_GPIO_ReadPin(SLOT_EN_01_GPIO_Port, SLOT_EN_01_Pin) == GPIO_PIN_RESET)
+    272          	{
+    273          		SysProperties.boardID = '1';	//0: 사용 설정 안됨, 1 ~ 4 슬롯으로 설정 해야 함
+    274          	}
+    275          	else if(HAL_GPIO_ReadPin(SLOT_EN_02_GPIO_Port, SLOT_EN_02_Pin) == GPIO_PIN_RESET)
+    276          	{
+    277          		SysProperties.boardID = '2';	//0: 사용 설정 안됨, 1 ~ 4 슬롯으로 설정 해야 함
+    278          	}
+    279          	else if(HAL_GPIO_ReadPin(SLOT_EN_03_GPIO_Port, SLOT_EN_03_Pin) == GPIO_PIN_RESET)
+    280          	{
+    281          		SysProperties.boardID = '3';	//0: 사용 설정 안됨, 1 ~ 4 슬롯으로 설정 해야 함
+    282          	}
+    283          }
+    284          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       0   ByteArrayToFloat
+      12   CRC16_Make
+      12   CopyToArray
+       8   doFindMyID
+         8   -> HAL_GPIO_ReadPin
+      16   doLedDisplay
+        16   -> HAL_GPIO_WritePin
+      32   doMakeSendSlotData
+        32   -> CRC16_Make
+        32   -> CopyToArray
+      32   doMakeSendTempData
+        32   -> CRC16_Make
+        32   -> CopyToArray
+       0   doNOP
+       8   doRelayPlay
+         8   -> HAL_GPIO_WritePin
+      64   midADC
+        64   -> swap
+       0   swap
+       8   util_mem_cpy
+       0   util_mem_set
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable4
+       4  ??DataTable4_1
+       4  ??DataTable4_2
+       4  ??DataTable4_3
+       4  ??DataTable4_4
+       4  ??DataTable4_5
+       4  ??DataTable4_6
+       1  BuzzerEnable
+      30  ByteArrayToFloat
+      82  CRC16_Make
+      58  CopyToArray
+      64  LED
+      32  LED_PIN
+       4  bytes
+     132  doFindMyID
+      36  doLedDisplay
+      98  doMakeSendSlotData
+     102  doMakeSendTempData
+      22  doNOP
+      76  doRelayPlay
+     162  midADC
+      10  swap
+      28  util_mem_cpy
+      14  util_mem_set
+
+ 
+   5 bytes in section .bss
+  96 bytes in section .data
+ 878 bytes in section .text
+ 
+ 878 bytes of CODE memory
+ 101 bytes of DATA memory
+
+Errors: none
+Warnings: none

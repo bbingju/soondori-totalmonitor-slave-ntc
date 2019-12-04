@@ -1,0 +1,888 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.40.1.212/W32 for ARM         06/Sep/2019  23:26:45
+# Copyright 1999-2019 IAR Systems AB.
+#
+#    Cpu mode     =  
+#    Endian       =  little
+#    Source file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\main.c
+#    Command line =
+#        -f C:\Users\ilkorea\AppData\Local\Temp\EW7DEE.tmp
+#        (D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\main.c
+#        -D USE_HAL_DRIVER -D STM32F103xB -lc
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List
+#        -o
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.3\arm\inc\c\DLib_Config_Full.h"
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Device/ST/STM32F1xx/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/SEGGER\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9/Config\
+#        -On -I "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.3\arm\CMSIS\Core\Include\" -I "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.3\arm\CMSIS\DSP\Include\")
+#    Locale       =  C
+#    List file    =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List\main.lst
+#    Object file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj\main.o
+#
+###############################################################################
+
+D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\main.c
+      1          /* USER CODE BEGIN Header */
+      2          /**
+      3            ******************************************************************************
+      4            * @file           : main.c
+      5            * @brief          : Main program body
+      6            ******************************************************************************
+      7            * @attention
+      8            *
+      9            * <h2><center>&copy; Copyright (c) 2019 STMicroelectronics.
+     10            * All rights reserved.</center></h2>
+     11            *
+     12            * This software component is licensed by ST under Ultimate Liberty license
+     13            * SLA0044, the "License"; You may not use this file except in compliance with
+     14            * the License. You may obtain a copy of the License at:
+     15            *                             www.st.com/SLA0044
+     16            *
+     17            ******************************************************************************
+     18            */
+     19          /* USER CODE END Header */
+     20          
+     21          /* Includes ------------------------------------------------------------------*/
+     22          #include "main.h"
+     23          #include "cmsis_os.h"
+     24          
+     25          /* Private includes ----------------------------------------------------------*/
+     26          /* USER CODE BEGIN Includes */
+     27          #include "0_GlobalValue.h"
+     28          #include "0_GlobalDefine.h"
+     29          #include "0_StartDisplayTask.h"
+     30          #include "0_StartSensorTask.h"
+     31          #include "0_StartUartTask.h"
+     32          #include "0_Util.h"
+     33          #include "0_soonFlashMemory.h"
+     34          
+     35              
+     36          /* USER CODE END Includes */
+     37          
+     38          /* Private typedef -----------------------------------------------------------*/
+     39          /* USER CODE BEGIN PTD */
+     40          
+     41          /* USER CODE END PTD */
+     42          
+     43          /* Private define ------------------------------------------------------------*/
+     44          /* USER CODE BEGIN PD */
+     45          
+     46          /* USER CODE END PD */
+     47          
+     48          /* Private macro -------------------------------------------------------------*/
+     49          /* USER CODE BEGIN PM */
+     50          
+     51          /* USER CODE END PM */
+     52          
+     53          /* Private variables ---------------------------------------------------------*/
+     54          ADC_HandleTypeDef hadc1;
+     55          ADC_HandleTypeDef hadc2;
+     56          
+     57          UART_HandleTypeDef huart1;
+     58          DMA_HandleTypeDef hdma_usart1_rx;
+     59          DMA_HandleTypeDef hdma_usart1_tx;
+     60          
+     61          PCD_HandleTypeDef hpcd_USB_FS;
+     62          
+     63          osThreadId sensorTaskHandle;
+     64          osThreadId displayTaskHandle;
+     65          osThreadId uartTaskHandle;
+     66          osSemaphoreId myAdcBinarySemHandle;
+     67          osSemaphoreId BinarySemUartTxHandle;
+     68          osSemaphoreId CountingSemUartRxHandle;
+     69          /* USER CODE BEGIN PV */
+     70          /* Private variables ---------------------------------------------------------*/
+     71          SYSTEM_STRUCT SysProperties;
+     72          
+     73          /* USER CODE END PV */
+     74          
+     75          /* Private function prototypes -----------------------------------------------*/
+     76          void SystemClock_Config(void);
+     77          static void MX_GPIO_Init(void);
+     78          static void MX_DMA_Init(void);
+     79          static void MX_ADC1_Init(void);
+     80          static void MX_ADC2_Init(void);
+     81          static void MX_USART1_UART_Init(void);
+     82          static void MX_USB_PCD_Init(void);
+     83          void StartSensorTask(void const * argument);
+     84          void StartDisplayTask(void const * argument);
+     85          void StartUartTask(void const * argument);
+     86          
+     87          /* USER CODE BEGIN PFP */
+     88          /* Private function prototypes -----------------------------------------------*/
+     89          
+     90          /* USER CODE END PFP */
+     91          
+     92          /* Private user code ---------------------------------------------------------*/
+     93          /* USER CODE BEGIN 0 */
+     94          
+     95          /* USER CODE END 0 */
+     96          
+     97          /**
+     98            * @brief  The application entry point.
+     99            * @retval int
+    100            */
+    101          int main(void)
+    102          {
+    103            /* USER CODE BEGIN 1 */
+    104          	uint8_t   	i;
+    105          	char      	number[5] = "1.000";
+    106          	//uint32_t	flashError = 0;
+    107          	uint32_t 	read = 0;
+    108          
+    109            /* USER CODE END 1 */
+    110            
+    111          
+    112            /* MCU Configuration--------------------------------------------------------*/
+    113          
+    114            /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+    115            HAL_Init();
+    116          
+    117            /* USER CODE BEGIN Init */
+    118          
+    119            /* USER CODE END Init */
+    120          
+    121            /* Configure the system clock */
+    122            SystemClock_Config();
+    123          
+    124            /* USER CODE BEGIN SysInit */
+    125          
+    126            /* USER CODE END SysInit */
+    127          
+    128            /* Initialize all configured peripherals */
+    129            MX_GPIO_Init();
+    130            MX_DMA_Init();
+    131            MX_ADC1_Init();
+    132            MX_ADC2_Init();
+    133            MX_USART1_UART_Init();
+    134            MX_USB_PCD_Init();
+    135            /* USER CODE BEGIN 2 */
+    136          	SysProperties.boardType[0] = SBT_NTC;
+    137          	SysProperties.boardEnable = ENABLE;
+    138          
+    139          	for(i = 0; i < 5; i++)
+    140          	{
+    141          	SysProperties.hwVersion[i].cChar= number[i];
+    142          	SysProperties.fwVersion[i].cChar= number[i];
+    143          	}
+    144          	HAL_GetUID(&SysProperties.uuid[0].u32_Value);
+    145          
+    146          	doRelayPlay(_OFF);
+    147          
+    148          	for(i = 0; i < 16; i++)
+    149          	{	
+    150          		doLedDisplay(i, _LED_OFF);	//LED Reset
+    151          	}
+    152          
+    153          	read = ReadFlash(FLASH_SAVE_CHK);
+    154          	if(read != FLASH_SAVE_FLAG)		//플래시에 기록이 없을경우 
+    155          	{
+    156          		DoValueFormating();		
+    157          		doFlashWriteRevision();
+    158          	}
+    159          	else		//Flash 에 저장된 값이 없는경우 
+    160          	{
+    161          		DoLoadFlash();		
+    162          	}
+    163          
+    164          	TestData.overTempFlag[i]			= TM_NORMAL_TEMP;
+    165          	TestData.displayModeFlag[i] 		= LDM_NORMAL_TEMP;
+    166          	TestData.displayModeChangeCount[i]	= 0;
+    167          
+    168          	//todo id는 자동으로 들어가야 한다. 밷플레이트를 변경하고 ntc보드에서 칩셀렉트 핀을 4개로 만들어서 변경할 이다. 
+    169          	HAL_GPIO_WritePin(BUFFER_EN0_GPIO_Port, BUFFER_EN0_Pin, GPIO_PIN_RESET);
+    170          	HAL_GPIO_WritePin(BUFFER_EN1_GPIO_Port, BUFFER_EN1_Pin, GPIO_PIN_RESET);
+    171          
+    172          	//SysProperties.boardID = '3';	//0: 사용 설정 안됨, 1 ~ 4 슬롯으로 설정 해야 함
+    173          
+    174            /* USER CODE END 2 */
+    175          
+    176            /* USER CODE BEGIN RTOS_MUTEX */
+    177          	/* add mutexes, ... */
+    178            /* USER CODE END RTOS_MUTEX */
+    179          
+    180            /* Create the semaphores(s) */
+    181            /* definition and creation of myAdcBinarySem */
+    182            osSemaphoreDef(myAdcBinarySem);
+    183            myAdcBinarySemHandle = osSemaphoreCreate(osSemaphore(myAdcBinarySem), 1);
+    184          
+    185            /* definition and creation of BinarySemUartTx */
+    186            osSemaphoreDef(BinarySemUartTx);
+    187            BinarySemUartTxHandle = osSemaphoreCreate(osSemaphore(BinarySemUartTx), 1);
+    188          
+    189            /* definition and creation of CountingSemUartRx */
+    190            osSemaphoreDef(CountingSemUartRx);
+    191            CountingSemUartRxHandle = osSemaphoreCreate(osSemaphore(CountingSemUartRx), 5);
+    192          
+    193            /* USER CODE BEGIN RTOS_SEMAPHORES */
+    194          	/* add semaphores, ... */
+    195            /* USER CODE END RTOS_SEMAPHORES */
+    196          
+    197            /* USER CODE BEGIN RTOS_TIMERS */
+    198          	/* start timers, add new ones, ... */
+    199            /* USER CODE END RTOS_TIMERS */
+    200          
+    201            /* USER CODE BEGIN RTOS_QUEUES */
+    202          	/* add queues, ... */
+    203            /* USER CODE END RTOS_QUEUES */
+    204          
+    205            /* Create the thread(s) */
+    206            /* definition and creation of sensorTask */
+    207            osThreadDef(sensorTask, StartSensorTask, osPriorityLow, 0, 128);
+    208            sensorTaskHandle = osThreadCreate(osThread(sensorTask), NULL);
+    209          
+    210            /* definition and creation of displayTask */
+    211            osThreadDef(displayTask, StartDisplayTask, osPriorityBelowNormal, 0, 128);
+    212            displayTaskHandle = osThreadCreate(osThread(displayTask), NULL);
+    213          
+    214            /* definition and creation of uartTask */
+    215            osThreadDef(uartTask, StartUartTask, osPriorityAboveNormal, 0, 200);
+    216            uartTaskHandle = osThreadCreate(osThread(uartTask), NULL);
+    217          
+    218            /* USER CODE BEGIN RTOS_THREADS */
+    219          	/* add threads, ... */
+    220            /* USER CODE END RTOS_THREADS */
+    221          
+    222            /* Start scheduler */
+    223            osKernelStart();
+    224            
+    225            /* We should never get here as control is now taken by the scheduler */
+    226          
+    227            /* Infinite loop */
+    228            /* USER CODE BEGIN WHILE */
+    229          	while (1)
+    230          	{
+    231              /* USER CODE END WHILE */
+    232          
+    233              /* USER CODE BEGIN 3 */
+    234          
+    235          	}
+    236            /* USER CODE END 3 */
+    237          }
+    238          
+    239          /**
+    240            * @brief System Clock Configuration
+    241            * @retval None
+    242            */
+    243          void SystemClock_Config(void)
+    244          {
+    245            RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+    246            RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+    247            RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
+    248          
+    249            /** Initializes the CPU, AHB and APB busses clocks 
+    250            */
+    251            RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+    252            RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+    253            RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+    254            RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+    255            RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+    256            RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+    257            RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+    258            if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+    259            {
+    260              Error_Handler();
+    261            }
+    262            /** Initializes the CPU, AHB and APB busses clocks 
+    263            */
+    264            RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+    265                                        |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+    266            RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+    267            RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+    268            RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+    269            RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+    270          
+    271            if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+    272            {
+    273              Error_Handler();
+    274            }
+    275            PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC|RCC_PERIPHCLK_USB;
+    276            PeriphClkInit.AdcClockSelection = RCC_ADCPCLK2_DIV6;
+    277            PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_PLL_DIV1_5;
+    278            if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
+    279            {
+    280              Error_Handler();
+    281            }
+    282          }
+    283          
+    284          /**
+    285            * @brief ADC1 Initialization Function
+    286            * @param None
+    287            * @retval None
+    288            */
+    289          static void MX_ADC1_Init(void)
+    290          {
+    291          
+    292            /* USER CODE BEGIN ADC1_Init 0 */
+    293          
+    294            /* USER CODE END ADC1_Init 0 */
+    295          
+    296            ADC_ChannelConfTypeDef sConfig = {0};
+    297          
+    298            /* USER CODE BEGIN ADC1_Init 1 */
+    299          
+    300            /* USER CODE END ADC1_Init 1 */
+    301            /** Common config 
+    302            */
+    303            hadc1.Instance = ADC1;
+    304            hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+    305            hadc1.Init.ContinuousConvMode = DISABLE;
+    306            hadc1.Init.DiscontinuousConvMode = DISABLE;
+    307            hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+    308            hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+    309            hadc1.Init.NbrOfConversion = 1;
+    310            if (HAL_ADC_Init(&hadc1) != HAL_OK)
+    311            {
+    312              Error_Handler();
+    313            }
+    314            /** Configure Regular Channel 
+    315            */
+    316            sConfig.Channel = ADC_CHANNEL_0;
+    317            sConfig.Rank = ADC_REGULAR_RANK_1;
+    318            sConfig.SamplingTime = ADC_SAMPLETIME_55CYCLES_5;
+    319            if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+    320            {
+    321              Error_Handler();
+    322            }
+    323            /* USER CODE BEGIN ADC1_Init 2 */
+    324          
+    325            /* USER CODE END ADC1_Init 2 */
+    326          
+    327          }
+    328          
+    329          /**
+    330            * @brief ADC2 Initialization Function
+    331            * @param None
+    332            * @retval None
+    333            */
+    334          static void MX_ADC2_Init(void)
+    335          {
+    336          
+    337            /* USER CODE BEGIN ADC2_Init 0 */
+    338          
+    339            /* USER CODE END ADC2_Init 0 */
+    340          
+    341            ADC_ChannelConfTypeDef sConfig = {0};
+    342          
+    343            /* USER CODE BEGIN ADC2_Init 1 */
+    344          
+    345            /* USER CODE END ADC2_Init 1 */
+    346            /** Common config 
+    347            */
+    348            hadc2.Instance = ADC2;
+    349            hadc2.Init.ScanConvMode = ADC_SCAN_DISABLE;
+    350            hadc2.Init.ContinuousConvMode = DISABLE;
+    351            hadc2.Init.DiscontinuousConvMode = DISABLE;
+    352            hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+    353            hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+    354            hadc2.Init.NbrOfConversion = 1;
+    355            if (HAL_ADC_Init(&hadc2) != HAL_OK)
+    356            {
+    357              Error_Handler();
+    358            }
+    359            /** Configure Regular Channel 
+    360            */
+    361            sConfig.Channel = ADC_CHANNEL_1;
+    362            sConfig.Rank = ADC_REGULAR_RANK_1;
+    363            sConfig.SamplingTime = ADC_SAMPLETIME_55CYCLES_5;
+    364            if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+    365            {
+    366              Error_Handler();
+    367            }
+    368            /* USER CODE BEGIN ADC2_Init 2 */
+    369          
+    370            /* USER CODE END ADC2_Init 2 */
+    371          
+    372          }
+    373          
+    374          /**
+    375            * @brief USART1 Initialization Function
+    376            * @param None
+    377            * @retval None
+    378            */
+    379          static void MX_USART1_UART_Init(void)
+    380          {
+    381          
+    382            /* USER CODE BEGIN USART1_Init 0 */
+    383          
+    384            /* USER CODE END USART1_Init 0 */
+    385          
+    386            /* USER CODE BEGIN USART1_Init 1 */
+    387          
+    388            /* USER CODE END USART1_Init 1 */
+    389            huart1.Instance = USART1;
+    390            huart1.Init.BaudRate = 921600;
+    391            huart1.Init.WordLength = UART_WORDLENGTH_8B;
+    392            huart1.Init.StopBits = UART_STOPBITS_1;
+    393            huart1.Init.Parity = UART_PARITY_NONE;
+    394            huart1.Init.Mode = UART_MODE_TX_RX;
+    395            huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+    396            huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+    397            if (HAL_UART_Init(&huart1) != HAL_OK)
+    398            {
+    399              Error_Handler();
+    400            }
+    401            /* USER CODE BEGIN USART1_Init 2 */
+    402          
+    403            /* USER CODE END USART1_Init 2 */
+    404          
+    405          }
+    406          
+    407          /**
+    408            * @brief USB Initialization Function
+    409            * @param None
+    410            * @retval None
+    411            */
+    412          static void MX_USB_PCD_Init(void)
+    413          {
+    414          
+    415            /* USER CODE BEGIN USB_Init 0 */
+    416          
+    417            /* USER CODE END USB_Init 0 */
+    418          
+    419            /* USER CODE BEGIN USB_Init 1 */
+    420          
+    421            /* USER CODE END USB_Init 1 */
+    422            hpcd_USB_FS.Instance = USB;
+    423            hpcd_USB_FS.Init.dev_endpoints = 8;
+    424            hpcd_USB_FS.Init.speed = PCD_SPEED_FULL;
+    425            hpcd_USB_FS.Init.low_power_enable = DISABLE;
+    426            hpcd_USB_FS.Init.lpm_enable = DISABLE;
+    427            hpcd_USB_FS.Init.battery_charging_enable = DISABLE;
+    428            if (HAL_PCD_Init(&hpcd_USB_FS) != HAL_OK)
+    429            {
+    430              Error_Handler();
+    431            }
+    432            /* USER CODE BEGIN USB_Init 2 */
+    433          
+    434            /* USER CODE END USB_Init 2 */
+    435          
+    436          }
+    437          
+    438          /** 
+    439            * Enable DMA controller clock
+    440            */
+    441          static void MX_DMA_Init(void) 
+    442          {
+    443            /* DMA controller clock enable */
+    444            __HAL_RCC_DMA1_CLK_ENABLE();
+    445          
+    446            /* DMA interrupt init */
+    447            /* DMA1_Channel4_IRQn interrupt configuration */
+    448            HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 5, 0);
+    449            HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
+    450            /* DMA1_Channel5_IRQn interrupt configuration */
+    451            HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 5, 0);
+    452            HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
+    453          
+    454          }
+    455          
+    456          /**
+    457            * @brief GPIO Initialization Function
+    458            * @param None
+    459            * @retval None
+    460            */
+    461          static void MX_GPIO_Init(void)
+    462          {
+    463            GPIO_InitTypeDef GPIO_InitStruct = {0};
+    464          
+    465            /* GPIO Ports Clock Enable */
+    466            __HAL_RCC_GPIOC_CLK_ENABLE();
+    467            __HAL_RCC_GPIOD_CLK_ENABLE();
+    468            __HAL_RCC_GPIOA_CLK_ENABLE();
+    469            __HAL_RCC_GPIOB_CLK_ENABLE();
+    470          
+    471            /*Configure GPIO pin Output Level */
+    472            HAL_GPIO_WritePin(GPIOC, BUFFER_EN1_Pin|MUX_ADD0_Pin|MUX_ADD1_Pin|MUX_ADD2_Pin 
+    473                                    |MUX_ADD3_Pin, GPIO_PIN_RESET);
+    474          
+    475            /*Configure GPIO pin Output Level */
+    476            HAL_GPIO_WritePin(BUFFER_EN0_GPIO_Port, BUFFER_EN0_Pin, GPIO_PIN_RESET);
+    477          
+    478            /*Configure GPIO pin Output Level */
+    479            HAL_GPIO_WritePin(GPIOB, LED_12_Pin|LED_13_Pin|LED_14_Pin|LED_02_Pin 
+    480                                    |LED_03_Pin|LED_04_Pin, GPIO_PIN_SET);
+    481          
+    482            /*Configure GPIO pin Output Level */
+    483            HAL_GPIO_WritePin(GPIOB, MUX_EN0_Pin|MUX_EN1_Pin|LED_01_Pin|DEBUGE_TO_MCU_Pin 
+    484                                    |UART1_TX_EN_Pin, GPIO_PIN_RESET);
+    485          
+    486            /*Configure GPIO pin Output Level */
+    487            HAL_GPIO_WritePin(GPIOC, LED_05_Pin|LED_06_Pin|LED_07_Pin|LED_08_Pin 
+    488                                    |LED_15_Pin|LED_16_Pin|LED_RELAY_Pin, GPIO_PIN_SET);
+    489          
+    490            /*Configure GPIO pin Output Level */
+    491            HAL_GPIO_WritePin(GPIOA, LED_09_Pin|LED_10_Pin|LED_11_Pin, GPIO_PIN_SET);
+    492          
+    493            /*Configure GPIO pin Output Level */
+    494            HAL_GPIO_WritePin(RELAY_SEL_GPIO_Port, RELAY_SEL_Pin, GPIO_PIN_SET);
+    495          
+    496            /*Configure GPIO pin : BUFFER_EN1_Pin */
+    497            GPIO_InitStruct.Pin = BUFFER_EN1_Pin;
+    498            GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+    499            GPIO_InitStruct.Pull = GPIO_NOPULL;
+    500            GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    501            HAL_GPIO_Init(BUFFER_EN1_GPIO_Port, &GPIO_InitStruct);
+    502          
+    503            /*Configure GPIO pins : MUX_ADD0_Pin MUX_ADD1_Pin MUX_ADD2_Pin MUX_ADD3_Pin */
+    504            GPIO_InitStruct.Pin = MUX_ADD0_Pin|MUX_ADD1_Pin|MUX_ADD2_Pin|MUX_ADD3_Pin;
+    505            GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    506            GPIO_InitStruct.Pull = GPIO_NOPULL;
+    507            GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    508            HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+    509          
+    510            /*Configure GPIO pin : BUFFER_EN0_Pin */
+    511            GPIO_InitStruct.Pin = BUFFER_EN0_Pin;
+    512            GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+    513            GPIO_InitStruct.Pull = GPIO_NOPULL;
+    514            GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    515            HAL_GPIO_Init(BUFFER_EN0_GPIO_Port, &GPIO_InitStruct);
+    516          
+    517            /*Configure GPIO pins : DEBUGE_TO_SLOT_Pin SLOT_EN_00_Pin SLOT_EN_01_Pin SLOT_EN_02_Pin 
+    518                                     SLOT_EN_03_Pin */
+    519            GPIO_InitStruct.Pin = DEBUGE_TO_SLOT_Pin|SLOT_EN_00_Pin|SLOT_EN_01_Pin|SLOT_EN_02_Pin 
+    520                                    |SLOT_EN_03_Pin;
+    521            GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    522            GPIO_InitStruct.Pull = GPIO_NOPULL;
+    523            HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    524          
+    525            /*Configure GPIO pins : SLOT_EN_04_Pin SLOT_EN_05_Pin */
+    526            GPIO_InitStruct.Pin = SLOT_EN_04_Pin|SLOT_EN_05_Pin;
+    527            GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    528            GPIO_InitStruct.Pull = GPIO_NOPULL;
+    529            HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+    530          
+    531            /*Configure GPIO pins : LED_12_Pin LED_13_Pin LED_14_Pin LED_01_Pin 
+    532                                     LED_02_Pin LED_03_Pin LED_04_Pin */
+    533            GPIO_InitStruct.Pin = LED_12_Pin|LED_13_Pin|LED_14_Pin|LED_01_Pin 
+    534                                    |LED_02_Pin|LED_03_Pin|LED_04_Pin;
+    535            GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+    536            GPIO_InitStruct.Pull = GPIO_PULLUP;
+    537            GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    538            HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    539          
+    540            /*Configure GPIO pins : MUX_EN0_Pin MUX_EN1_Pin DEBUGE_TO_MCU_Pin UART1_TX_EN_Pin */
+    541            GPIO_InitStruct.Pin = MUX_EN0_Pin|MUX_EN1_Pin|DEBUGE_TO_MCU_Pin|UART1_TX_EN_Pin;
+    542            GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    543            GPIO_InitStruct.Pull = GPIO_NOPULL;
+    544            GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    545            HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    546          
+    547            /*Configure GPIO pins : LED_05_Pin LED_06_Pin LED_07_Pin LED_08_Pin 
+    548                                     LED_15_Pin LED_16_Pin LED_RELAY_Pin */
+    549            GPIO_InitStruct.Pin = LED_05_Pin|LED_06_Pin|LED_07_Pin|LED_08_Pin 
+    550                                    |LED_15_Pin|LED_16_Pin|LED_RELAY_Pin;
+    551            GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+    552            GPIO_InitStruct.Pull = GPIO_PULLUP;
+    553            GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    554            HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+    555          
+    556            /*Configure GPIO pins : LED_09_Pin LED_10_Pin LED_11_Pin */
+    557            GPIO_InitStruct.Pin = LED_09_Pin|LED_10_Pin|LED_11_Pin;
+    558            GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+    559            GPIO_InitStruct.Pull = GPIO_PULLUP;
+    560            GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    561            HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    562          
+    563            /*Configure GPIO pin : RELAY_SEL_Pin */
+    564            GPIO_InitStruct.Pin = RELAY_SEL_Pin;
+    565            GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    566            GPIO_InitStruct.Pull = GPIO_NOPULL;
+    567            GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    568            HAL_GPIO_Init(RELAY_SEL_GPIO_Port, &GPIO_InitStruct);
+    569          
+    570            /*Configure GPIO pin : MCU_BLANK_01_Pin */
+    571            GPIO_InitStruct.Pin = MCU_BLANK_01_Pin;
+    572            GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    573            GPIO_InitStruct.Pull = GPIO_NOPULL;
+    574            HAL_GPIO_Init(MCU_BLANK_01_GPIO_Port, &GPIO_InitStruct);
+    575          
+    576          }
+    577          
+    578          /* USER CODE BEGIN 4 */
+    579          
+    580          
+    581          /* USER CODE END 4 */
+    582          
+    583          /* USER CODE BEGIN Header_StartSensorTask */
+    584          /**
+    585            * @brief  Function implementing the sendorTask thread.
+    586            * @param  argument: Not used 
+    587            * @retval None
+    588            */
+    589          /* USER CODE END Header_StartSensorTask */
+    590          __weak void StartSensorTask(void const * argument)
+    591          {
+    592          
+    593            /* USER CODE BEGIN 5 */
+    594            /* Infinite loop */
+    595            for(;;)
+    596            {
+    597              osDelay(1);
+    598            }
+    599            /* USER CODE END 5 */ 
+    600          }
+    601          
+    602          /* USER CODE BEGIN Header_StartDisplayTask */
+    603          /**
+    604          * @brief Function implementing the displayTask thread.
+    605          * @param argument: Not used
+    606          * @retval None
+    607          */
+    608          /* USER CODE END Header_StartDisplayTask */
+    609          __weak void StartDisplayTask(void const * argument)
+    610          {
+    611            /* USER CODE BEGIN StartDisplayTask */
+    612            /* Infinite loop */
+    613            for(;;)
+    614            {
+    615              osDelay(1);
+    616            }
+    617            /* USER CODE END StartDisplayTask */
+    618          }
+    619          
+    620          /* USER CODE BEGIN Header_StartUartTask */
+    621          /**
+    622          * @brief Function implementing the uartTask thread.
+    623          * @param argument: Not used
+    624          * @retval None
+    625          */
+    626          /* USER CODE END Header_StartUartTask */
+    627          __weak void StartUartTask(void const * argument)
+    628          {
+    629            /* USER CODE BEGIN StartUartTask */
+    630            /* Infinite loop */
+    631            for(;;)
+    632            {
+    633              osDelay(1);
+    634            }
+    635            /* USER CODE END StartUartTask */
+    636          }
+    637          
+    638          /**
+    639            * @brief  Period elapsed callback in non blocking mode
+    640            * @note   This function is called  when TIM1 interrupt took place, inside
+    641            * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+    642            * a global variable "uwTick" used as application time base.
+    643            * @param  htim : TIM handle
+    644            * @retval None
+    645            */
+    646          void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+    647          {
+    648            /* USER CODE BEGIN Callback 0 */
+    649          
+    650            /* USER CODE END Callback 0 */
+    651            if (htim->Instance == TIM1) {
+    652              HAL_IncTick();
+    653            }
+    654            /* USER CODE BEGIN Callback 1 */
+    655          
+    656            /* USER CODE END Callback 1 */
+    657          }
+    658          
+    659          /**
+    660            * @brief  This function is executed in case of error occurrence.
+    661            * @retval None
+    662            */
+    663          void Error_Handler(void)
+    664          {
+    665            /* USER CODE BEGIN Error_Handler_Debug */
+    666            /* User can add his own implementation to report the HAL error return state */
+    667            while(1)
+    668            {
+    669            }
+    670            /* USER CODE END Error_Handler_Debug */
+    671          }
+    672          
+    673          #ifdef  USE_FULL_ASSERT
+    674          /**
+    675            * @brief  Reports the name of the source file and the source line number
+    676            *         where the assert_param error has occurred.
+    677            * @param  file: pointer to the source file name
+    678            * @param  line: assert_param error line source number
+    679            * @retval None
+    680            */
+    681          void assert_failed(uint8_t *file, uint32_t line)
+    682          { 
+    683            /* USER CODE BEGIN 6 */
+    684            /* User can add his own implementation to report the file name and line number,
+    685               tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+    686            /* USER CODE END 6 */
+    687          }
+    688          #endif /* USE_FULL_ASSERT */
+    689          
+    690          /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+       0   Error_Handler
+       8   HAL_TIM_PeriodElapsedCallback
+         8   -> HAL_IncTick
+      24   MX_ADC1_Init
+        24   -> Error_Handler
+        24   -> HAL_ADC_ConfigChannel
+        24   -> HAL_ADC_Init
+        24   -> memset
+      24   MX_ADC2_Init
+        24   -> Error_Handler
+        24   -> HAL_ADC_ConfigChannel
+        24   -> HAL_ADC_Init
+        24   -> memset
+       8   MX_DMA_Init
+         8   -> HAL_NVIC_EnableIRQ
+         8   -> HAL_NVIC_SetPriority
+      40   MX_GPIO_Init
+        40   -> HAL_GPIO_Init
+        40   -> HAL_GPIO_WritePin
+        40   -> memset
+       8   MX_USART1_UART_Init
+         8   -> Error_Handler
+         8   -> HAL_UART_Init
+       8   MX_USB_PCD_Init
+         8   -> Error_Handler
+         8   -> HAL_PCD_Init
+       8   StartDisplayTask
+         8   -> osDelay
+       8   StartSensorTask
+         8   -> osDelay
+       8   StartUartTask
+         8   -> osDelay
+      80   SystemClock_Config
+        80   -> Error_Handler
+        80   -> HAL_RCCEx_PeriphCLKConfig
+        80   -> HAL_RCC_ClockConfig
+        80   -> HAL_RCC_OscConfig
+        80   -> memset
+      96   main
+        96   -> DoLoadFlash
+        96   -> DoValueFormating
+        96   -> HAL_GPIO_WritePin
+        96   -> HAL_GetUID
+        96   -> HAL_Init
+        96   -> MX_ADC1_Init
+        96   -> MX_ADC2_Init
+        96   -> MX_DMA_Init
+        96   -> MX_GPIO_Init
+        96   -> MX_USART1_UART_Init
+        96   -> MX_USB_PCD_Init
+        96   -> ReadFlash
+        96   -> SystemClock_Config
+        96   -> __aeabi_memcpy4
+        96   -> doFlashWriteRevision
+        96   -> doLedDisplay
+        96   -> doRelayPlay
+        96   -> memset
+        96   -> osKernelStart
+        96   -> osSemaphoreCreate
+        96   -> osThreadCreate
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable7
+       4  ??DataTable7_1
+       4  ??DataTable7_10
+       4  ??DataTable7_11
+       4  ??DataTable7_12
+       4  ??DataTable7_13
+       4  ??DataTable7_14
+       4  ??DataTable7_15
+       4  ??DataTable7_16
+       4  ??DataTable7_17
+       4  ??DataTable7_18
+       4  ??DataTable7_19
+       4  ??DataTable7_2
+       4  ??DataTable7_20
+       4  ??DataTable7_21
+       4  ??DataTable7_22
+       4  ??DataTable7_23
+       4  ??DataTable7_24
+       4  ??DataTable7_25
+       4  ??DataTable7_26
+       4  ??DataTable7_27
+       4  ??DataTable7_3
+       4  ??DataTable7_4
+       4  ??DataTable7_5
+       4  ??DataTable7_6
+       4  ??DataTable7_7
+       4  ??DataTable7_8
+       4  ??DataTable7_9
+       8  ?_0
+      12  ?_1
+      12  ?_2
+      12  ?_3
+      20  ?_4
+      20  ?_5
+      20  ?_6
+       4  BinarySemUartTxHandle
+       4  CountingSemUartRxHandle
+       2  Error_Handler
+      18  HAL_TIM_PeriodElapsedCallback
+      88  MX_ADC1_Init
+      88  MX_ADC2_Init
+      56  MX_DMA_Init
+     444  MX_GPIO_Init
+      52  MX_USART1_UART_Init
+      42  MX_USB_PCD_Init
+      12  StartDisplayTask
+      12  StartSensorTask
+      12  StartUartTask
+      36  SysProperties
+     148  SystemClock_Config
+       4  displayTaskHandle
+      48  hadc1
+      48  hadc2
+      68  hdma_usart1_rx
+      68  hdma_usart1_tx
+    1120  hpcd_USB_FS
+      64  huart1
+     394  main
+       4  myAdcBinarySemHandle
+       4  sensorTaskHandle
+       4  uartTaskHandle
+
+ 
+ 1'476 bytes in section .bss
+   104 bytes in section .rodata
+ 1'480 bytes in section .text
+ 
+ 1'444 bytes of CODE  memory (+ 36 bytes shared)
+   104 bytes of CONST memory
+ 1'476 bytes of DATA  memory
+
+Errors: none
+Warnings: none

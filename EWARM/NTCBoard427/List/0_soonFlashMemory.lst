@@ -1,0 +1,300 @@
+###############################################################################
+#
+# IAR ANSI C/C++ Compiler V8.40.1.212/W32 for ARM         06/Sep/2019  23:26:44
+# Copyright 1999-2019 IAR Systems AB.
+#
+#    Cpu mode     =  
+#    Endian       =  little
+#    Source file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_soonFlashMemory.c
+#    Command line =
+#        -f C:\Users\ilkorea\AppData\Local\Temp\EW795D.tmp
+#        (D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_soonFlashMemory.c
+#        -D USE_HAL_DRIVER -D STM32F103xB -lc
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List
+#        -o
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj
+#        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
+#        --no_clustering --no_scheduling --debug --endian=little
+#        --cpu=Cortex-M3 -e --fpu=None --dlib_config "C:\Program Files
+#        (x86)\IAR Systems\Embedded Workbench 8.3\arm\inc\c\DLib_Config_Full.h"
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Device/ST/STM32F1xx/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Drivers/CMSIS/Include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/portable/IAR/ARM_CM3\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/include\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/SEGGER\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9\
+#        -I
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM/../Middlewares/FreeRTOSV9/Config\
+#        -On -I "C:\Program Files (x86)\IAR Systems\Embedded Workbench
+#        8.3\arm\CMSIS\Core\Include\" -I "C:\Program Files (x86)\IAR
+#        Systems\Embedded Workbench 8.3\arm\CMSIS\DSP\Include\")
+#    Locale       =  C
+#    List file    =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\List\0_soonFlashMemory.lst
+#    Object file  =
+#        D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\EWARM\NTCBoard427\Obj\0_soonFlashMemory.o
+#
+###############################################################################
+
+D:\00_Soondori\07_TotalTempMonitor\11_Firmware\NTCBoard427\Src\0_soonFlashMemory.c
+      1          #include "0_soonFlashMemory.h"
+      2          
+      3          
+      4          /**************************************************************************************************************
+      5          *	Write 동작의 흐름은 아래와 같다.
+      6          *	1) Control register unlock
+      7          *	2) 4byte 단위로 쓰기 수행
+      8          *	3) Control register lock
+      9          ***************************************************************************************************************/
+     10          HAL_StatusTypeDef WriteFlash(uint32_t Address, uint32_t data, uint32_t* errorcode)
+     11          {
+     12          	HAL_StatusTypeDef res = HAL_OK;
+     13          
+     14          	/* Unlock to control */
+     15          	HAL_FLASH_Unlock();
+     16          
+     17          	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_PGERR| FLASH_FLAG_WRPERR);
+     18          
+     19          	/* Writing data to flash memory */
+     20          	if(HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address, data) == HAL_OK)
+     21          	{
+     22          		errorcode = 0;
+     23          	}
+     24          	else
+     25          	{
+     26          		*errorcode = HAL_FLASH_GetError();
+     27          		res = HAL_ERROR;
+     28          	}
+     29          
+     30          	/* Lock flash control register */
+     31          	HAL_FLASH_Lock();  
+     32          
+     33          	return res;
+     34          }
+     35          
+     36          /**************************************************************************************************************
+     37          *	Read 동작의 경우에는 직관적으로 해당 Memory 주소를 Access 하여 4byte 데이터 읽어온다.
+     38          ***************************************************************************************************************/
+     39          __IO uint32_t ReadFlash(uint32_t Address)
+     40          {
+     41          	return *(__IO uint32_t*)Address;
+     42          }
+     43          
+     44          /**************************************************************************************************************
+     45          *	Flash에 쓰기 위해 해당 영역을 지우는 Erase 동작을 살펴보자.
+     46          *	코드의 흐름을 살펴보면 아래와 같다.
+     47          *	1) Control register unlock
+     48          *	2) 지우고자 하는 섹터의 크기 계산
+     49          *	3) 섹터 삭제 명령
+     50          *	4) 데이터 캐시에 이미 올라간 데이터인 경우에 Cache까지 삭제가 필요한 경우에는 Cache Clear
+     51          * 	5) Control register lock
+     52          ***************************************************************************************************************/
+     53          HAL_StatusTypeDef EraseFlash(uint32_t startAdd, uint32_t pages)
+     54          {
+     55            uint32_t SectorError = 0;
+     56            
+     57            /* Unlock to control */
+     58            HAL_FLASH_Unlock();
+     59              
+     60            /* Erase sectors */
+     61            FLASH_EraseInitTypeDef EraseInitStruct;
+     62            EraseInitStruct.TypeErase = FLASH_TYPEERASE_PAGES;
+     63            EraseInitStruct.Banks = FLASH_BANK_1;
+     64            EraseInitStruct.PageAddress = startAdd;
+     65            EraseInitStruct.NbPages = pages;
+     66          
+     67            if(HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError) != HAL_OK)
+     68            { 
+     69              uint32_t errorcode = HAL_FLASH_GetError();            
+     70              return HAL_ERROR;
+     71            }
+     72            
+     73            /* Lock flash control register */
+     74            HAL_FLASH_Lock();
+     75            
+     76            return HAL_OK;  
+     77          }
+     78          
+     79          uint32_t doFlashWriteRevision(void)
+     80          {
+     81          	uint32_t	flashError = 0;
+     82          	uint8_t 	i;
+     83          
+     84          	EraseFlash(FLASH_SAVE_CHK, 1);
+     85          	
+     86          	for(i = 0; i < 16; i++)
+     87          	{	
+     88          		WriteFlash(FLASH_ADD_THRESHOLD_TEMP 	  	+ (i * 4), TestData.Threshold[0][i].UI32, &flashError);
+     89          		WriteFlash(FLASH_ADD_THRESHOLD_TEMP1 	  	+ (i * 4), TestData.Threshold[1][i].UI32, &flashError);
+     90          		WriteFlash(FLASH_ADD_NTC_CALIBRATION_TABLE  + (i * 4), TestData.ntcCalibrationTable[0][i].UI32, &flashError);
+     91          		WriteFlash(FLASH_ADD_NTC_CALIBRATION_TABLE1	+ (i * 4), TestData.ntcCalibrationTable[1][i].UI32, &flashError);
+     92          	}
+     93          	
+     94          	WriteFlash(FLASH_ADD_NTC_CALIBRATION_CONSTANT, 	TestData.ntcCalibrationConstant.UI32, &flashError);
+     95          	WriteFlash(FLASH_ADD_REVISION_APPLY, 			(uint32_t)TestData.revisionApplyFlag, &flashError);
+     96          	WriteFlash(FLASH_ADD_REVISION_CONSTANT, 		TestData.revisionConstant.UI32, &flashError);
+     97          
+     98          	WriteFlash(FLASH_SAVE_CHK, FLASH_SAVE_FLAG, &flashError);
+     99          
+    100          	return flashError;
+    101          }
+    102          
+    103          
+    104          #if 0
+    105          /**************************************************************************************************************
+    106          *	WP을 활성화 하는 코드를 살펴보자. WRPState 값에 OB_WRPSTATE_ENABLE 을 설정하고 HAL_FLASH_OB_Launch 를 호출한다.
+    107          ***************************************************************************************************************/
+    108          HAL_StatusTypeDef EnableWriteProtect(uint32_t add)
+    109          {
+    110            FLASH_OBProgramInitTypeDef OBInit; 
+    111            
+    112            HAL_FLASH_OB_Unlock();
+    113            HAL_FLASH_Unlock();
+    114              
+    115            OBInit.OptionType = OPTIONBYTE_WRP;
+    116            OBInit.WRPState   = OB_WRPSTATE_ENABLE;
+    117            OBInit.Banks      = FLASH_BANK_1;
+    118            OBInit.WRPSector  = add;//FLASH_WRP_SECTORS;
+    119            HAL_FLASHEx_OBProgram(&OBInit);   
+    120              
+    121            if (HAL_FLASH_OB_Launch() != HAL_OK)
+    122            {
+    123              return HAL_ERROR;
+    124            }
+    125              
+    126            HAL_FLASH_OB_Lock();  
+    127            HAL_FLASH_Lock();  
+    128            
+    129            return HAL_OK;
+    130          }
+    131          
+    132          /**************************************************************************************************************
+    133          *	WP를 비활성화 하는 기능은 Enable과 동일하며 WRPState 값만 다를 뿐이다. 
+    134          ***************************************************************************************************************/
+    135          HAL_StatusTypeDef DisableWriteProtect(uint32_t add)
+    136          {
+    137            FLASH_OBProgramInitTypeDef OBInit; 
+    138            
+    139            HAL_FLASH_OB_Unlock();
+    140            HAL_FLASH_Unlock();
+    141            
+    142            OBInit.OptionType = OPTIONBYTE_WRP;
+    143            OBInit.WRPState   = OB_WRPSTATE_DISABLE;
+    144            OBInit.Banks      = FLASH_BANK_1;
+    145            OBInit.WRPSector  = add;//FLASH_WRP_SECTORS;
+    146            HAL_FLASHEx_OBProgram(&OBInit); 
+    147            
+    148            if (HAL_FLASH_OB_Launch() != HAL_OK)
+    149            {
+    150              return HAL_ERROR;
+    151            }
+    152            
+    153            HAL_FLASH_OB_Lock();  
+    154            HAL_FLASH_Lock();
+    155            
+    156            return HAL_OK;
+    157          }
+    158          #endif
+    159          
+    160          void DoValueFormating(void)
+    161          {
+    162          	uint8_t i;
+    163          	
+    164          	for(i = 0; i < 16; i++)
+    165          	{	
+    166          		TestData.Threshold[0][i].Float				= (float)50.0;	//경고 온도 테이블 
+    167          		TestData.Threshold[1][i].Float				= (float)50.0;
+    168          		TestData.ntcCalibrationTable[0][i].Float	= (float)0.0;	//NTC 교정 테이블 
+    169          		TestData.ntcCalibrationTable[1][i].Float	= (float)0.0;
+    170          	}
+    171          	TestData.ntcCalibrationConstant.Float = (float)0.0; 			//NTC 증감상수 
+    172          	TestData.revisionConstant.Float = (float)0.3672;				//보정상수 
+    173          	TestData.revisionApplyFlag = 0; 								//보정 선택 
+    174          }
+    175          
+    176          void DoLoadFlash(void)
+    177          {
+    178          	uint8_t i;
+    179          	
+    180          	for(i = 0; i < 16; i++)
+    181          	{	
+    182          		TestData.Threshold[0][i].UI32			= ReadFlash(FLASH_ADD_THRESHOLD_TEMP + (i * 4));
+    183          		TestData.Threshold[1][i].UI32			= ReadFlash(FLASH_ADD_THRESHOLD_TEMP1 + (i * 4));
+    184          		TestData.ntcCalibrationTable[0][i].UI32 = ReadFlash(FLASH_ADD_NTC_CALIBRATION_TABLE + (i * 4));
+    185          		TestData.ntcCalibrationTable[1][i].UI32 = ReadFlash(FLASH_ADD_NTC_CALIBRATION_TABLE1 + (i * 4));
+    186          	}
+    187          	TestData.ntcCalibrationConstant.UI32		= ReadFlash(FLASH_ADD_NTC_CALIBRATION_CONSTANT);
+    188          	TestData.revisionApplyFlag					= (uint8_t)ReadFlash(FLASH_ADD_REVISION_APPLY);
+    189          	TestData.revisionConstant.Float 			= ReadFlash(FLASH_ADD_REVISION_CONSTANT);
+    190          }
+    191          
+
+   Maximum stack usage in bytes:
+
+   .cstack Function
+   ------- --------
+      16   DoLoadFlash
+        16   -> ReadFlash
+        16   -> __aeabi_ui2f
+       0   DoValueFormating
+      32   EraseFlash
+        32   -> HAL_FLASHEx_Erase
+        32   -> HAL_FLASH_GetError
+        32   -> HAL_FLASH_Lock
+        32   -> HAL_FLASH_Unlock
+       0   ReadFlash
+      24   WriteFlash
+        24   -> HAL_FLASH_GetError
+        24   -> HAL_FLASH_Lock
+        24   -> HAL_FLASH_Program
+        24   -> HAL_FLASH_Unlock
+      24   doFlashWriteRevision
+        24   -> EraseFlash
+        24   -> WriteFlash
+
+
+   Section sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       4  ??DataTable3
+       4  ??DataTable3_1
+       4  ??DataTable3_10
+       4  ??DataTable3_11
+       4  ??DataTable3_2
+       4  ??DataTable3_3
+       4  ??DataTable3_4
+       4  ??DataTable3_5
+       4  ??DataTable3_6
+       4  ??DataTable3_7
+       4  ??DataTable3_8
+       4  ??DataTable3_9
+     160  DoLoadFlash
+      92  DoValueFormating
+      60  EraseFlash
+       4  ReadFlash
+      62  WriteFlash
+     196  doFlashWriteRevision
+
+ 
+ 622 bytes in section .text
+ 
+ 622 bytes of CODE memory
+
+Errors: none
+Warnings: none
