@@ -10,55 +10,55 @@
 TEST_DATA TestData;
 
 uint32_t	adc_value[11];
-uint8_t 	adc_count = 0;
+uint8_t         adc_count = 0;
 uint8_t		adc_delay_break = FALSE;
-uint8_t   	adcNumber;
+uint8_t         adcNumber;
 
 ADC_HandleTypeDef * adc[2] = {&hadc1, &hadc2};
 
-GPIO_TypeDef * 		MUX_ADD[4] 	   = { MUX_ADD0_GPIO_Port,	MUX_ADD1_GPIO_Port,	MUX_ADD2_GPIO_Port,	MUX_ADD3_GPIO_Port };
-uint16_t	 		MUX_ADD_PIN[4] = { MUX_ADD0_Pin,		MUX_ADD1_Pin,		MUX_ADD2_Pin,		MUX_ADD3_Pin };
+GPIO_TypeDef *          MUX_ADD[4]         = { MUX_ADD0_GPIO_Port,	MUX_ADD1_GPIO_Port,	MUX_ADD2_GPIO_Port,	MUX_ADD3_GPIO_Port };
+uint16_t	                MUX_ADD_PIN[4] = { MUX_ADD0_Pin,		MUX_ADD1_Pin,		MUX_ADD2_Pin,		MUX_ADD3_Pin };
 
-GPIO_TypeDef * 		MUX_EN[2] = { MUX_EN0_GPIO_Port, MUX_EN1_GPIO_Port };
-uint16_t	 		MUX_EN_PIN[2] = { MUX_EN0_Pin, MUX_EN1_Pin };
+GPIO_TypeDef *          MUX_EN[2] = { MUX_EN0_GPIO_Port, MUX_EN1_GPIO_Port };
+uint16_t	                MUX_EN_PIN[2] = { MUX_EN0_Pin, MUX_EN1_Pin };
 
-uint8_t   			mux_enable;
+uint8_t                         mux_enable;
 
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{  
-	//adc_delay_break = TRUE;
-	osSemaphoreRelease(myAdcBinarySemHandle);
+{
+    //adc_delay_break = TRUE;
+    osSemaphoreRelease(myAdcBinarySemHandle);
 }
 
 /*********************************************************************
 *	StartSensorTask
-* 32°³ ¼¾¼­ ÀÔ·Â task
+* 32ê°œ ì„¼ì„œ ìž…ë ¥ task
 **********************************************************************/
 void StartSensorTask(void const * argument)
 {
-	/* init code for USB_DEVICE */
+        /* init code for USB_DEVICE */
 //	MX_USB_DEVICE_Init();
 
-	/* USER CODE BEGIN 5 */
-	HAL_ADC_Stop(&hadc1);
-	HAL_ADC_Stop(&hadc2);
-	HAL_ADCEx_Calibration_Start(&hadc1);
-	HAL_ADCEx_Calibration_Start(&hadc2);	
+        /* USER CODE BEGIN 5 */
+        HAL_ADC_Stop(&hadc1);
+        HAL_ADC_Stop(&hadc2);
+        HAL_ADCEx_Calibration_Start(&hadc1);
+        HAL_ADCEx_Calibration_Start(&hadc2);
 
-	HAL_GPIO_WritePin(MUX_EN[0], MUX_EN_PIN[0], GPIO_PIN_SET);	// disable		
-	HAL_GPIO_WritePin(MUX_EN[1], MUX_EN_PIN[1], GPIO_PIN_SET);	// disable		
+        HAL_GPIO_WritePin(MUX_EN[0], MUX_EN_PIN[0], GPIO_PIN_SET);	// disable
+        HAL_GPIO_WritePin(MUX_EN[1], MUX_EN_PIN[1], GPIO_PIN_SET);	// disable
 
-	adc_count = 0;
+        adc_count = 0;
 
-	doFindMyID();
-	
-	//Task ºÎÆÃ ¿Ï·á ÇÃ·¹±× 
-	SysProperties.bootingWate[1] = TRUE;
-  
+        doFindMyID();
+
+        //Task ë¶€íŒ… ì™„ë£Œ í”Œë ˆê·¸
+        SysProperties.bootingWate[1] = TRUE;
+
     while(1)
     {
-        if( (SysProperties.bootingWate[0] == TRUE) &&     // 0 : DiaplayTask, 
+        if( (SysProperties.bootingWate[0] == TRUE) &&     // 0 : DiaplayTask,
             (SysProperties.bootingWate[1] == TRUE) &&     // 1 : SensorTask
             (SysProperties.bootingWate[2] == TRUE))       // 2 : UartTask
         {
@@ -68,117 +68,113 @@ void StartSensorTask(void const * argument)
     }
 
 
-	/* Infinite loop */
-	for(;;)
-	{
-		doReadADC();
-		osDelay(1);
-	}
-	/* USER CODE END 5 */ 
+        /* Infinite loop */
+        for(;;)
+        {
+                doReadADC();
+                osDelay(1);
+        }
+        /* USER CODE END 5 */
 }
 
 void doReadADC(void)
 {
-	uint8_t 	channel;
-	uint8_t 	mux_add;
-	uint8_t 	inout;
-	uint32_t 	midAdc;
-	float 		calAdc;
-	float		beforeRevision;
+    uint8_t         channel;
+    uint8_t         mux_add;
+    uint8_t         inout;
+    uint32_t        midAdc;
+    float           calAdc;
+    float		beforeRevision;
 
-	mux_enable = adcNumber / 16;
-	mux_add    = adcNumber % 16;
-	inout      = adcNumber % 2;
-	channel    = adcNumber / 2;
+    mux_enable = adcNumber / 16;
+    mux_add    = adcNumber % 16;
+    inout      = adcNumber % 2;
+    channel    = adcNumber / 2;
 
-	HAL_GPIO_WritePin(MUX_EN[mux_enable], MUX_EN_PIN[mux_enable], GPIO_PIN_RESET);	// enable
+    HAL_GPIO_WritePin(MUX_EN[mux_enable], MUX_EN_PIN[mux_enable], GPIO_PIN_RESET);	// enable
 
-	doMuxAddressSet(mux_add);
-	//osDelay(1);
-	//HAL_Delay(1);
+    doMuxAddressSet(mux_add);
+    //osDelay(1);
+    //HAL_Delay(1);
 
-	HAL_ADC_Start_IT(adc[mux_enable]);
-	HAL_GPIO_WritePin(MUX_EN[0], MUX_EN_PIN[0], GPIO_PIN_SET);	// disable		
-	HAL_GPIO_WritePin(MUX_EN[1], MUX_EN_PIN[1], GPIO_PIN_SET);	// disable		
+    HAL_ADC_Start_IT(adc[mux_enable]);
+    HAL_GPIO_WritePin(MUX_EN[0], MUX_EN_PIN[0], GPIO_PIN_SET);	// disable
+    HAL_GPIO_WritePin(MUX_EN[1], MUX_EN_PIN[1], GPIO_PIN_SET);	// disable
 
-	if(myAdcBinarySemHandle != NULL)
-	{
-		if(osSemaphoreWait(myAdcBinarySemHandle, 0) == osOK)
-		{
-			adc_value[adc_count] = HAL_ADC_GetValue(adc[mux_enable]);
-			adc_count++;
-			
-			if(adc_count < 11)
-				return;
-			else
-				adc_count = 0;
+    if(myAdcBinarySemHandle != NULL)
+    {
+        if(osSemaphoreWait(myAdcBinarySemHandle, 0) == osOK)
+        {
+            adc_value[adc_count] = HAL_ADC_GetValue(adc[mux_enable]);
+            adc_count++;
 
-			midAdc = midADC(adc_value);					// ADC Áß°£°ª ÀúÀå 
-			calAdc = Calc_Temp_NTC(midAdc);				// ADC·Î °è»êµÈ ¿Âµµ°ª ÀúÀå 
+            if(adc_count < 11)
+                return;
+            else
+                adc_count = 0;
 
-			if((calAdc >= -10) && (calAdc <= 150))
-			{
-				TestData.AdcMidValue[inout][channel].UI32 	= midAdc;
+            midAdc = midADC(adc_value);					// ADC ì¤‘ê°„ê°’ ì €ìž¥
+            calAdc = Calc_Temp_NTC(midAdc);				// ADCë¡œ ê³„ì‚°ëœ ì˜¨ë„ê°’ ì €ìž¥
 
-				//±³Á¤ °úÁ¤ ½ÇÇà 
-				beforeRevision = calAdc + TestData.ntcCalibrationTable[inout][channel].Float 	//RTD - NTC ·Î °è»êµÈ º¸Á¤ »ó¼ö 
-										+ TestData.ntcCalibrationConstant.Float;				//»ç¿ëÀÚ°¡ ÀÓÀÇ·Î Ãß°¡ÇÑ Áõ°¨ »ó¼ö 
-										
-				if(TestData.revisionApplyFlag == TRUE)	//º¸Á¤ Àû¿ë »óÅÂ 
-				{
-					if(inout == 0)		//Á¢ÃË¿Âµµ À§Ä¡¿¡ º¸Á¤¿Âµµ¸¦ »ðÀÔ 
-					{
-						TestData.Temperature[inout][channel].Float = DoRevisionTemperature(TestData.Temperature[0][channel].Float,
-																						   TestData.Temperature[1][channel].Float);
-					}
-					else				//È¯°æ¿Âµµ À§Ä¡´Â È¯°æ¿Âµµ °íÁ¤ 
-					{
-						TestData.Temperature[inout][channel].Float = beforeRevision;
-					}
-				}
-				else									//º¸Á¤ ¹ÌÀû¿ë »óÅÂ 
-				{
-					TestData.Temperature[inout][channel].Float = beforeRevision;
-				}
-			}
-			adcNumber++;
-			if(adcNumber > 31)
-			{
-				adcNumber = 0;
-			}
-		}
-	}
+            if((calAdc >= -10) && (calAdc <= 150))
+            {
+                TestData.AdcMidValue[inout][channel].UI32       = midAdc;
+
+                //êµì • ê³¼ì • ì‹¤í–‰
+                beforeRevision = calAdc + TestData.ntcCalibrationTable[inout][channel].Float    //RTD - NTC ë¡œ ê³„ì‚°ëœ ë³´ì • ìƒìˆ˜
+                    + TestData.ntcCalibrationConstant.Float;				//ì‚¬ìš©ìžê°€ ìž„ì˜ë¡œ ì¶”ê°€í•œ ì¦ê° ìƒìˆ˜
+
+                if(TestData.revisionApplyFlag == TRUE)	//ë³´ì • ì ìš© ìƒíƒœ
+                {
+                    if(inout == 0)		//ì ‘ì´‰ì˜¨ë„ ìœ„ì¹˜ì— ë³´ì •ì˜¨ë„ë¥¼ ì‚½ìž…
+                    {
+                        TestData.Temperature[inout][channel].Float = DoRevisionTemperature(TestData.Temperature[0][channel].Float,
+                                                                                           TestData.Temperature[1][channel].Float);
+                    }
+                    else				//í™˜ê²½ì˜¨ë„ ìœ„ì¹˜ëŠ” í™˜ê²½ì˜¨ë„ ê³ ì •
+                    {
+                        TestData.Temperature[inout][channel].Float = beforeRevision;
+                    }
+                }
+                else									//ë³´ì • ë¯¸ì ìš© ìƒíƒœ
+                {
+                    TestData.Temperature[inout][channel].Float = beforeRevision;
+                }
+            }
+            adcNumber++;
+            if(adcNumber > 31)
+            {
+                adcNumber = 0;
+            }
+        }
+    }
 }
 
 float DoRevisionTemperature(float beforeRevision, float environmentTemp)
 {
-	if(TestData.revisionConstant.Float == 0)
-	{
-		return (beforeRevision - TestData.revisionConstant.Float * environmentTemp)/(1 - TestData.revisionConstant.Float);
-	}
-	else
-	{
-		return beforeRevision;
-	}
+        if(TestData.revisionConstant.Float == 0)
+        {
+                return (beforeRevision - TestData.revisionConstant.Float * environmentTemp)/(1 - TestData.revisionConstant.Float);
+        }
+        else
+        {
+                return beforeRevision;
+        }
 }
 
 void doMuxAddressSet(uint8_t add)
 {
-	uint8_t i;
+    for(uint8_t i = 0; i < 4; i++)
+    {
+        if((add & 0x01) == 001)
+        {
+            HAL_GPIO_WritePin(MUX_ADD[i], MUX_ADD_PIN[i], GPIO_PIN_SET);
+        }
+        else
+        {
+            HAL_GPIO_WritePin(MUX_ADD[i] ,MUX_ADD_PIN[i], GPIO_PIN_RESET);
+        }
 
-	for(i = 0; i < 4; i++)
-	{
-		if((add & 0x01) == 001)
-		{
-			HAL_GPIO_WritePin(MUX_ADD[i], MUX_ADD_PIN[i], GPIO_PIN_SET);
-		}
-		else
-		{
-			HAL_GPIO_WritePin(MUX_ADD[i] ,MUX_ADD_PIN[i], GPIO_PIN_RESET);
-		}
-		
-		add = add >> 1;
-	}
+        add = add >> 1;
+    }
 }
-
-

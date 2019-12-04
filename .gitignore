@@ -3,6 +3,12 @@ _si/
 .ccls-cache/
 *~
 
+GPATH
+GRTAGS
+GTAGS
+
+*.jdebug.user
+
 ### IAR ###
 # Compiled binaries
 *.o

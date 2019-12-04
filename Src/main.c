@@ -146,17 +146,17 @@ int main(void)
 	doRelayPlay(_OFF);
 
 	for(i = 0; i < 16; i++)
-	{	
+	{
 		doLedDisplay(i, _LED_OFF);	//LED Reset
 	}
 
 	read = ReadFlash(FLASH_SAVE_CHK);
-	if(read != FLASH_SAVE_FLAG)		//ÇÃ·¡½Ã¿¡ ±â·ÏÀÌ ¾øÀ»°æ¿ì 
+	if(read != FLASH_SAVE_FLAG)		//í”Œëž˜ì‹œì— ê¸°ë¡ì´ ì—†ì„ê²½ìš° 
 	{
 		DoValueFormating();		
 		doFlashWriteRevision();
 	}
-	else		//Flash ¿¡ ÀúÀåµÈ °ªÀÌ ¾ø´Â°æ¿ì 
+	else		//Flash ì— ì €ìž¥ëœ ê°’ì´ ì—†ëŠ”ê²½ìš° 
 	{
 		DoLoadFlash();		
 	}
@@ -165,11 +165,11 @@ int main(void)
 	TestData.displayModeFlag[i] 		= LDM_NORMAL_TEMP;
 	TestData.displayModeChangeCount[i]	= 0;
 
-	//todo id´Â ÀÚµ¿À¸·Î µé¾î°¡¾ß ÇÑ´Ù. “bÇÃ·¹ÀÌÆ®¸¦ º¯°æÇÏ°í ntcº¸µå¿¡¼­ Ä¨¼¿·ºÆ® ÇÉÀ» 4°³·Î ¸¸µé¾î¼­ º¯°æÇÒ ÀÌ´Ù. 
+	//todo idëŠ” ìžë™ìœ¼ë¡œ ë“¤ì–´ê°€ì•¼ í•œë‹¤. ë°·í”Œë ˆì´íŠ¸ë¥¼ ë³€ê²½í•˜ê³  ntcë³´ë“œì—ì„œ ì¹©ì…€ë ‰íŠ¸ í•€ì„ 4ê°œë¡œ ë§Œë“¤ì–´ì„œ ë³€ê²½í•  ì´ë‹¤. 
 	HAL_GPIO_WritePin(BUFFER_EN0_GPIO_Port, BUFFER_EN0_Pin, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(BUFFER_EN1_GPIO_Port, BUFFER_EN1_Pin, GPIO_PIN_RESET);
 
-	//SysProperties.boardID = '3';	//0: »ç¿ë ¼³Á¤ ¾ÈµÊ, 1 ~ 4 ½½·ÔÀ¸·Î ¼³Á¤ ÇØ¾ß ÇÔ
+	//SysProperties.boardID = '3';	//0: ì‚¬ìš© ì„¤ì • ì•ˆë¨, 1 ~ 4 ìŠ¬ë¡¯ìœ¼ë¡œ ì„¤ì • í•´ì•¼ í•¨
 
   /* USER CODE END 2 */
 
