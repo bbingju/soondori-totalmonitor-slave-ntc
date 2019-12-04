@@ -58,7 +58,7 @@ typedef union{
 
 /*********************************************************************
 *	Test Data
-* Main board ¿Í Sensor board ¿¡¼­ ÀĞ¾î³½ µ¥ÀÌÅÍ ÀúÀå °ø°£ 
+* Main board ì™€ Sensor board ì—ì„œ ì½ì–´ë‚¸ ë°ì´í„° ì €ì¥ ê³µê°„ 
 **********************************************************************/
 typedef enum {
 	MBS_BATTERY = 0,
@@ -89,10 +89,10 @@ typedef enum {
 }TEMP_MODE;
 
 typedef enum {
-	LDM_NORMAL_TEMP = 0,	//Á¤»ó
-	LDM_OVER_TEMP,			//°æ°í¿Âµµ ÃÊ°ú
-	LDM_SENSOR_CLOSE,		//¼¾¼­ ¼îÆ®
-	LDM_DONOT_CONNECT		//¼¾¼­ ¾øÀ½ 
+	LDM_NORMAL_TEMP = 0,	//ì •ìƒ
+	LDM_OVER_TEMP,			//ê²½ê³ ì˜¨ë„ ì´ˆê³¼
+	LDM_SENSOR_CLOSE,		//ì„¼ì„œ ì‡¼íŠ¸
+	LDM_DONOT_CONNECT		//ì„¼ì„œ ì—†ìŒ 
 }LED_DIPLAY_MODE;
 
 typedef enum {
@@ -102,16 +102,16 @@ typedef enum {
 
 typedef struct 
 {
-	uni4Byte				Temperature[2][16];					// adc ¿Ï·áÈÄ ¿Âµµ°ªÀ¸·Î È¯»êµÈ °ª, 0 : ÇÇ´ë»ó¹° ¿Âµµ, 1 : È¯°æ¿Âµµ , 0~15Ã¤³Î 
-	uni4Byte				AdcMidValue[2][16];					// ÄÁ¹öÆÃ ¿Ï·áµÈ ADC °ªÁß Áß°£ °ª,  0 : ÇÇ´ë»ó¹° ¿Âµµ, 1 : È¯°æ¿Âµµ, 0~15Ã¤³Î 
-	uni4Byte				Threshold[2][16];						// °æ°í ¿Âµµ ÀúÀå 
+	uni4Byte				Temperature[2][16];					// adc ì™„ë£Œí›„ ì˜¨ë„ê°’ìœ¼ë¡œ í™˜ì‚°ëœ ê°’, 0 : í”¼ëŒ€ìƒë¬¼ ì˜¨ë„, 1 : í™˜ê²½ì˜¨ë„ , 0~15ì±„ë„ 
+	uni4Byte				AdcMidValue[2][16];					// ì»¨ë²„íŒ… ì™„ë£Œëœ ADC ê°’ì¤‘ ì¤‘ê°„ ê°’,  0 : í”¼ëŒ€ìƒë¬¼ ì˜¨ë„, 1 : í™˜ê²½ì˜¨ë„, 0~15ì±„ë„ 
+	uni4Byte				Threshold[2][16];						// ê²½ê³  ì˜¨ë„ ì €ì¥ 
 	TEMP_MODE				overTempFlag[16];	
-	LED_DIPLAY_MODE	        displayModeFlag[16];				// LED Ç¥½Ã ¹æ¹ıÀ» ¹Ù²Ù±â Àü¿¡ »óÅÂ°¡ ¹Ù²î´Â °ÍÀº 3¹ø Ã¼Å©ÇØ¼­ ±× ÀÌ»ó °°Àº »óÅÂ·Î ¹İº¹µÉ¶§ º¯°æ 
-	uni4Byte				ntcCalibrationTable[2][16];			// NTC ±³Á¤»ó¼ö , RTD - NTC
-	uni4Byte				ntcCalibrationConstant;				// NTC + ntcCalibrationTable(±³Á¤»ó¼ö) + Áõ°¨»ó¼ö(ntcCalibrationConstant) 
-	uint8_t					displayModeChangeCount[16];			// À§ ÇÃ·¡±× »ç¿ëÀ» À§ÇÑ Ä«¿îÅÍ 
-	uint8_t					revisionApplyFlag;					// º¸Á¤ Àû¿ë ÇÃ·¡±×, 1: Ç¥¸é¿Âµµ¸ğµå(º¸Á¤ Àû¿ë) 0 : ÃøÁ¤¿Âµµ ¸ğµå(º¸Á¤ ¹ÌÀû¿ë)
-	uni4Byte				revisionConstant;					// º¸Á¤¿ë Á¢ÃË»ó¼ö 
+	LED_DIPLAY_MODE	        displayModeFlag[16];				// LED í‘œì‹œ ë°©ë²•ì„ ë°”ê¾¸ê¸° ì „ì— ìƒíƒœê°€ ë°”ë€ŒëŠ” ê²ƒì€ 3ë²ˆ ì²´í¬í•´ì„œ ê·¸ ì´ìƒ ê°™ì€ ìƒíƒœë¡œ ë°˜ë³µë ë•Œ ë³€ê²½ 
+	uni4Byte				ntcCalibrationTable[2][16];			// NTC êµì •ìƒìˆ˜ , RTD - NTC
+	uni4Byte				ntcCalibrationConstant;				// NTC + ntcCalibrationTable(êµì •ìƒìˆ˜) + ì¦ê°ìƒìˆ˜(ntcCalibrationConstant) 
+	uint8_t					displayModeChangeCount[16];			// ìœ„ í”Œë˜ê·¸ ì‚¬ìš©ì„ ìœ„í•œ ì¹´ìš´í„° 
+	uint8_t					revisionApplyFlag;					// ë³´ì • ì ìš© í”Œë˜ê·¸, 1: í‘œë©´ì˜¨ë„ëª¨ë“œ(ë³´ì • ì ìš©) 0 : ì¸¡ì •ì˜¨ë„ ëª¨ë“œ(ë³´ì • ë¯¸ì ìš©)
+	uni4Byte				revisionConstant;					// ë³´ì •ìš© ì ‘ì´‰ìƒìˆ˜ 
 }TEST_DATA;
 extern TEST_DATA TestData;
 
@@ -137,25 +137,25 @@ extern TX_QUEUE_STRUCT UartTxQueue;
 
 /*********************************************************************
 *	System Properties
-* ½Ã½ºÅÛ¿¡¼­ °ø¿ëÀ¸·Î »ç¿ë µÇ´Â º¯¼ö ÀúÀå  
+* ì‹œìŠ¤í…œì—ì„œ ê³µìš©ìœ¼ë¡œ ì‚¬ìš© ë˜ëŠ” ë³€ìˆ˜ ì €ì¥  
 **********************************************************************/
 typedef enum {
 	DPM_NORMAL = 0,
 	DPM_SETTING
 }DISPLAYMODE;
 
-typedef struct 
-{								
-    uint8_t             boardID;
-    uint8_t             bootingWate[4];     //°¢ ¹ÙÀÌÆ®¿¡ Taskº° ºÎÆÃ ¿Ï·á¸¦ Ç¥½Ã ÇÑ´Ù. 
-                                      // 0 : DiaplayTask, 1 : SensorTask, 2 : UartTask, 3 : ParsingTask
-	SENSORBOARDTYPE	    boardType[1];				// SENSORBOARDTYPE »ç¿ë ÇØ¼­ ¼±ÅÃ, sensor board Á¾·ù ±â·Ï 
-	uint8_t				boardEnable;
-	uniChar				hwVersion[5];
-	uniChar				fwVersion[5];
-	uniInt32 			uuid[3];
-	uint8_t				relayState;
-}SYSTEM_STRUCT;
+typedef struct {
+    uint8_t boardID;
+    uint8_t bootingWate[4]; //ê° ë°”ì´íŠ¸ì— Taskë³„ ë¶€íŒ… ì™„ë£Œë¥¼ í‘œì‹œ í•œë‹¤.
+                            // 0 : DiaplayTask, 1 : SensorTask, 2 : UartTask, 3
+                            // : ParsingTask
+    SENSORBOARDTYPE boardType[1]; // SENSORBOARDTYPE ì‚¬ìš© í•´ì„œ ì„ íƒ, sensor board ì¢…ë¥˜ ê¸°ë¡
+    uint8_t boardEnable;
+    uniChar hwVersion[5];
+    uniChar fwVersion[5];
+    uniInt32 uuid[3];
+    uint8_t relayState;
+} SYSTEM_STRUCT;
 extern SYSTEM_STRUCT SysProperties;
 
 extern uint8_t receiveData[20];

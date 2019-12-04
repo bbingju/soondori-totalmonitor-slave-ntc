@@ -1,131 +1,138 @@
 #include "0_Util.h"
+#include <string.h>
 
 uint8_t *bytes;
 uint8_t BuzzerEnable;
 
 
-GPIO_TypeDef * 	LED[16] = {	LED_01_GPIO_Port,	LED_02_GPIO_Port,	LED_03_GPIO_Port,	LED_04_GPIO_Port,
-														LED_05_GPIO_Port,	LED_06_GPIO_Port,	LED_07_GPIO_Port,	LED_08_GPIO_Port,
-														LED_09_GPIO_Port,	LED_10_GPIO_Port,	LED_11_GPIO_Port,	LED_12_GPIO_Port,
-														LED_13_GPIO_Port,	LED_14_GPIO_Port,	LED_15_GPIO_Port,	LED_16_GPIO_Port };
-uint16_t LED_PIN[16] = { 		LED_01_Pin,				LED_02_Pin,				LED_03_Pin,				LED_04_Pin,
-														LED_05_Pin,				LED_06_Pin,				LED_07_Pin,				LED_08_Pin,
-														LED_09_Pin,				LED_10_Pin,				LED_11_Pin,				LED_12_Pin,
-														LED_13_Pin,				LED_14_Pin,				LED_15_Pin,				LED_16_Pin };
+GPIO_TypeDef *  LED[16] = {	LED_01_GPIO_Port,	LED_02_GPIO_Port,	LED_03_GPIO_Port,	LED_04_GPIO_Port,
+                                LED_05_GPIO_Port,	LED_06_GPIO_Port,	LED_07_GPIO_Port,	LED_08_GPIO_Port,
+                                LED_09_GPIO_Port,	LED_10_GPIO_Port,	LED_11_GPIO_Port,	LED_12_GPIO_Port,
+                                LED_13_GPIO_Port,	LED_14_GPIO_Port,	LED_15_GPIO_Port,	LED_16_GPIO_Port };
+uint16_t LED_PIN[16] = {                LED_01_Pin,				LED_02_Pin,				LED_03_Pin,				LED_04_Pin,
+                                        LED_05_Pin,				LED_06_Pin,				LED_07_Pin,				LED_08_Pin,
+                                        LED_09_Pin,				LED_10_Pin,				LED_11_Pin,				LED_12_Pin,
+                                        LED_13_Pin,				LED_14_Pin,				LED_15_Pin,				LED_16_Pin };
 
 
 /*********************************************************************
 *	 ByteArrayToFloat
-*  String ∏¶ πËø≠∑Œ ∫πªÁ «—¥Ÿ. ∫πªÁ«— µ⁄ ≥≤¿∫ πËø≠¿∫ 0¿∏∑Œ √ ±‚»≠ «—¥Ÿ.
-*  byteArray			: ø¯∫ª πËø≠¿ª πﬁ¥¬¥Ÿ. 4πŸ¿Ã∆Æ 
-*	 return	    		: float ∑Œ ∫Ø»Ø«œø© π›»Ø «—¥Ÿ. 
+*  String Î•º Î∞∞Ïó¥Î°ú Î≥µÏÇ¨ ÌïúÎã§. Î≥µÏÇ¨Ìïú Îí§ ÎÇ®ÏùÄ Î∞∞Ïó¥ÏùÄ 0ÏúºÎ°ú Ï¥àÍ∏∞Ìôî ÌïúÎã§.
+*  byteArray			: ÏõêÎ≥∏ Î∞∞Ïó¥ÏùÑ Î∞õÎäîÎã§. 4Î∞îÏù¥Ìä∏
+*	 return	                : float Î°ú Î≥ÄÌôòÌïòÏó¨ Î∞òÌôò ÌïúÎã§.
 **********************************************************************/
 float ByteArrayToFloat(uint8_t *byteArray)
 {
 //	uint8_t data[4] = {0, 0, 0, 0};
-	bytes = byteArray;
-	uint32_t res = 0.0;
+    bytes = byteArray;
+    uint32_t res = 0.0;
 
-	res  =  ((uint32_t)*byteArray 
-				| ((uint32_t)*(byteArray + 1) << 8) 
-				| ((uint32_t)*(byteArray + 2) << 16) 
-				| ((uint32_t)*(byteArray + 3) << 24));
+    res  =  ((uint32_t)*byteArray
+             | ((uint32_t)*(byteArray + 1) << 8)
+             | ((uint32_t)*(byteArray + 2) << 16)
+             | ((uint32_t)*(byteArray + 3) << 24));
 
-	return	*((float*)&res);
+    return	*((float*)&res);
+}
+
+void print_bytes(uint8_t *stream, int len)
+{
+    for (int i = 0; i < len; i++) {
+        DBG_LOG("%02x ", *(stream + i));
+    }
+    SEGGER_RTT_PutChar(0, '\n');
 }
 
 /*********************************************************************
 *	 StringCopyToArray
-*  String ∏¶ πËø≠∑Œ ∫πªÁ «—¥Ÿ. ∫πªÁ«— µ⁄ ≥≤¿∫ πËø≠¿∫ 0¿∏∑Œ √ ±‚»≠ «—¥Ÿ.
-*  TagetArray			: ¿Ã∞˜¿∏∑Œ ∫πªÁ«—¥Ÿ.
-*  OriginalString : ¿Ã∞Õ¿ª ∫πªÁ«—¥Ÿ.
-*  CopyLength     : ∫πªÁ«“ ±Ê¿Ã
-*	 TotalLength    : ≈∏∞Ÿ πËø≠¿« √— ±Ê¿Ã 
+*  String Î•º Î∞∞Ïó¥Î°ú Î≥µÏÇ¨ ÌïúÎã§. Î≥µÏÇ¨Ìïú Îí§ ÎÇ®ÏùÄ Î∞∞Ïó¥ÏùÄ 0ÏúºÎ°ú Ï¥àÍ∏∞Ìôî ÌïúÎã§.
+*  TagetArray			: Ïù¥Í≥≥ÏúºÎ°ú Î≥µÏÇ¨ÌïúÎã§.
+*  OriginalString : Ïù¥Í≤ÉÏùÑ Î≥µÏÇ¨ÌïúÎã§.
+*  CopyLength     : Î≥µÏÇ¨Ìï† Í∏∏Ïù¥
+*	 TotalLength    : ÌÉÄÍ≤ü Î∞∞Ïó¥Ïùò Ï¥ù Í∏∏Ïù¥
 **********************************************************************/
-uint8_t CopyToArray(	uint8_t* TagetArray, 	uint8_t* OriginalString, 
-							uint8_t CopyLength, 	uint8_t TotalLength)
+uint8_t CopyToArray(uint8_t* TagetArray, uint8_t* OriginalString,
+                    uint8_t CopyLength, uint8_t TotalLength)
 {
-	uint8_t i = 0; 
+    for(uint8_t i = 0; i < TotalLength; i++)
+    {
+        if(i < CopyLength)
+        {
+            *TagetArray++ = *OriginalString++;
+        }
+        else
+        {
+            *TagetArray++ = 0;
+        }
+    }
 
-	for(i = 0; i < TotalLength; i++)
-	{
-		if(i < CopyLength)
-		{
-			*TagetArray++ = *OriginalString++;
-		}
-		else
-		{
-			*TagetArray++ = 0;
-		}
-	}
-
-	return TRUE;
+    return TRUE;
 }
 
 /*********************************************************************
 *	doMakeSendData
-*	∏Ì∑…¿ª πﬁæ—§µ¿ª∂ß ∏Æ≈œ«ÿ¡÷¥¬ πÆ¿⁄ø≠ ª˝º∫ «‘ºˆ 
-*	SendData		: ¿Ã∞˜¿∏∑Œ πÆ¿⁄ø≠¿ª ª˝º∫«—¥Ÿ.
-*	Command 		: 1π¯ πŸ¿Ã∆Æ¿« command ¿« πŸ¿Ã∆Æ∏¶ πﬁ¥¬¥Ÿ. (0π¯ πŸ¿Ã∆Æ∫Œ≈Õ Ω√¿€)
-*	Data    		: 2π¯∫Œ≈Õ ±‚∑œµ… πÆ¿⁄ø≠¿ª πﬁ¥¬¥Ÿ.
-*	DataLength		: Data ¿« ±Ê¿Ã∏¶ πﬁ¥¬¥Ÿ.
-*	BufferLength	: ¿¸√º SendData¿« ±Ê¿Ã∏¶ πﬁ¥¬¥Ÿ. etx¿« ¿ßƒ°∏¶ »Æ¿Œ 
+*	Î™ÖÎ†πÏùÑ Î∞õÏïó„ÖÖÏùÑÎïå Î¶¨ÌÑ¥Ìï¥Ï£ºÎäî Î¨∏ÏûêÏó¥ ÏÉùÏÑ± Ìï®Ïàò
+*	SendData		: Ïù¥Í≥≥ÏúºÎ°ú Î¨∏ÏûêÏó¥ÏùÑ ÏÉùÏÑ±ÌïúÎã§.
+*	Command                 : 1Î≤à Î∞îÏù¥Ìä∏Ïùò command Ïùò Î∞îÏù¥Ìä∏Î•º Î∞õÎäîÎã§. (0Î≤à Î∞îÏù¥Ìä∏Î∂ÄÌÑ∞ ÏãúÏûë)
+*	Data                    : 2Î≤àÎ∂ÄÌÑ∞ Í∏∞Î°ùÎê† Î¨∏ÏûêÏó¥ÏùÑ Î∞õÎäîÎã§.
+*	DataLength		: Data Ïùò Í∏∏Ïù¥Î•º Î∞õÎäîÎã§.
+*	BufferLength	: Ï†ÑÏ≤¥ SendDataÏùò Í∏∏Ïù¥Î•º Î∞õÎäîÎã§. etxÏùò ÏúÑÏπòÎ•º ÌôïÏù∏
 **********************************************************************/
 #if 0
-void doMakeSendData(  uint8_t* SendData,  uint8_t Command, 
-                            uint8_t* Data,      
+void doMakeSendData(  uint8_t* SendData,  uint8_t Command,
+                            uint8_t* Data,
                             uint8_t  DataLength,  uint8_t BufferLength)
 {
   //uint8_t i;
   uniInt16 crc;
-  
+
   *SendData++ = CMD_STX;
   *SendData++ = Command;
-  CopyToArray(SendData, Data, DataLength, DATA_FULL_LENGTH);  
+  CopyToArray(SendData, Data, DataLength, DATA_FULL_LENGTH);
   SendData += 5;
 
   crc.UI16 =  CRC16_Make(&SendData[0], DATA_FULL_LENGTH + 1);
 
   *SendData++ = crc.UI8[0];
   *SendData++ = crc.UI8[1];
-  
+
   *SendData = CMD_ETX;
 }
-#endif 
+#endif
 
-void doMakeSendSlotData(	uint8_t* SendData,	    uint8_t SlotNumber,
-                                uint8_t Command, 		uint8_t* Data, 			
-							    uint8_t  DataLength,	uint8_t BufferLength)
+void doMakeSendSlotData(uint8_t* SendData,	    uint8_t SlotNumber,
+                        uint8_t Command,                uint8_t* Data,
+                        uint8_t  DataLength,	uint8_t BufferLength)
 {
-	//uint8_t i;
-	uniInt16 crc;
-	
-	*SendData++ = CMD_STX;
-	*SendData++ = SlotNumber;
-	*SendData++ = Command;
-	CopyToArray(SendData, Data, DataLength, DATA_FULL_LENGTH);	
-	SendData -= 2;
+    //uint8_t i;
+    uniInt16 crc;
 
-	crc.UI16 =	CRC16_Make(&SendData[0], BufferLength - 4);
-	SendData += (BufferLength - 4);
+    *SendData++ = CMD_STX;
+    *SendData++ = SlotNumber;
+    *SendData++ = Command;
+    CopyToArray(SendData, Data, DataLength, DATA_FULL_LENGTH);
+    SendData -= 2;
 
-	*SendData++ = crc.UI8[0];
-	*SendData++ = crc.UI8[1];
-	
-	*SendData = CMD_ETX;
+    crc.UI16 =	CRC16_Make(&SendData[0], BufferLength - 4);
+    SendData += (BufferLength - 4);
+
+    *SendData++ = crc.UI8[0];
+    *SendData++ = crc.UI8[1];
+
+    *SendData = CMD_ETX;
 }
 
-void doMakeSendTempData(    uint8_t* SendData,  uint8_t Command, 
-                                    uint8_t* Data,      
+void doMakeSendTempData(    uint8_t* SendData,  uint8_t Command,
+                                    uint8_t* Data,
                                     uint8_t  DataLength,  uint8_t BufferLength)
 {
   //uint8_t i;
   uniInt16 crc;
-  
+
   *SendData++ = CMD_STX;
   *SendData++ = SysProperties.boardID;
   *SendData++ = Command;
-  CopyToArray(SendData, Data, DataLength, BufferLength - 4);  
+  CopyToArray(SendData, Data, DataLength, BufferLength - 4);
   SendData -= 2;
 
   crc.UI16 =  CRC16_Make(&SendData[0], BufferLength - 4);
@@ -133,152 +140,125 @@ void doMakeSendTempData(    uint8_t* SendData,  uint8_t Command,
 
   *SendData++ = crc.UI8[0];
   *SendData++ = crc.UI8[1];
-  
+
   *SendData = CMD_ETX;
 }
 
 /*********************************************************************
 *	doNOP
-*  	NOP ∏Ì∑… π›∫π ∑Á∆æ
-*  	count	 : 16∫Ò∆Æ ƒ´øÓ∆Æ 
+*       NOP Î™ÖÎ†π Î∞òÎ≥µ Î£®Ìã¥
+*       count	 : 16ÎπÑÌä∏ Ïπ¥Ïö¥Ìä∏
 **********************************************************************/
 void doNOP(uint16_t count)
 {
-	uint16_t i;
-	for(i = 0; i < count; i++)
-		asm("NOP");
+        uint16_t i;
+        for(i = 0; i < count; i++)
+                asm("NOP");
 }
 
-uint32_t midADC(uint32_t * inData) /* using Bubble sort */ 
+uint32_t midADC(uint32_t * inData) /* using Bubble sort */
 {
-	uint8_t 	i, j; 
-	uint32_t	sortData[11];
+    uint8_t         i, j;
+    uint32_t	sortData[11];
 
-	sortData[0] 	= *(inData++);
-	sortData[1] 	= *(inData++);
-	sortData[2] 	= *(inData++);
-	sortData[3] 	= *(inData++);
-	sortData[4] 	= *(inData++);
-	sortData[5] 	= *(inData++);
-	sortData[6] 	= *(inData++);
-	sortData[7] 	= *(inData++);
-	sortData[8] 	= *(inData++);
-	sortData[9] 	= *(inData++);
-	sortData[10]	= *(inData);
+    sortData[0]     = *(inData++);
+    sortData[1]     = *(inData++);
+    sortData[2]     = *(inData++);
+    sortData[3]     = *(inData++);
+    sortData[4]     = *(inData++);
+    sortData[5]     = *(inData++);
+    sortData[6]     = *(inData++);
+    sortData[7]     = *(inData++);
+    sortData[8]     = *(inData++);
+    sortData[9]     = *(inData++);
+    sortData[10]	= *(inData);
 
-	for(i = 0; i < 11 - 1; ++i) 
-	{ 
-		for(j = 11 - 1; i < j; --j) 
-		{
-			if(sortData[j - 1] > sortData[j]) 
-				swap(&sortData[j - 1], &sortData[j]); 
-		} 
-	} 
-	return sortData[6]; 
+    for(i = 0; i < 11 - 1; ++i)
+    {
+        for(j = 11 - 1; i < j; --j)
+        {
+            if(sortData[j - 1] > sortData[j])
+                swap(&sortData[j - 1], &sortData[j]);
+        }
+    }
+    return sortData[6];
 }
 
-void swap(uint32_t *a, uint32_t *b) 
-{ 
-	uint32_t tmp = *a; 
-	*a = *b; 
-	*b = tmp; 
+void swap(uint32_t *a, uint32_t *b)
+{
+    uint32_t tmp = *a;
+    *a = *b;
+    *b = tmp;
 }
 
 void doLedDisplay(uint8_t channel, uint8_t state)
 {
-	HAL_GPIO_WritePin(LED[channel], LED_PIN[channel], (GPIO_PinState)state);
+        HAL_GPIO_WritePin(LED[channel], LED_PIN[channel], (GPIO_PinState)state);
 }
 
 void doRelayPlay(uint8_t state)
 {
-	if(state == _ON)
-	{
-		HAL_GPIO_WritePin(RELAY_SEL_GPIO_Port, RELAY_SEL_Pin, _RELAY_ON);
-		HAL_GPIO_WritePin(LED_RELAY_GPIO_Port, LED_RELAY_Pin, _LED_ON);
-		SysProperties.relayState = 1;
-	}	
-	else
-	{
-		HAL_GPIO_WritePin(RELAY_SEL_GPIO_Port, RELAY_SEL_Pin, _RELAY_OFF);
-		HAL_GPIO_WritePin(LED_RELAY_GPIO_Port, LED_RELAY_Pin, _LED_OFF);
-		SysProperties.relayState = 0;
-	}
+    if(state == _ON)
+    {
+        HAL_GPIO_WritePin(RELAY_SEL_GPIO_Port, RELAY_SEL_Pin, _RELAY_ON);
+        HAL_GPIO_WritePin(LED_RELAY_GPIO_Port, LED_RELAY_Pin, _LED_ON);
+        SysProperties.relayState = 1;
+    }
+    else
+    {
+        HAL_GPIO_WritePin(RELAY_SEL_GPIO_Port, RELAY_SEL_Pin, _RELAY_OFF);
+        HAL_GPIO_WritePin(LED_RELAY_GPIO_Port, LED_RELAY_Pin, _LED_OFF);
+        SysProperties.relayState = 0;
+    }
 }
 
-// CRC16 
+// CRC16
 uint16_t CRC16_Make(uint8_t *byMsg, uint16_t len)
 {
-	uint16_t crc = 0xFFFF;
+    uint16_t crc = 0xFFFF;
     uint16_t i;
     uint8_t  j;
-    
-	for (i = 0; i < len; i++)
-	{
-		crc ^= byMsg[i];
-		for (j = 0; j < 8; j++)
-		{
-			uint16_t flag = (uint16_t)(crc & 0x0001);
-			crc >>= 1;
-			if (flag > 0) crc ^= 0xA001;
-		}
-	}
-	return crc;
+
+    for (i = 0; i < len; i++)
+    {
+        crc ^= byMsg[i];
+        for (j = 0; j < 8; j++)
+        {
+            uint16_t flag = (uint16_t)(crc & 0x0001);
+            crc >>= 1;
+            if (flag > 0) crc ^= 0xA001;
+        }
+    }
+    return crc;
 }
-
-/*-----------------------------------------------------------------------*/
-/* String functions                                                      */
-/*-----------------------------------------------------------------------*/
-
-/* Copy memory to memory */
-void util_mem_cpy (void* dst, const void* src, UINT cnt) {
-	BYTE *d = (BYTE*)dst;
-	const BYTE *s = (const BYTE*)src;
-
-	if (cnt) {
-		do {
-			*d++ = *s++;
-		} while (--cnt);
-	}
-}
-
-/* Fill memory block */
-void util_mem_set (void* dst, int val, UINT cnt) {
-	BYTE *d = (BYTE*)dst;
-
-	do {
-		*d++ = (BYTE)val;
-	} while (--cnt);
-}
-
 
 void doFindMyID(void)
 {
-	while(1)
-	{
-		if( (HAL_GPIO_ReadPin(SLOT_EN_00_GPIO_Port, SLOT_EN_00_Pin) == GPIO_PIN_RESET) || 
-			(HAL_GPIO_ReadPin(SLOT_EN_01_GPIO_Port, SLOT_EN_01_Pin) == GPIO_PIN_RESET) || 
-			(HAL_GPIO_ReadPin(SLOT_EN_02_GPIO_Port, SLOT_EN_02_Pin) == GPIO_PIN_RESET) || 
-			(HAL_GPIO_ReadPin(SLOT_EN_03_GPIO_Port, SLOT_EN_03_Pin) == GPIO_PIN_RESET) )
-		{
-			break;
-		}
-	}
+        while(1)
+        {
+                if( (HAL_GPIO_ReadPin(SLOT_EN_00_GPIO_Port, SLOT_EN_00_Pin) == GPIO_PIN_RESET) ||
+                        (HAL_GPIO_ReadPin(SLOT_EN_01_GPIO_Port, SLOT_EN_01_Pin) == GPIO_PIN_RESET) ||
+                        (HAL_GPIO_ReadPin(SLOT_EN_02_GPIO_Port, SLOT_EN_02_Pin) == GPIO_PIN_RESET) ||
+                        (HAL_GPIO_ReadPin(SLOT_EN_03_GPIO_Port, SLOT_EN_03_Pin) == GPIO_PIN_RESET) )
+                {
+                        break;
+                }
+        }
 
-	if(HAL_GPIO_ReadPin(SLOT_EN_00_GPIO_Port, SLOT_EN_00_Pin) == GPIO_PIN_RESET)
-	{
-		SysProperties.boardID = '0';	//0: ªÁøÎ º≥¡§ æ»µ , 1 ~ 4 ΩΩ∑‘¿∏∑Œ º≥¡§ «ÿæﬂ «‘
-	}
-	else if(HAL_GPIO_ReadPin(SLOT_EN_01_GPIO_Port, SLOT_EN_01_Pin) == GPIO_PIN_RESET)
-	{
-		SysProperties.boardID = '1';	//0: ªÁøÎ º≥¡§ æ»µ , 1 ~ 4 ΩΩ∑‘¿∏∑Œ º≥¡§ «ÿæﬂ «‘
-	}
-	else if(HAL_GPIO_ReadPin(SLOT_EN_02_GPIO_Port, SLOT_EN_02_Pin) == GPIO_PIN_RESET)
-	{
-		SysProperties.boardID = '2';	//0: ªÁøÎ º≥¡§ æ»µ , 1 ~ 4 ΩΩ∑‘¿∏∑Œ º≥¡§ «ÿæﬂ «‘
-	}
-	else if(HAL_GPIO_ReadPin(SLOT_EN_03_GPIO_Port, SLOT_EN_03_Pin) == GPIO_PIN_RESET)
-	{
-		SysProperties.boardID = '3';	//0: ªÁøÎ º≥¡§ æ»µ , 1 ~ 4 ΩΩ∑‘¿∏∑Œ º≥¡§ «ÿæﬂ «‘
-	}
+        if(HAL_GPIO_ReadPin(SLOT_EN_00_GPIO_Port, SLOT_EN_00_Pin) == GPIO_PIN_RESET)
+        {
+                SysProperties.boardID = '0';	//0: ÏÇ¨Ïö© ÏÑ§Ï†ï ÏïàÎê®, 1 ~ 4 Ïä¨Î°ØÏúºÎ°ú ÏÑ§Ï†ï Ìï¥Ïïº Ìï®
+        }
+        else if(HAL_GPIO_ReadPin(SLOT_EN_01_GPIO_Port, SLOT_EN_01_Pin) == GPIO_PIN_RESET)
+        {
+                SysProperties.boardID = '1';	//0: ÏÇ¨Ïö© ÏÑ§Ï†ï ÏïàÎê®, 1 ~ 4 Ïä¨Î°ØÏúºÎ°ú ÏÑ§Ï†ï Ìï¥Ïïº Ìï®
+        }
+        else if(HAL_GPIO_ReadPin(SLOT_EN_02_GPIO_Port, SLOT_EN_02_Pin) == GPIO_PIN_RESET)
+        {
+                SysProperties.boardID = '2';	//0: ÏÇ¨Ïö© ÏÑ§Ï†ï ÏïàÎê®, 1 ~ 4 Ïä¨Î°ØÏúºÎ°ú ÏÑ§Ï†ï Ìï¥Ïïº Ìï®
+        }
+        else if(HAL_GPIO_ReadPin(SLOT_EN_03_GPIO_Port, SLOT_EN_03_Pin) == GPIO_PIN_RESET)
+        {
+                SysProperties.boardID = '3';	//0: ÏÇ¨Ïö© ÏÑ§Ï†ï ÏïàÎê®, 1 ~ 4 Ïä¨Î°ØÏúºÎ°ú ÏÑ§Ï†ï Ìï¥Ïïº Ìï®
+        }
 }
-

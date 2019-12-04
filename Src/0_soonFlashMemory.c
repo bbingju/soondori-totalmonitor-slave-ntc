@@ -2,61 +2,61 @@
 
 
 /**************************************************************************************************************
-*	Write µ¿ÀÛÀÇ Èå¸§Àº ¾Æ·¡¿Í °°´Ù.
-*	1) Control register unlock
-*	2) 4byte ´ÜÀ§·Î ¾²±â ¼öÇà
-*	3) Control register lock
+*       Write ë™ì‘ì˜ íë¦„ì€ ì•„ë˜ì™€ ê°™ë‹¤.
+*       1) Control register unlock
+*       2) 4byte ë‹¨ìœ„ë¡œ ì“°ê¸° ìˆ˜í–‰
+*       3) Control register lock
 ***************************************************************************************************************/
 HAL_StatusTypeDef WriteFlash(uint32_t Address, uint32_t data, uint32_t* errorcode)
 {
-	HAL_StatusTypeDef res = HAL_OK;
+        HAL_StatusTypeDef res = HAL_OK;
 
-	/* Unlock to control */
-	HAL_FLASH_Unlock();
+        /* Unlock to control */
+        HAL_FLASH_Unlock();
 
-	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_PGERR| FLASH_FLAG_WRPERR);
+        __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_PGERR| FLASH_FLAG_WRPERR);
 
-	/* Writing data to flash memory */
-	if(HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address, data) == HAL_OK)
-	{
-		errorcode = 0;
-	}
-	else
-	{
-		*errorcode = HAL_FLASH_GetError();
-		res = HAL_ERROR;
-	}
+        /* Writing data to flash memory */
+        if(HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Address, data) == HAL_OK)
+        {
+                errorcode = 0;
+        }
+        else
+        {
+                *errorcode = HAL_FLASH_GetError();
+                res = HAL_ERROR;
+        }
 
-	/* Lock flash control register */
-	HAL_FLASH_Lock();  
+        /* Lock flash control register */
+        HAL_FLASH_Lock();
 
-	return res;
+        return res;
 }
 
 /**************************************************************************************************************
-*	Read µ¿ÀÛÀÇ °æ¿ì¿¡´Â Á÷°üÀûÀ¸·Î ÇØ´ç Memory ÁÖ¼Ò¸¦ Access ÇÏ¿© 4byte µ¥ÀÌÅÍ ÀĞ¾î¿Â´Ù.
+*       Read ë™ì‘ì˜ ê²½ìš°ì—ëŠ” ì§ê´€ì ìœ¼ë¡œ í•´ë‹¹ Memory ì£¼ì†Œë¥¼ Access í•˜ì—¬ 4byte ë°ì´í„° ì½ì–´ì˜¨ë‹¤.
 ***************************************************************************************************************/
 __IO uint32_t ReadFlash(uint32_t Address)
 {
-	return *(__IO uint32_t*)Address;
+        return *(__IO uint32_t*)Address;
 }
 
 /**************************************************************************************************************
-*	Flash¿¡ ¾²±â À§ÇØ ÇØ´ç ¿µ¿ªÀ» Áö¿ì´Â Erase µ¿ÀÛÀ» »ìÆìº¸ÀÚ.
-*	ÄÚµåÀÇ Èå¸§À» »ìÆìº¸¸é ¾Æ·¡¿Í °°´Ù.
-*	1) Control register unlock
-*	2) Áö¿ì°íÀÚ ÇÏ´Â ¼½ÅÍÀÇ Å©±â °è»ê
-*	3) ¼½ÅÍ »èÁ¦ ¸í·É
-*	4) µ¥ÀÌÅÍ Ä³½Ã¿¡ ÀÌ¹Ì ¿Ã¶ó°£ µ¥ÀÌÅÍÀÎ °æ¿ì¿¡ Cache±îÁö »èÁ¦°¡ ÇÊ¿äÇÑ °æ¿ì¿¡´Â Cache Clear
-* 	5) Control register lock
+*       Flashì— ì“°ê¸° ìœ„í•´ í•´ë‹¹ ì˜ì—­ì„ ì§€ìš°ëŠ” Erase ë™ì‘ì„ ì‚´í´ë³´ì.
+*       ì½”ë“œì˜ íë¦„ì„ ì‚´í´ë³´ë©´ ì•„ë˜ì™€ ê°™ë‹¤.
+*       1) Control register unlock
+*       2) ì§€ìš°ê³ ì í•˜ëŠ” ì„¹í„°ì˜ í¬ê¸° ê³„ì‚°
+*       3) ì„¹í„° ì‚­ì œ ëª…ë ¹
+*       4) ë°ì´í„° ìºì‹œì— ì´ë¯¸ ì˜¬ë¼ê°„ ë°ì´í„°ì¸ ê²½ìš°ì— Cacheê¹Œì§€ ì‚­ì œê°€ í•„ìš”í•œ ê²½ìš°ì—ëŠ” Cache Clear
+*       5) Control register lock
 ***************************************************************************************************************/
 HAL_StatusTypeDef EraseFlash(uint32_t startAdd, uint32_t pages)
 {
   uint32_t SectorError = 0;
-  
+
   /* Unlock to control */
   HAL_FLASH_Unlock();
-    
+
   /* Erase sectors */
   FLASH_EraseInitTypeDef EraseInitStruct;
   EraseInitStruct.TypeErase = FLASH_TYPEERASE_PAGES;
@@ -65,127 +65,122 @@ HAL_StatusTypeDef EraseFlash(uint32_t startAdd, uint32_t pages)
   EraseInitStruct.NbPages = pages;
 
   if(HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError) != HAL_OK)
-  { 
-    uint32_t errorcode = HAL_FLASH_GetError();            
+  {
+    uint32_t errorcode = HAL_FLASH_GetError();
     return HAL_ERROR;
   }
-  
+
   /* Lock flash control register */
   HAL_FLASH_Lock();
-  
-  return HAL_OK;  
+
+  return HAL_OK;
 }
 
 uint32_t doFlashWriteRevision(void)
 {
-	uint32_t	flashError = 0;
-	uint8_t 	i;
+        uint32_t        flashError = 0;
+        uint8_t         i;
 
-	EraseFlash(FLASH_SAVE_CHK, 1);
-	
-	for(i = 0; i < 16; i++)
-	{	
-		WriteFlash(FLASH_ADD_THRESHOLD_TEMP 	  	+ (i * 4), TestData.Threshold[0][i].UI32, &flashError);
-		WriteFlash(FLASH_ADD_THRESHOLD_TEMP1 	  	+ (i * 4), TestData.Threshold[1][i].UI32, &flashError);
-		WriteFlash(FLASH_ADD_NTC_CALIBRATION_TABLE  + (i * 4), TestData.ntcCalibrationTable[0][i].UI32, &flashError);
-		WriteFlash(FLASH_ADD_NTC_CALIBRATION_TABLE1	+ (i * 4), TestData.ntcCalibrationTable[1][i].UI32, &flashError);
-	}
-	
-	WriteFlash(FLASH_ADD_NTC_CALIBRATION_CONSTANT, 	TestData.ntcCalibrationConstant.UI32, &flashError);
-	WriteFlash(FLASH_ADD_REVISION_APPLY, 			(uint32_t)TestData.revisionApplyFlag, &flashError);
-	WriteFlash(FLASH_ADD_REVISION_CONSTANT, 		TestData.revisionConstant.UI32, &flashError);
+        EraseFlash(FLASH_SAVE_CHK, 1);
 
-	WriteFlash(FLASH_SAVE_CHK, FLASH_SAVE_FLAG, &flashError);
+        for(i = 0; i < 16; i++)
+        {
+                WriteFlash(FLASH_ADD_THRESHOLD_TEMP             + (i * 4), TestData.Threshold[0][i].UI32, &flashError);
+                WriteFlash(FLASH_ADD_THRESHOLD_TEMP1            + (i * 4), TestData.Threshold[1][i].UI32, &flashError);
+                WriteFlash(FLASH_ADD_NTC_CALIBRATION_TABLE  + (i * 4), TestData.ntcCalibrationTable[0][i].UI32, &flashError);
+                WriteFlash(FLASH_ADD_NTC_CALIBRATION_TABLE1     + (i * 4), TestData.ntcCalibrationTable[1][i].UI32, &flashError);
+        }
 
-	return flashError;
+        WriteFlash(FLASH_ADD_NTC_CALIBRATION_CONSTANT,  TestData.ntcCalibrationConstant.UI32, &flashError);
+        WriteFlash(FLASH_ADD_REVISION_APPLY,                    (uint32_t)TestData.revisionApplyFlag, &flashError);
+        WriteFlash(FLASH_ADD_REVISION_CONSTANT,                 TestData.revisionConstant.UI32, &flashError);
+
+        WriteFlash(FLASH_SAVE_CHK, FLASH_SAVE_FLAG, &flashError);
+
+        return flashError;
 }
 
 
 #if 0
 /**************************************************************************************************************
-*	WPÀ» È°¼ºÈ­ ÇÏ´Â ÄÚµå¸¦ »ìÆìº¸ÀÚ. WRPState °ª¿¡ OB_WRPSTATE_ENABLE À» ¼³Á¤ÇÏ°í HAL_FLASH_OB_Launch ¸¦ È£ÃâÇÑ´Ù.
+*       WPì„ í™œì„±í™” í•˜ëŠ” ì½”ë“œë¥¼ ì‚´í´ë³´ì. WRPState ê°’ì— OB_WRPSTATE_ENABLE ì„ ì„¤ì •í•˜ê³  HAL_FLASH_OB_Launch ë¥¼ í˜¸ì¶œí•œë‹¤.
 ***************************************************************************************************************/
 HAL_StatusTypeDef EnableWriteProtect(uint32_t add)
 {
-  FLASH_OBProgramInitTypeDef OBInit; 
-  
+  FLASH_OBProgramInitTypeDef OBInit;
+
   HAL_FLASH_OB_Unlock();
   HAL_FLASH_Unlock();
-    
+
   OBInit.OptionType = OPTIONBYTE_WRP;
   OBInit.WRPState   = OB_WRPSTATE_ENABLE;
   OBInit.Banks      = FLASH_BANK_1;
   OBInit.WRPSector  = add;//FLASH_WRP_SECTORS;
-  HAL_FLASHEx_OBProgram(&OBInit);   
-    
+  HAL_FLASHEx_OBProgram(&OBInit);
+
   if (HAL_FLASH_OB_Launch() != HAL_OK)
   {
     return HAL_ERROR;
   }
-    
-  HAL_FLASH_OB_Lock();  
-  HAL_FLASH_Lock();  
-  
+
+  HAL_FLASH_OB_Lock();
+  HAL_FLASH_Lock();
+
   return HAL_OK;
 }
 
 /**************************************************************************************************************
-*	WP¸¦ ºñÈ°¼ºÈ­ ÇÏ´Â ±â´ÉÀº Enable°ú µ¿ÀÏÇÏ¸ç WRPState °ª¸¸ ´Ù¸¦ »ÓÀÌ´Ù. 
+*       WPë¥¼ ë¹„í™œì„±í™” í•˜ëŠ” ê¸°ëŠ¥ì€ Enableê³¼ ë™ì¼í•˜ë©° WRPState ê°’ë§Œ ë‹¤ë¥¼ ë¿ì´ë‹¤.
 ***************************************************************************************************************/
 HAL_StatusTypeDef DisableWriteProtect(uint32_t add)
 {
-  FLASH_OBProgramInitTypeDef OBInit; 
-  
-  HAL_FLASH_OB_Unlock();
-  HAL_FLASH_Unlock();
-  
-  OBInit.OptionType = OPTIONBYTE_WRP;
-  OBInit.WRPState   = OB_WRPSTATE_DISABLE;
-  OBInit.Banks      = FLASH_BANK_1;
-  OBInit.WRPSector  = add;//FLASH_WRP_SECTORS;
-  HAL_FLASHEx_OBProgram(&OBInit); 
-  
-  if (HAL_FLASH_OB_Launch() != HAL_OK)
-  {
-    return HAL_ERROR;
-  }
-  
-  HAL_FLASH_OB_Lock();  
-  HAL_FLASH_Lock();
-  
-  return HAL_OK;
+    FLASH_OBProgramInitTypeDef OBInit;
+
+    HAL_FLASH_OB_Unlock();
+    HAL_FLASH_Unlock();
+
+    OBInit.OptionType = OPTIONBYTE_WRP;
+    OBInit.WRPState   = OB_WRPSTATE_DISABLE;
+    OBInit.Banks      = FLASH_BANK_1;
+    OBInit.WRPSector  = add;//FLASH_WRP_SECTORS;
+    HAL_FLASHEx_OBProgram(&OBInit);
+
+    if (HAL_FLASH_OB_Launch() != HAL_OK)
+    {
+        return HAL_ERROR;
+    }
+
+    HAL_FLASH_OB_Lock();
+    HAL_FLASH_Lock();
+
+    return HAL_OK;
 }
 #endif
 
 void DoValueFormating(void)
 {
-	uint8_t i;
-	
-	for(i = 0; i < 16; i++)
-	{	
-		TestData.Threshold[0][i].Float				= (float)50.0;	//°æ°í ¿Âµµ Å×ÀÌºí 
-		TestData.Threshold[1][i].Float				= (float)50.0;
-		TestData.ntcCalibrationTable[0][i].Float	= (float)0.0;	//NTC ±³Á¤ Å×ÀÌºí 
-		TestData.ntcCalibrationTable[1][i].Float	= (float)0.0;
-	}
-	TestData.ntcCalibrationConstant.Float = (float)0.0; 			//NTC Áõ°¨»ó¼ö 
-	TestData.revisionConstant.Float = (float)0.3672;				//º¸Á¤»ó¼ö 
-	TestData.revisionApplyFlag = 0; 								//º¸Á¤ ¼±ÅÃ 
+    for(int i = 0; i < 16; i++)
+    {
+        TestData.Threshold[0][i].Float                  = (float)50.0;  //ê²½ê³  ì˜¨ë„ í…Œì´ë¸”
+        TestData.Threshold[1][i].Float                  = (float)50.0;
+        TestData.ntcCalibrationTable[0][i].Float        = (float)0.0;   //NTC êµì • í…Œì´ë¸”
+        TestData.ntcCalibrationTable[1][i].Float        = (float)0.0;
+    }
+    TestData.ntcCalibrationConstant.Float = (float)0.0;                     //NTC ì¦ê°ìƒìˆ˜
+    TestData.revisionConstant.Float = (float)0.3672;                            //ë³´ì •ìƒìˆ˜
+    TestData.revisionApplyFlag = 0;                                                                 //ë³´ì • ì„ íƒ
 }
 
 void DoLoadFlash(void)
 {
-	uint8_t i;
-	
-	for(i = 0; i < 16; i++)
-	{	
-		TestData.Threshold[0][i].UI32			= ReadFlash(FLASH_ADD_THRESHOLD_TEMP + (i * 4));
-		TestData.Threshold[1][i].UI32			= ReadFlash(FLASH_ADD_THRESHOLD_TEMP1 + (i * 4));
-		TestData.ntcCalibrationTable[0][i].UI32 = ReadFlash(FLASH_ADD_NTC_CALIBRATION_TABLE + (i * 4));
-		TestData.ntcCalibrationTable[1][i].UI32 = ReadFlash(FLASH_ADD_NTC_CALIBRATION_TABLE1 + (i * 4));
-	}
-	TestData.ntcCalibrationConstant.UI32		= ReadFlash(FLASH_ADD_NTC_CALIBRATION_CONSTANT);
-	TestData.revisionApplyFlag					= (uint8_t)ReadFlash(FLASH_ADD_REVISION_APPLY);
-	TestData.revisionConstant.Float 			= ReadFlash(FLASH_ADD_REVISION_CONSTANT);
+    for(int i = 0; i < 16; i++)
+    {
+        TestData.Threshold[0][i].UI32                   = ReadFlash(FLASH_ADD_THRESHOLD_TEMP + (i * 4));
+        TestData.Threshold[1][i].UI32                   = ReadFlash(FLASH_ADD_THRESHOLD_TEMP1 + (i * 4));
+        TestData.ntcCalibrationTable[0][i].UI32 = ReadFlash(FLASH_ADD_NTC_CALIBRATION_TABLE + (i * 4));
+        TestData.ntcCalibrationTable[1][i].UI32 = ReadFlash(FLASH_ADD_NTC_CALIBRATION_TABLE1 + (i * 4));
+    }
+    TestData.ntcCalibrationConstant.UI32        = ReadFlash(FLASH_ADD_NTC_CALIBRATION_CONSTANT);
+    TestData.revisionApplyFlag                  = (uint8_t)ReadFlash(FLASH_ADD_REVISION_APPLY);
+    TestData.revisionConstant.Float             = ReadFlash(FLASH_ADD_REVISION_CONSTANT);
 }
-
