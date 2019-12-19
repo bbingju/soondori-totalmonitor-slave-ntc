@@ -16,13 +16,13 @@ uint8_t         adcNumber;
 
 ADC_HandleTypeDef * adc[2] = {&hadc1, &hadc2};
 
-GPIO_TypeDef *MUX_ADD[4] = {MUX_ADD0_GPIO_Port, MUX_ADD1_GPIO_Port,
-                            MUX_ADD2_GPIO_Port, MUX_ADD3_GPIO_Port};
-uint16_t MUX_ADD_PIN[4] = {MUX_ADD0_Pin, MUX_ADD1_Pin, MUX_ADD2_Pin,
-                           MUX_ADD3_Pin};
+GPIO_TypeDef *MUX_ADD[4] = { MUX_ADD0_GPIO_Port, MUX_ADD1_GPIO_Port,
+                             MUX_ADD2_GPIO_Port, MUX_ADD3_GPIO_Port };
+uint16_t      MUX_ADD_PIN[4] = { MUX_ADD0_Pin, MUX_ADD1_Pin, MUX_ADD2_Pin,
+                                 MUX_ADD3_Pin };
 
-GPIO_TypeDef *MUX_EN[2] = {MUX_EN0_GPIO_Port, MUX_EN1_GPIO_Port};
-uint16_t MUX_EN_PIN[2] = {MUX_EN0_Pin, MUX_EN1_Pin};
+GPIO_TypeDef *MUX_EN[2] = { MUX_EN0_GPIO_Port, MUX_EN1_GPIO_Port };
+uint16_t MUX_EN_PIN[2] = { MUX_EN0_Pin, MUX_EN1_Pin };
 
 uint8_t                         mux_enable;
 
