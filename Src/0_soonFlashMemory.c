@@ -52,48 +52,47 @@ __IO uint32_t ReadFlash(uint32_t Address)
 ***************************************************************************************************************/
 HAL_StatusTypeDef EraseFlash(uint32_t startAdd, uint32_t pages)
 {
-  uint32_t SectorError = 0;
+	uint32_t SectorError = 0;
 
-  /* Unlock to control */
-  HAL_FLASH_Unlock();
+	/* Unlock to control */
+	HAL_FLASH_Unlock();
 
-  /* Erase sectors */
-  FLASH_EraseInitTypeDef EraseInitStruct;
-  EraseInitStruct.TypeErase = FLASH_TYPEERASE_PAGES;
-  EraseInitStruct.Banks = FLASH_BANK_1;
-  EraseInitStruct.PageAddress = startAdd;
-  EraseInitStruct.NbPages = pages;
+	/* Erase sectors */
+	FLASH_EraseInitTypeDef EraseInitStruct;
+	EraseInitStruct.TypeErase = FLASH_TYPEERASE_PAGES;
+	EraseInitStruct.Banks = FLASH_BANK_1;
+	EraseInitStruct.PageAddress = startAdd;
+	EraseInitStruct.NbPages = pages;
 
-  if(HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError) != HAL_OK)
-  {
-    uint32_t errorcode = HAL_FLASH_GetError();
-    return HAL_ERROR;
-  }
+	if(HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError) != HAL_OK)
+	{
+		uint32_t errorcode = HAL_FLASH_GetError();
+		return HAL_ERROR;
+	}
 
-  /* Lock flash control register */
-  HAL_FLASH_Lock();
+	/* Lock flash control register */
+	HAL_FLASH_Lock();
 
-  return HAL_OK;
+	return HAL_OK;
 }
 
 uint32_t doFlashWriteRevision(void)
 {
         uint32_t        flashError = 0;
-        uint8_t         i;
 
         EraseFlash(FLASH_SAVE_CHK, 1);
 
-        for(i = 0; i < 16; i++)
+        for(int i = 0; i < 16; i++)
         {
-                WriteFlash(FLASH_ADD_THRESHOLD_TEMP             + (i * 4), TestData.Threshold[0][i].UI32, &flashError);
-                WriteFlash(FLASH_ADD_THRESHOLD_TEMP1            + (i * 4), TestData.Threshold[1][i].UI32, &flashError);
-                WriteFlash(FLASH_ADD_NTC_CALIBRATION_TABLE  + (i * 4), TestData.ntcCalibrationTable[0][i].UI32, &flashError);
-                WriteFlash(FLASH_ADD_NTC_CALIBRATION_TABLE1     + (i * 4), TestData.ntcCalibrationTable[1][i].UI32, &flashError);
+                WriteFlash(FLASH_ADD_THRESHOLD_TEMP + (i * 4), TestData.Threshold[0][i].UI32, &flashError);
+                WriteFlash(FLASH_ADD_THRESHOLD_TEMP1 + (i * 4), TestData.Threshold[1][i].UI32, &flashError);
+                WriteFlash(FLASH_ADD_NTC_CALIBRATION_TABLE + (i * 4), TestData.ntcCalibrationTable[0][i].UI32, &flashError);
+                WriteFlash(FLASH_ADD_NTC_CALIBRATION_TABLE1 + (i * 4), TestData.ntcCalibrationTable[1][i].UI32, &flashError);
         }
 
         WriteFlash(FLASH_ADD_NTC_CALIBRATION_CONSTANT,  TestData.ntcCalibrationConstant.UI32, &flashError);
-        WriteFlash(FLASH_ADD_REVISION_APPLY,                    (uint32_t)TestData.revisionApplyFlag, &flashError);
-        WriteFlash(FLASH_ADD_REVISION_CONSTANT,                 TestData.revisionConstant.UI32, &flashError);
+        WriteFlash(FLASH_ADD_REVISION_APPLY, (uint32_t)TestData.revisionApplyFlag, &flashError);
+        WriteFlash(FLASH_ADD_REVISION_CONSTANT, TestData.revisionConstant.UI32, &flashError);
 
         WriteFlash(FLASH_SAVE_CHK, FLASH_SAVE_FLAG, &flashError);
 
@@ -107,26 +106,26 @@ uint32_t doFlashWriteRevision(void)
 ***************************************************************************************************************/
 HAL_StatusTypeDef EnableWriteProtect(uint32_t add)
 {
-  FLASH_OBProgramInitTypeDef OBInit;
+	FLASH_OBProgramInitTypeDef OBInit;
 
-  HAL_FLASH_OB_Unlock();
-  HAL_FLASH_Unlock();
+	HAL_FLASH_OB_Unlock();
+	HAL_FLASH_Unlock();
 
-  OBInit.OptionType = OPTIONBYTE_WRP;
-  OBInit.WRPState   = OB_WRPSTATE_ENABLE;
-  OBInit.Banks      = FLASH_BANK_1;
-  OBInit.WRPSector  = add;//FLASH_WRP_SECTORS;
-  HAL_FLASHEx_OBProgram(&OBInit);
+	OBInit.OptionType = OPTIONBYTE_WRP;
+	OBInit.WRPState   = OB_WRPSTATE_ENABLE;
+	OBInit.Banks      = FLASH_BANK_1;
+	OBInit.WRPSector  = add;//FLASH_WRP_SECTORS;
+	HAL_FLASHEx_OBProgram(&OBInit);
 
-  if (HAL_FLASH_OB_Launch() != HAL_OK)
-  {
-    return HAL_ERROR;
-  }
+	if (HAL_FLASH_OB_Launch() != HAL_OK)
+	{
+		return HAL_ERROR;
+	}
 
-  HAL_FLASH_OB_Lock();
-  HAL_FLASH_Lock();
+	HAL_FLASH_OB_Lock();
+	HAL_FLASH_Lock();
 
-  return HAL_OK;
+	return HAL_OK;
 }
 
 /**************************************************************************************************************
@@ -134,53 +133,52 @@ HAL_StatusTypeDef EnableWriteProtect(uint32_t add)
 ***************************************************************************************************************/
 HAL_StatusTypeDef DisableWriteProtect(uint32_t add)
 {
-    FLASH_OBProgramInitTypeDef OBInit;
+	FLASH_OBProgramInitTypeDef OBInit;
 
-    HAL_FLASH_OB_Unlock();
-    HAL_FLASH_Unlock();
+	HAL_FLASH_OB_Unlock();
+	HAL_FLASH_Unlock();
 
-    OBInit.OptionType = OPTIONBYTE_WRP;
-    OBInit.WRPState   = OB_WRPSTATE_DISABLE;
-    OBInit.Banks      = FLASH_BANK_1;
-    OBInit.WRPSector  = add;//FLASH_WRP_SECTORS;
-    HAL_FLASHEx_OBProgram(&OBInit);
+	OBInit.OptionType = OPTIONBYTE_WRP;
+	OBInit.WRPState   = OB_WRPSTATE_DISABLE;
+	OBInit.Banks      = FLASH_BANK_1;
+	OBInit.WRPSector  = add;//FLASH_WRP_SECTORS;
+	HAL_FLASHEx_OBProgram(&OBInit);
 
-    if (HAL_FLASH_OB_Launch() != HAL_OK)
-    {
-        return HAL_ERROR;
-    }
+	if (HAL_FLASH_OB_Launch() != HAL_OK)
+	{
+		return HAL_ERROR;
+	}
 
-    HAL_FLASH_OB_Lock();
-    HAL_FLASH_Lock();
+	HAL_FLASH_OB_Lock();
+	HAL_FLASH_Lock();
 
-    return HAL_OK;
+	return HAL_OK;
 }
 #endif
 
 void DoValueFormating(void)
 {
-    for(int i = 0; i < 16; i++)
-    {
-        TestData.Threshold[0][i].Float                  = (float)50.0;  //경고 온도 테이블
-        TestData.Threshold[1][i].Float                  = (float)50.0;
-        TestData.ntcCalibrationTable[0][i].Float        = (float)0.0;   //NTC 교정 테이블
-        TestData.ntcCalibrationTable[1][i].Float        = (float)0.0;
-    }
-    TestData.ntcCalibrationConstant.Float = (float)0.0;                     //NTC 증감상수
-    TestData.revisionConstant.Float = (float)0.3672;                            //보정상수
-    TestData.revisionApplyFlag = 0;                                                                 //보정 선택
+	for(int i = 0; i < 16; i++)
+	{
+		TestData.Threshold[0][i].Float            = (float)50.0;  //경고 온도 테이블
+		TestData.Threshold[1][i].Float            = (float)50.0;
+		TestData.ntcCalibrationTable[0][i].Float  = (float)0.0;   //NTC 교정 테이블
+		TestData.ntcCalibrationTable[1][i].Float  = (float)0.0;
+	}
+	TestData.ntcCalibrationConstant.Float = (float)0.0; //NTC 증감상수
+	TestData.revisionConstant.Float = (float)0.3672;    //보정상수
+	TestData.revisionApplyFlag = 0;	//보정 선택
 }
 
 void DoLoadFlash(void)
 {
-    for(int i = 0; i < 16; i++)
-    {
-        TestData.Threshold[0][i].UI32                   = ReadFlash(FLASH_ADD_THRESHOLD_TEMP + (i * 4));
-        TestData.Threshold[1][i].UI32                   = ReadFlash(FLASH_ADD_THRESHOLD_TEMP1 + (i * 4));
-        TestData.ntcCalibrationTable[0][i].UI32 = ReadFlash(FLASH_ADD_NTC_CALIBRATION_TABLE + (i * 4));
-        TestData.ntcCalibrationTable[1][i].UI32 = ReadFlash(FLASH_ADD_NTC_CALIBRATION_TABLE1 + (i * 4));
-    }
-    TestData.ntcCalibrationConstant.UI32        = ReadFlash(FLASH_ADD_NTC_CALIBRATION_CONSTANT);
-    TestData.revisionApplyFlag                  = (uint8_t)ReadFlash(FLASH_ADD_REVISION_APPLY);
-    TestData.revisionConstant.Float             = ReadFlash(FLASH_ADD_REVISION_CONSTANT);
+	for (int i = 0; i < 16; i++) {
+		TestData.Threshold[0][i].UI32           = ReadFlash(FLASH_ADD_THRESHOLD_TEMP + (i * 4));
+		TestData.Threshold[1][i].UI32           = ReadFlash(FLASH_ADD_THRESHOLD_TEMP1 + (i * 4));
+		TestData.ntcCalibrationTable[0][i].UI32 = ReadFlash(FLASH_ADD_NTC_CALIBRATION_TABLE + (i * 4));
+		TestData.ntcCalibrationTable[1][i].UI32 = ReadFlash(FLASH_ADD_NTC_CALIBRATION_TABLE1 + (i * 4));
+	}
+	TestData.ntcCalibrationConstant.UI32        = ReadFlash(FLASH_ADD_NTC_CALIBRATION_CONSTANT);
+	TestData.revisionApplyFlag                  = (uint8_t)ReadFlash(FLASH_ADD_REVISION_APPLY);
+	TestData.revisionConstant.Float             = ReadFlash(FLASH_ADD_REVISION_CONSTANT);
 }

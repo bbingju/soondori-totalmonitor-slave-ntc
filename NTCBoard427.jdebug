@@ -22,14 +22,14 @@ void OnProjectLoad (void) {
   //
   // Dialog-generated settings
   //
-  Project.AddPathSubstitute ("C:/Users/popla/Documents/11_Firmware/NTCBoard427", "$(ProjectDir)");
-  Project.AddPathSubstitute ("c:/users/popla/documents/11_firmware/ntcboard427", "$(ProjectDir)");
+  Project.AddPathSubstitute (".", "$(ProjectDir)");
+  Project.AddPathSubstitute (".", "$(ProjectDir)");
   Project.SetDevice ("STM32F103R8");
   Project.SetHostIF ("USB", "");
   Project.SetTargetIF ("JTAG");
   Project.SetTIFSpeed ("1 MHz");
   Project.AddSvdFile ("$(InstallDir)/Config/CPU/Cortex-M3.svd");
-  Project.AddSvdFile ("C:/Program Files/SEGGER/Ozone V2.70e/Config/Peripherals/STM32F103xx.svd");
+  Project.AddSvdFile ("$(ProjectDir)/Scripts/STM32F103xx.svd");
   Project.SetOSPlugin("FreeRTOSPlugin.dll"); // Windows
   // Project.SetOSPlugin("FreeRTOSPlugin.so"); // Linux 
   // Project.SetOSPlugin("FreeRTOSPlugin.dylib"); // Mac

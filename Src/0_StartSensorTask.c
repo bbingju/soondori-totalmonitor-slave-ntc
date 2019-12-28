@@ -53,21 +53,21 @@ void StartSensorTask(void const * argument)
 
         adc_count = 0;
 
-        doFindMyID();
+        /* doFindMyID(); */
 
         //Task 부팅 완료 플레그
         SysProperties.bootingWate[1] = TRUE;
 
-    while(1)
-    {
-        if( (SysProperties.bootingWate[0] == TRUE) &&     // 0 : DiaplayTask,
-            (SysProperties.bootingWate[1] == TRUE) &&     // 1 : SensorTask
-            (SysProperties.bootingWate[2] == TRUE))       // 2 : UartTask
-        {
-          break;
-        }
-        osDelay(2);
-    }
+    /* while(1) */
+    /* { */
+    /*     if( (SysProperties.bootingWate[0] == TRUE) &&     // 0 : DiaplayTask, */
+    /*         (SysProperties.bootingWate[1] == TRUE) &&     // 1 : SensorTask */
+    /*         (SysProperties.bootingWate[2] == TRUE))       // 2 : UartTask */
+    /*     { */
+    /*       break; */
+    /*     } */
+    /*     osDelay(2); */
+    /* } */
 
 
         /* Infinite loop */

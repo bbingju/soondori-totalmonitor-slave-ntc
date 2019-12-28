@@ -36,15 +36,20 @@ BUILD_DIR = build
 ######################################
 # source
 ######################################
+# Src/0_StartUartTask.c
+# Src/0_StartDisplayTask.c
+# Src/0_StartSensorTask.c
+
 # C sources
 APP_C_SOURCES = \
 Src/0_SensorCal.c \
 Src/0_soonFlashMemory.c \
 Src/0_soonQueue.c \
-Src/0_StartDisplayTask.c \
-Src/0_StartSensorTask.c \
-Src/0_StartUartTask.c \
-Src/0_Util.c
+Src/0_Util.c \
+Src/job_task.c \
+Src/routine_task.c \
+Src/uart_rx_task.c \
+Src/internal_frame.c
 
 C_SOURCES =  \
 Src/main.c \

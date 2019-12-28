@@ -234,31 +234,22 @@ uint16_t CRC16_Make(uint8_t *byMsg, uint16_t len)
 
 void doFindMyID(void)
 {
-        while(1)
-        {
-                if( (HAL_GPIO_ReadPin(SLOT_EN_00_GPIO_Port, SLOT_EN_00_Pin) == GPIO_PIN_RESET) ||
-                        (HAL_GPIO_ReadPin(SLOT_EN_01_GPIO_Port, SLOT_EN_01_Pin) == GPIO_PIN_RESET) ||
-                        (HAL_GPIO_ReadPin(SLOT_EN_02_GPIO_Port, SLOT_EN_02_Pin) == GPIO_PIN_RESET) ||
-                        (HAL_GPIO_ReadPin(SLOT_EN_03_GPIO_Port, SLOT_EN_03_Pin) == GPIO_PIN_RESET) )
-                {
-                        break;
-                }
+    while (1) {
+        if ((HAL_GPIO_ReadPin(SLOT_EN_00_GPIO_Port, SLOT_EN_00_Pin) == GPIO_PIN_RESET) ||
+            (HAL_GPIO_ReadPin(SLOT_EN_01_GPIO_Port, SLOT_EN_01_Pin) == GPIO_PIN_RESET) ||
+            (HAL_GPIO_ReadPin(SLOT_EN_02_GPIO_Port, SLOT_EN_02_Pin) == GPIO_PIN_RESET) ||
+            (HAL_GPIO_ReadPin(SLOT_EN_03_GPIO_Port, SLOT_EN_03_Pin) == GPIO_PIN_RESET)) {
+            break;
         }
+    }
 
-        if(HAL_GPIO_ReadPin(SLOT_EN_00_GPIO_Port, SLOT_EN_00_Pin) == GPIO_PIN_RESET)
-        {
-                SysProperties.boardID = '0';	//0: 사용 설정 안됨, 1 ~ 4 슬롯으로 설정 해야 함
-        }
-        else if(HAL_GPIO_ReadPin(SLOT_EN_01_GPIO_Port, SLOT_EN_01_Pin) == GPIO_PIN_RESET)
-        {
-                SysProperties.boardID = '1';	//0: 사용 설정 안됨, 1 ~ 4 슬롯으로 설정 해야 함
-        }
-        else if(HAL_GPIO_ReadPin(SLOT_EN_02_GPIO_Port, SLOT_EN_02_Pin) == GPIO_PIN_RESET)
-        {
-                SysProperties.boardID = '2';	//0: 사용 설정 안됨, 1 ~ 4 슬롯으로 설정 해야 함
-        }
-        else if(HAL_GPIO_ReadPin(SLOT_EN_03_GPIO_Port, SLOT_EN_03_Pin) == GPIO_PIN_RESET)
-        {
-                SysProperties.boardID = '3';	//0: 사용 설정 안됨, 1 ~ 4 슬롯으로 설정 해야 함
-        }
+    if (HAL_GPIO_ReadPin(SLOT_EN_00_GPIO_Port, SLOT_EN_00_Pin) == GPIO_PIN_RESET) {
+        SysProperties.boardID = 0; // 0: 사용 설정 안됨, 1 ~ 4 슬롯으로 설정 해야 함
+    } else if (HAL_GPIO_ReadPin(SLOT_EN_01_GPIO_Port, SLOT_EN_01_Pin) == GPIO_PIN_RESET) {
+        SysProperties.boardID = 1; // 0: 사용 설정 안됨, 1 ~ 4 슬롯으로 설정 해야 함
+    } else if (HAL_GPIO_ReadPin(SLOT_EN_02_GPIO_Port, SLOT_EN_02_Pin) == GPIO_PIN_RESET) {
+        SysProperties.boardID = 2; // 0: 사용 설정 안됨, 1 ~ 4 슬롯으로 설정 해야 함
+    } else if (HAL_GPIO_ReadPin(SLOT_EN_03_GPIO_Port, SLOT_EN_03_Pin) == GPIO_PIN_RESET) {
+        SysProperties.boardID = 3; // 0: 사용 설정 안됨, 1 ~ 4 슬롯으로 설정 해야 함
+    }
 }

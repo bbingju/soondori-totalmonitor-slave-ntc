@@ -25,14 +25,14 @@ RX_QUEUE_STRUCT UartRxQueue;
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-    osSemaphoreRelease(CountingSemUartRxHandle);
+    /* osSemaphoreRelease(CountingSemUartRxHandle); */
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
     HAL_GPIO_WritePin(UART1_TX_EN_GPIO_Port, UART1_TX_EN_Pin, GPIO_PIN_RESET);  //TX 완료후 스위치IC OFF
-    HAL_Delay(1);
-    osSemaphoreRelease(BinarySemUartTxHandle);
+    /* HAL_Delay(1); */
+    /* osSemaphoreRelease(BinarySemUartTxHandle); */
 }
 
 /*********************************************************************

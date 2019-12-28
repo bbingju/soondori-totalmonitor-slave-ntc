@@ -31,7 +31,9 @@
 #include "0_StartUartTask.h"
 #include "0_Util.h"
 #include "0_soonFlashMemory.h"
-
+#include "job_task.h"
+#include "routine_task.h"
+#include "uart_rx_task.h"
     
 /* USER CODE END Includes */
 
@@ -60,12 +62,12 @@ DMA_HandleTypeDef hdma_usart1_tx;
 
 PCD_HandleTypeDef hpcd_USB_FS;
 
-osThreadId sensorTaskHandle;
-osThreadId displayTaskHandle;
+/* osThreadId sensorTaskHandle; */
+/* osThreadId displayTaskHandle; */
 osThreadId uartTaskHandle;
 osSemaphoreId myAdcBinarySemHandle;
-osSemaphoreId BinarySemUartTxHandle;
-osSemaphoreId CountingSemUartRxHandle;
+/* osSemaphoreId BinarySemUartTxHandle; */
+/* osSemaphoreId CountingSemUartRxHandle; */
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 SYSTEM_STRUCT SysProperties;
@@ -82,7 +84,7 @@ static void MX_USART1_UART_Init(void);
 static void MX_USB_PCD_Init(void);
 void StartSensorTask(void const * argument);
 void StartDisplayTask(void const * argument);
-void StartUartTask(void const * argument);
+/* void StartUartTask(void const * argument); */
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -133,43 +135,42 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USB_PCD_Init();
   /* USER CODE BEGIN 2 */
-	SysProperties.boardType[0] = SBT_NTC;
-	SysProperties.boardEnable = ENABLE;
+  SysProperties.boardType[0] = SBT_NTC;
+  SysProperties.boardEnable = ENABLE;
 
-	for(i = 0; i < 5; i++)
-	{
-	SysProperties.hwVersion[i].cChar= number[i];
-	SysProperties.fwVersion[i].cChar= number[i];
-	}
-	HAL_GetUID(&SysProperties.uuid[0].u32_Value);
+  for (i = 0; i < 5; i++) {
+      SysProperties.hwVersion[i].cChar = number[i];
+      SysProperties.fwVersion[i].cChar = number[i];
+  }
+  HAL_GetUID(&SysProperties.uuid[0].u32_Value);
 
-	doRelayPlay(_OFF);
+  doRelayPlay(_OFF);
 
-	for(i = 0; i < 16; i++)
-	{
-		doLedDisplay(i, _LED_OFF);	//LED Reset
-	}
+  for (i = 0; i < 16; i++) {
+      doLedDisplay(i, _LED_OFF); // LED Reset
+  }
 
-	read = ReadFlash(FLASH_SAVE_CHK);
-	if(read != FLASH_SAVE_FLAG)		//플래시에 기록이 없을경우 
-	{
-		DoValueFormating();		
-		doFlashWriteRevision();
-	}
-	else		//Flash 에 저장된 값이 없는경우 
-	{
-		DoLoadFlash();		
-	}
+  read = ReadFlash(FLASH_SAVE_CHK);
+  if (read != FLASH_SAVE_FLAG) //플래시에 기록이 없을경우
+  {
+      DoValueFormating();
+      doFlashWriteRevision();
+  } else // Flash 에 저장된 값이 없는경우
+  {
+      DoLoadFlash();
+  }
 
-	TestData.overTempFlag[i]			= TM_NORMAL_TEMP;
-	TestData.displayModeFlag[i] 		= LDM_NORMAL_TEMP;
-	TestData.displayModeChangeCount[i]	= 0;
+  TestData.overTempFlag[i] = TM_NORMAL_TEMP;
+  TestData.displayModeFlag[i] = LDM_NORMAL_TEMP;
+  TestData.displayModeChangeCount[i] = 0;
 
-	//todo id는 자동으로 들어가야 한다. 밷플레이트를 변경하고 ntc보드에서 칩셀렉트 핀을 4개로 만들어서 변경할 이다. 
-	HAL_GPIO_WritePin(BUFFER_EN0_GPIO_Port, BUFFER_EN0_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(BUFFER_EN1_GPIO_Port, BUFFER_EN1_Pin, GPIO_PIN_RESET);
+  // todo id는 자동으로 들어가야 한다. 밷플레이트를 변경하고 ntc보드에서
+  // 칩셀렉트 핀을 4개로 만들어서 변경할 이다.
+  HAL_GPIO_WritePin(BUFFER_EN0_GPIO_Port, BUFFER_EN0_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(BUFFER_EN1_GPIO_Port, BUFFER_EN1_Pin, GPIO_PIN_RESET);
 
-	//SysProperties.boardID = '3';	//0: 사용 설정 안됨, 1 ~ 4 슬롯으로 설정 해야 함
+  // SysProperties.boardID = '3';	//0: 사용 설정 안됨, 1 ~ 4 슬롯으로 설정
+  // 해야 함
 
   /* USER CODE END 2 */
 
@@ -183,12 +184,12 @@ int main(void)
   myAdcBinarySemHandle = osSemaphoreCreate(osSemaphore(myAdcBinarySem), 1);
 
   /* definition and creation of BinarySemUartTx */
-  osSemaphoreDef(BinarySemUartTx);
-  BinarySemUartTxHandle = osSemaphoreCreate(osSemaphore(BinarySemUartTx), 1);
+  /* osSemaphoreDef(BinarySemUartTx); */
+  /* BinarySemUartTxHandle = osSemaphoreCreate(osSemaphore(BinarySemUartTx), 1); */
 
   /* definition and creation of CountingSemUartRx */
-  osSemaphoreDef(CountingSemUartRx);
-  CountingSemUartRxHandle = osSemaphoreCreate(osSemaphore(CountingSemUartRx), 5);
+  /* osSemaphoreDef(CountingSemUartRx); */
+  /* CountingSemUartRxHandle = osSemaphoreCreate(osSemaphore(CountingSemUartRx), 5); */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
 	/* add semaphores, ... */
@@ -203,17 +204,25 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
+  osThreadDef(JobTask, job_task, osPriorityAboveNormal, 0, 128);
+  osThreadCreate(osThread(JobTask), NULL);
+
+  osThreadDef(RoutineTask, routine_task, osPriorityNormal, 0, 128);
+  osThreadCreate(osThread(RoutineTask), NULL);
+
   /* definition and creation of sensorTask */
-  osThreadDef(sensorTask, StartSensorTask, osPriorityLow, 0, 128);
-  sensorTaskHandle = osThreadCreate(osThread(sensorTask), NULL);
+  /* osThreadDef(sensorTask, StartSensorTask, osPriorityNormal, 0, 128); */
+  /* sensorTaskHandle = osThreadCreate(osThread(sensorTask), NULL); */
 
   /* definition and creation of displayTask */
-  osThreadDef(displayTask, StartDisplayTask, osPriorityBelowNormal, 0, 128);
-  displayTaskHandle = osThreadCreate(osThread(displayTask), NULL);
+  /* osThreadDef(displayTask, StartDisplayTask, osPriorityNormal, 0, 128); */
+  /* displayTaskHandle = osThreadCreate(osThread(displayTask), NULL); */
 
   /* definition and creation of uartTask */
-  osThreadDef(uartTask, StartUartTask, osPriorityAboveNormal, 0, 200);
-  uartTaskHandle = osThreadCreate(osThread(uartTask), NULL);
+  /* osThreadDef(uartTask, StartUartTask, osPriorityAboveNormal, 0, 200); */
+  /* uartTaskHandle = osThreadCreate(osThread(uartTask), NULL); */
+  osThreadDef(UartRxTask, uart_rx_task, osPriorityNormal, 0, 128);
+  osThreadCreate(osThread(UartRxTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
 	/* add threads, ... */
@@ -399,7 +408,8 @@ static void MX_USART1_UART_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN USART1_Init 2 */
-
+  USART_TypeDef *regs = huart1.Instance;
+  SET_BIT(regs->CR1, USART_CR1_IDLEIE);
   /* USER CODE END USART1_Init 2 */
 
 }
