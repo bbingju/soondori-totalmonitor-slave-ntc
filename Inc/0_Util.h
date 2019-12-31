@@ -2,16 +2,13 @@
 #define __UTIL_H__
 
 
-#ifndef _STDINT
-	#include "stdint.h"
-#endif
+#include <stdint.h>
 
 #include "stm32f1xx_hal.h"
 #include "cmsis_os.h"
 
 #include "0_GlobalValue.h"
 #include "0_GlobalDefine.h"
-#include <SEGGER_RTT.h>
 #include "debug.h"
 
 #define _LED_ON			GPIO_PIN_RESET

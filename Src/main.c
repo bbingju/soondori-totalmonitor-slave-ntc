@@ -103,7 +103,6 @@ void StartDisplayTask(void const * argument);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	uint8_t   	i;
 	char      	number[5] = "1.000";
 	//uint32_t	flashError = 0;
 	uint32_t 	read = 0;
@@ -138,7 +137,7 @@ int main(void)
   SysProperties.boardType[0] = SBT_NTC;
   SysProperties.boardEnable = ENABLE;
 
-  for (i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
       SysProperties.hwVersion[i].cChar = number[i];
       SysProperties.fwVersion[i].cChar = number[i];
   }
@@ -146,7 +145,7 @@ int main(void)
 
   doRelayPlay(_OFF);
 
-  for (i = 0; i < 16; i++) {
+  for (int i = 0; i < 16; i++) {
       doLedDisplay(i, _LED_OFF); // LED Reset
   }
 
@@ -160,9 +159,11 @@ int main(void)
       DoLoadFlash();
   }
 
-  TestData.overTempFlag[i] = TM_NORMAL_TEMP;
-  TestData.displayModeFlag[i] = LDM_NORMAL_TEMP;
-  TestData.displayModeChangeCount[i] = 0;
+  for (int i = 0; i < 16; i++) {
+	  TestData.overTempFlag[i] = TM_NORMAL_TEMP;
+	  TestData.displayModeFlag[i] = LDM_NORMAL_TEMP;
+	  TestData.displayModeChangeCount[i] = 0;
+  }
 
   // todo id는 자동으로 들어가야 한다. 밷플레이트를 변경하고 ntc보드에서
   // 칩셀렉트 핀을 4개로 만들어서 변경할 이다.

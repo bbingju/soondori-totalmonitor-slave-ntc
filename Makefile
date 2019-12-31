@@ -15,14 +15,14 @@
 ######################################
 # target
 ######################################
-TARGET = NTCBoard427
+TARGET = totalmonitor-slave-ntc
 
 
 ######################################
 # building variables
 ######################################
 # debug build?
-DEBUG = 1
+DEBUG = 0
 # optimization
 OPT = -Os
 
@@ -49,7 +49,7 @@ Src/0_Util.c \
 Src/job_task.c \
 Src/routine_task.c \
 Src/uart_rx_task.c \
-Src/internal_frame.c
+Src/frame.c
 
 C_SOURCES =  \
 Src/main.c \

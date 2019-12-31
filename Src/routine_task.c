@@ -72,8 +72,7 @@ void check_temperature_over_n_flick_led(void)
 						doLedDisplay(i, _LED_ON);
 					}
 				}
-			} else if (TestData.AdcMidValue[0][i].UI32 < 10) //센서 쇼트됨
-			{
+			} else if (TestData.AdcMidValue[0][i].UI32 < 10) { //센서 쇼트됨
 				if (TestData.displayModeFlag[i] == LDM_SENSOR_CLOSE) {
 					flick_led(i, (overTempDisplay % 4), 2); // led 고속 점멸
 				} else {
@@ -84,8 +83,7 @@ void check_temperature_over_n_flick_led(void)
 						flick_led(i, (overTempDisplay % 4), 2); // led 고속 점멸
 					}
 				}
-			} else //정상 온도
-			{
+			} else { //정상 온도
 				if (TestData.displayModeFlag[i] == LDM_NORMAL_TEMP) {
 					doLedDisplay(i, _LED_OFF);
 				} else {
@@ -97,8 +95,7 @@ void check_temperature_over_n_flick_led(void)
 					}
 				}
 			}
-		} else //경고온도 초과
-		{
+		} else {	//경고온도 초과
 			if (TestData.displayModeFlag[i] == LDM_OVER_TEMP) {
 				flick_led(i, overTempDisplay, 10);
 			} else {

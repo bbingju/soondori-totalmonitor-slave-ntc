@@ -27,6 +27,7 @@
 #include "stm32f1xx_ll_dma.h"
 #include "stm32f1xx_ll_usart.h"
 #include "uart_rx_task.h"
+#include "debug.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

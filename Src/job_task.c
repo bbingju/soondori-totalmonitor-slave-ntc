@@ -1,7 +1,7 @@
 #include "job_task.h"
 #include "cmsis_os.h"
 #include "main.h"
-#include "internal_frame.h"
+#include "frame.h"
 #include "routine_task.h"
 #include "0_soonFlashMemory.h"
 #include "0_Util.h"
@@ -72,8 +72,6 @@ void job_task(void const *argument)
 
 	DBG_LOG("%s is started\n", __func__);
 
-	HAL_GPIO_WritePin(UART1_TX_EN_GPIO_Port, UART1_TX_EN_Pin, GPIO_PIN_SET);
-
 	/* uint32_t tick = HAL_GetTick(); */
 	while (1) {
 		osEvent event = osMailGet(job_pool_q_id, osWaitForever);
@@ -86,7 +84,7 @@ void job_task(void const *argument)
 }
 
 /**
- * do job
+ * job_handler
  */
 static void job_handler(struct job_s *job)
 {
@@ -98,11 +96,9 @@ static void job_handler(struct job_s *job)
 		handle_from_internal(&job->internal);
 		break;
 	case JOB_TYPE_ROUTINE_MEASURE_TEMPERATURE:
-		/* DBG_LOG("JOB_TYPE_ROUTINE_MEASURE_TEMPERATURE\n"); */
 		read_sensors();
 		break;
 	case JOB_TYPE_ROUTINE_CHECK_TEMP_OVER:
-		/* DBG_LOG("JOB_TYPE_ROUTINE_CHECK_TEMP_OVER\n"); */
 		check_temperature_over_n_flick_led();
 		break;
 	default:
@@ -125,7 +121,22 @@ static void handle_to_internal(struct internal_frame *frm)
 	/*   frm->data = NULL; */
 	/* } */
 
+	/* while (HAL_GPIO_ReadPin(UART1_TX_EN_GPIO_Port, UART1_TX_EN_Pin) == GPIO_PIN_SET) */
+	/* 	__NOP(); */
 	HAL_GPIO_WritePin(UART1_TX_EN_GPIO_Port, UART1_TX_EN_Pin, GPIO_PIN_SET);
+
+	/* DBG_LOG("%s\n", __func__); */
+	/* HAL_MultiProcessor_EnterMuteMode(&huart1); */
+
+	/* while (!__HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE)) ; */
+	/* if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE)) { */
+	/* 	DBG_LOG("IDLE\n"); */
+	/* } else { */
+	/* 	DBG_LOG("Not IDLE\n"); */
+	/* } */
+
+	/* while (READ_BIT(huart1.Instance->CR1, USART_CR1_RWU)) ; */
+	/* 	__NOP(); */
 	HAL_UART_Transmit_DMA(&huart1, buffer, frame_size);
 }
 
@@ -358,4 +369,11 @@ static void doCalibrationNTCConstantReq(struct internal_frame *frm)
 	frm->datalen = 4;
 	frm->data = &TestData.ntcCalibrationConstant.UI8[0];
 	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(struct internal_frame));
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+    HAL_GPIO_WritePin(UART1_TX_EN_GPIO_Port, UART1_TX_EN_Pin, GPIO_PIN_RESET);  //TX 완료후 스위치IC OFF
+    /* HAL_Delay(1); */
+    /* osSemaphoreRelease(BinarySemUartTxHandle); */
 }

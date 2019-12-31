@@ -4,7 +4,7 @@
 #include "stm32f1xx_ll_dma.h"
 #include "cmsis_os.h"
 #include "main.h"
-#include "internal_frame.h"
+#include "frame.h"
 #include "debug.h"
 
 #include <stdint.h>
@@ -32,17 +32,17 @@ void uart_rx_notify() { osMessagePut(uart_rx_msg_q_id, 1, 0); }
  */
 void uart_rx_task(void const *argument)
 {
-    uart_rx_msg_q_id = osMessageCreate(osMessageQ(uart_rx_msg_q), NULL);
+	uart_rx_msg_q_id = osMessageCreate(osMessageQ(uart_rx_msg_q), NULL);
 
-    DBG_LOG("%s is started\n", __func__);
+	DBG_LOG("%s is started\n", __func__);
 
-    HAL_UART_Receive_DMA(&huart1, uart_rx_buffer, ARRAY_LEN(uart_rx_buffer));
+	HAL_UART_Receive_DMA(&huart1, uart_rx_buffer, ARRAY_LEN(uart_rx_buffer));
 
-    while (1) {
-        osEvent e = osMessageGet(uart_rx_msg_q_id, osWaitForever);
-        if (e.status == osEventMessage)
-            uart_rx_check();
-    }
+	while (1) {
+		osEvent e = osMessageGet(uart_rx_msg_q_id, osWaitForever);
+		if (e.status == osEventMessage)
+			uart_rx_check();
+	}
 }
 
 /**
@@ -50,33 +50,33 @@ void uart_rx_task(void const *argument)
  */
 static void uart_rx_check(void)
 {
-    static size_t old_pos;
-    size_t pos;
+	static size_t old_pos;
+	size_t pos;
 
-    /* Calculate current position in buffer */
-    pos = ARRAY_LEN(uart_rx_buffer) - LL_DMA_GetDataLength(DMA1, LL_DMA_CHANNEL_5);
-    if (pos != old_pos) {    /* Check change in received data */
-        if (pos > old_pos) { /* Current position is over previous one */
-            /* We are in "linear" mode */
-            /* Process data directly by subtracting "pointers" */
-            parse_rx(&uart_rx_buffer[old_pos], pos - old_pos);
-        } else {
-            /* uart_send_string("received data2\r\n"); */
-            /* We are in "overflow" mode */
-            /* First process data to the end of buffer */
-            parse_rx(&uart_rx_buffer[old_pos], ARRAY_LEN(uart_rx_buffer) - old_pos);
-            /* Check and continue with beginning of buffer */
-            if (pos > 0) {
-                parse_rx(&uart_rx_buffer[0], pos);
-            }
-        }
-    }
-    old_pos = pos; /* Save current position as old */
+	/* Calculate current position in buffer */
+	pos = ARRAY_LEN(uart_rx_buffer) - LL_DMA_GetDataLength(DMA1, LL_DMA_CHANNEL_5);
+	if (pos != old_pos) {    /* Check change in received data */
+		if (pos > old_pos) { /* Current position is over previous one */
+			/* We are in "linear" mode */
+			/* Process data directly by subtracting "pointers" */
+			parse_rx(&uart_rx_buffer[old_pos], pos - old_pos);
+		} else {
+			/* uart_send_string("received data2\r\n"); */
+			/* We are in "overflow" mode */
+			/* First process data to the end of buffer */
+			parse_rx(&uart_rx_buffer[old_pos], ARRAY_LEN(uart_rx_buffer) - old_pos);
+			/* Check and continue with beginning of buffer */
+			if (pos > 0) {
+				parse_rx(&uart_rx_buffer[0], pos);
+			}
+		}
+	}
+	old_pos = pos; /* Save current position as old */
 
-    /* Check and manually update if we reached end of buffer */
-    if (old_pos == ARRAY_LEN(uart_rx_buffer)) {
-        old_pos = 0;
-    }
+	/* Check and manually update if we reached end of buffer */
+	if (old_pos == ARRAY_LEN(uart_rx_buffer)) {
+		old_pos = 0;
+	}
 }
 
 /**

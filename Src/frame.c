@@ -1,4 +1,4 @@
-#include "internal_frame.h"
+#include "frame.h"
 #include "debug.h"
 #include <string.h>
 #include <stdlib.h>
@@ -163,7 +163,7 @@ int parse_internal_frame(struct internal_frame *frm, uint8_t const *byte)
             state = 0;
             return 0;
         }
-	DBG_DUMP(buffer_for_crc, frm->datalen + 4);
+	/* DBG_DUMP(buffer_for_crc, frm->datalen + 4); */
         state = 0;
         return 1;
     }
