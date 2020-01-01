@@ -32,18 +32,11 @@
 #define EXT_STX 0x7F
 #define EXT_ETX 0x7E
 
-
-/* __PACKED_STRUCT data_threshold_set { */
-/* 	uint8_t channel; */
-/* 	float   threshold; */
-/* }; */
-
 struct internal_frame {
 	uint8_t slot_id;
 	uint8_t cmd;
 	uint8_t datalen;
 	union {
-		/* uint8_t *data; */
 		uint8_t  rx_data[8];
 		uint8_t *tx_data;
 

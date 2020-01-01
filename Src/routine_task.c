@@ -178,10 +178,6 @@ void read_sensors(void)
 	HAL_GPIO_WritePin(MUX_EN[0], MUX_EN_PIN[0], GPIO_PIN_SET);	// disable
 	HAL_GPIO_WritePin(MUX_EN[1], MUX_EN_PIN[1], GPIO_PIN_SET);	// disable
 
-	/* if (myAdcBinarySemHandle != NULL) */
-	/* { */
-	/* if(osSemaphoreWait(myAdcBinarySemHandle, 0) == osOK) */
-	/* { */
 	adc_value[adc_count] = HAL_ADC_GetValue(adc[mux_enable]);
 	adc_count++;
 
@@ -219,8 +215,6 @@ void read_sensors(void)
 	if (adcNumber > 31) {
 		adcNumber = 0;
 	}
-	/* } */
-	/* } */
 }
 
 static float DoRevisionTemperature(float beforeRevision, float environmentTemp)

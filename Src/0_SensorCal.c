@@ -122,7 +122,7 @@ float Calc_Temp_RTD(uint32_t val)
 	float dv;
 	float d1;
 	float d2;
-    float res = 0;
+	float res = 0;
 	int i;
 
 	if ((val == 0) || (val < pTableRTD[0]) || (val > pTableRTD[160])){
@@ -144,5 +144,5 @@ float Calc_Temp_RTD(uint32_t val)
 	d2 = (float)pTableRTD[i];
 
 	res = (dv - d1) / (d2 - d1) + i - 11;
-    return res;
+	return res;
 }

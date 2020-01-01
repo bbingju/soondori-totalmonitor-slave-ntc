@@ -9,10 +9,10 @@ GPIO_TypeDef *  LED[16] = {	LED_01_GPIO_Port,	LED_02_GPIO_Port,	LED_03_GPIO_Port
                                 LED_05_GPIO_Port,	LED_06_GPIO_Port,	LED_07_GPIO_Port,	LED_08_GPIO_Port,
                                 LED_09_GPIO_Port,	LED_10_GPIO_Port,	LED_11_GPIO_Port,	LED_12_GPIO_Port,
                                 LED_13_GPIO_Port,	LED_14_GPIO_Port,	LED_15_GPIO_Port,	LED_16_GPIO_Port };
-uint16_t LED_PIN[16] = {                LED_01_Pin,				LED_02_Pin,				LED_03_Pin,				LED_04_Pin,
-                                        LED_05_Pin,				LED_06_Pin,				LED_07_Pin,				LED_08_Pin,
-                                        LED_09_Pin,				LED_10_Pin,				LED_11_Pin,				LED_12_Pin,
-                                        LED_13_Pin,				LED_14_Pin,				LED_15_Pin,				LED_16_Pin };
+uint16_t LED_PIN[16] = { LED_01_Pin,	LED_02_Pin,	LED_03_Pin,	LED_04_Pin,
+                         LED_05_Pin,	LED_06_Pin,	LED_07_Pin,	LED_08_Pin,
+                         LED_09_Pin,	LED_10_Pin,	LED_11_Pin,	LED_12_Pin,
+                         LED_13_Pin,	LED_14_Pin,	LED_15_Pin,	LED_16_Pin };
 
 
 /*********************************************************************
@@ -24,15 +24,15 @@ uint16_t LED_PIN[16] = {                LED_01_Pin,				LED_02_Pin,				LED_03_Pin
 float ByteArrayToFloat(uint8_t *byteArray)
 {
 //	uint8_t data[4] = {0, 0, 0, 0};
-    bytes = byteArray;
-    uint32_t res = 0.0;
+	bytes = byteArray;
+	uint32_t res = 0.0;
 
-    res  =  ((uint32_t)*byteArray
-             | ((uint32_t)*(byteArray + 1) << 8)
-             | ((uint32_t)*(byteArray + 2) << 16)
-             | ((uint32_t)*(byteArray + 3) << 24));
+	res  =  ((uint32_t)*byteArray
+		| ((uint32_t)*(byteArray + 1) << 8)
+		| ((uint32_t)*(byteArray + 2) << 16)
+		| ((uint32_t)*(byteArray + 3) << 24));
 
-    return	*((float*)&res);
+	return	*((float*)&res);
 }
 
 /*********************************************************************
@@ -44,21 +44,21 @@ float ByteArrayToFloat(uint8_t *byteArray)
 *	 TotalLength    : 타겟 배열의 총 길이
 **********************************************************************/
 uint8_t CopyToArray(uint8_t* TagetArray, uint8_t* OriginalString,
-                    uint8_t CopyLength, uint8_t TotalLength)
+		uint8_t CopyLength, uint8_t TotalLength)
 {
-    for(uint8_t i = 0; i < TotalLength; i++)
-    {
-        if(i < CopyLength)
-        {
-            *TagetArray++ = *OriginalString++;
-        }
-        else
-        {
-            *TagetArray++ = 0;
-        }
-    }
+	for (int i = 0; i < TotalLength; i++)
+	{
+		if (i < CopyLength)
+		{
+			*TagetArray++ = *OriginalString++;
+		}
+		else
+		{
+			*TagetArray++ = 0;
+		}
+	}
 
-    return TRUE;
+	return TRUE;
 }
 
 /*********************************************************************
@@ -96,44 +96,44 @@ void doMakeSendSlotData(uint8_t* SendData,	    uint8_t SlotNumber,
                         uint8_t Command,                uint8_t* Data,
                         uint8_t  DataLength,	uint8_t BufferLength)
 {
-    //uint8_t i;
-    uniInt16 crc;
+	//uint8_t i;
+	uniInt16 crc;
 
-    *SendData++ = CMD_STX;
-    *SendData++ = SlotNumber;
-    *SendData++ = Command;
-    CopyToArray(SendData, Data, DataLength, DATA_FULL_LENGTH);
-    SendData -= 2;
+	*SendData++ = CMD_STX;
+	*SendData++ = SlotNumber;
+	*SendData++ = Command;
+	CopyToArray(SendData, Data, DataLength, DATA_FULL_LENGTH);
+	SendData -= 2;
 
-    crc.UI16 =	CRC16_Make(&SendData[0], BufferLength - 4);
-    SendData += (BufferLength - 4);
+	crc.UI16 =	CRC16_Make(&SendData[0], BufferLength - 4);
+	SendData += (BufferLength - 4);
 
-    *SendData++ = crc.UI8[0];
-    *SendData++ = crc.UI8[1];
+	*SendData++ = crc.UI8[0];
+	*SendData++ = crc.UI8[1];
 
-    *SendData = CMD_ETX;
+	*SendData = CMD_ETX;
 }
 
 void doMakeSendTempData(    uint8_t* SendData,  uint8_t Command,
-                                    uint8_t* Data,
-                                    uint8_t  DataLength,  uint8_t BufferLength)
+			uint8_t* Data,
+			uint8_t  DataLength,  uint8_t BufferLength)
 {
-  //uint8_t i;
-  uniInt16 crc;
+	//uint8_t i;
+	uniInt16 crc;
 
-  *SendData++ = CMD_STX;
-  *SendData++ = SysProperties.boardID;
-  *SendData++ = Command;
-  CopyToArray(SendData, Data, DataLength, BufferLength - 4);
-  SendData -= 2;
+	*SendData++ = CMD_STX;
+	*SendData++ = SysProperties.boardID;
+	*SendData++ = Command;
+	CopyToArray(SendData, Data, DataLength, BufferLength - 4);
+	SendData -= 2;
 
-  crc.UI16 =  CRC16_Make(&SendData[0], BufferLength - 4);
-  SendData += (BufferLength - 4);
+	crc.UI16 =  CRC16_Make(&SendData[0], BufferLength - 4);
+	SendData += (BufferLength - 4);
 
-  *SendData++ = crc.UI8[0];
-  *SendData++ = crc.UI8[1];
+	*SendData++ = crc.UI8[0];
+	*SendData++ = crc.UI8[1];
 
-  *SendData = CMD_ETX;
+	*SendData = CMD_ETX;
 }
 
 /*********************************************************************
@@ -143,8 +143,7 @@ void doMakeSendTempData(    uint8_t* SendData,  uint8_t Command,
 **********************************************************************/
 void doNOP(uint16_t count)
 {
-        uint16_t i;
-        for(i = 0; i < count; i++)
+        for (int i = 0; i < count; i++)
                 asm("NOP");
 }
 

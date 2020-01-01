@@ -215,14 +215,6 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
 	/* add threads, ... */
-  /* osThreadDef(JobTask, job_task, osPriorityAboveNormal, 0, 128); */
-  /* osThreadCreate(osThread(JobTask), NULL); */
-
-  /* osThreadDef(RoutineTask, routine_task, osPriorityNormal, 0, 128); */
-  /* osThreadCreate(osThread(RoutineTask), NULL); */
-
-  /* osThreadDef(UartRxTask, uart_rx_task, osPriorityNormal, 0, 128); */
-  /* osThreadCreate(osThread(UartRxTask), NULL); */
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
