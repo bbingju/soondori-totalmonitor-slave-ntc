@@ -62,8 +62,16 @@ DMA_HandleTypeDef hdma_usart1_tx;
 
 PCD_HandleTypeDef hpcd_USB_FS;
 
+osThreadId JobTaskHandle;
+uint32_t JobTaskBuffer[ 128 ];
+osStaticThreadDef_t JobTaskControlBlock;
+osThreadId RoutineTaskHandle;
+uint32_t RoutineTaskBuffer[ 128 ];
+osStaticThreadDef_t RoutineTaskControlBlock;
+osThreadId UartRxTaskHandle;
+uint32_t UartRxTaskBuffer[ 128 ];
+osStaticThreadDef_t UartRxTaskControlBlock;
 osSemaphoreId myAdcBinarySemHandle;
-
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 SYSTEM_STRUCT SysProperties;
@@ -78,6 +86,9 @@ static void MX_ADC1_Init(void);
 static void MX_ADC2_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USB_PCD_Init(void);
+void job_task(void const * argument);
+void routine_task(void const * argument);
+void uart_rx_task(void const * argument);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -134,7 +145,7 @@ int main(void)
       SysProperties.hwVersion[i].cChar = number[i];
       SysProperties.fwVersion[i].cChar = number[i];
   }
-  HAL_GetUID(&SysProperties.uuid[0].u32_Value);
+  /* HAL_GetUID(&SysProperties.uuid[0].u32_Value); */
 
   doRelayPlay(_OFF);
 
@@ -177,14 +188,6 @@ int main(void)
   osSemaphoreDef(myAdcBinarySem);
   myAdcBinarySemHandle = osSemaphoreCreate(osSemaphore(myAdcBinarySem), 1);
 
-  /* definition and creation of BinarySemUartTx */
-  /* osSemaphoreDef(BinarySemUartTx); */
-  /* BinarySemUartTxHandle = osSemaphoreCreate(osSemaphore(BinarySemUartTx), 1); */
-
-  /* definition and creation of CountingSemUartRx */
-  /* osSemaphoreDef(CountingSemUartRx); */
-  /* CountingSemUartRxHandle = osSemaphoreCreate(osSemaphore(CountingSemUartRx), 5); */
-
   /* USER CODE BEGIN RTOS_SEMAPHORES */
 	/* add semaphores, ... */
   /* USER CODE END RTOS_SEMAPHORES */
@@ -198,17 +201,28 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
+  /* definition and creation of JobTask */
+  osThreadStaticDef(JobTask, job_task, osPriorityNormal, 0, 128, JobTaskBuffer, &JobTaskControlBlock);
+  JobTaskHandle = osThreadCreate(osThread(JobTask), NULL);
+
+  /* definition and creation of RoutineTask */
+  osThreadStaticDef(RoutineTask, routine_task, osPriorityNormal, 0, 128, RoutineTaskBuffer, &RoutineTaskControlBlock);
+  RoutineTaskHandle = osThreadCreate(osThread(RoutineTask), NULL);
+
+  /* definition and creation of UartRxTask */
+  osThreadStaticDef(UartRxTask, uart_rx_task, osPriorityNormal, 0, 128, UartRxTaskBuffer, &UartRxTaskControlBlock);
+  UartRxTaskHandle = osThreadCreate(osThread(UartRxTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
 	/* add threads, ... */
-  osThreadDef(JobTask, job_task, osPriorityAboveNormal, 0, 128);
-  osThreadCreate(osThread(JobTask), NULL);
+  /* osThreadDef(JobTask, job_task, osPriorityAboveNormal, 0, 128); */
+  /* osThreadCreate(osThread(JobTask), NULL); */
 
-  osThreadDef(RoutineTask, routine_task, osPriorityNormal, 0, 128);
-  osThreadCreate(osThread(RoutineTask), NULL);
+  /* osThreadDef(RoutineTask, routine_task, osPriorityNormal, 0, 128); */
+  /* osThreadCreate(osThread(RoutineTask), NULL); */
 
-  osThreadDef(UartRxTask, uart_rx_task, osPriorityNormal, 0, 128);
-  osThreadCreate(osThread(UartRxTask), NULL);
+  /* osThreadDef(UartRxTask, uart_rx_task, osPriorityNormal, 0, 128); */
+  /* osThreadCreate(osThread(UartRxTask), NULL); */
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
@@ -433,6 +447,7 @@ static void MX_USB_PCD_Init(void)
   */
 static void MX_DMA_Init(void) 
 {
+
   /* DMA controller clock enable */
   __HAL_RCC_DMA1_CLK_ENABLE();
 
@@ -573,16 +588,15 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE END 4 */
 
-/* USER CODE BEGIN Header_StartSensorTask */
+/* USER CODE BEGIN Header_job_task */
 /**
-  * @brief  Function implementing the sendorTask thread.
+  * @brief  Function implementing the JobTask thread.
   * @param  argument: Not used 
   * @retval None
   */
-/* USER CODE END Header_StartSensorTask */
-__weak void StartSensorTask(void const * argument)
+/* USER CODE END Header_job_task */
+__weak void job_task(void const * argument)
 {
-
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
@@ -592,40 +606,40 @@ __weak void StartSensorTask(void const * argument)
   /* USER CODE END 5 */ 
 }
 
-/* USER CODE BEGIN Header_StartDisplayTask */
+/* USER CODE BEGIN Header_routine_task */
 /**
-* @brief Function implementing the displayTask thread.
+* @brief Function implementing the RoutineTask thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartDisplayTask */
-__weak void StartDisplayTask(void const * argument)
+/* USER CODE END Header_routine_task */
+__weak void routine_task(void const * argument)
 {
-  /* USER CODE BEGIN StartDisplayTask */
+  /* USER CODE BEGIN routine_task */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END StartDisplayTask */
+  /* USER CODE END routine_task */
 }
 
-/* USER CODE BEGIN Header_StartUartTask */
+/* USER CODE BEGIN Header_uart_rx_task */
 /**
-* @brief Function implementing the uartTask thread.
+* @brief Function implementing the UartRxTask thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartUartTask */
-__weak void StartUartTask(void const * argument)
+/* USER CODE END Header_uart_rx_task */
+__weak void uart_rx_task(void const * argument)
 {
-  /* USER CODE BEGIN StartUartTask */
+  /* USER CODE BEGIN uart_rx_task */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END StartUartTask */
+  /* USER CODE END uart_rx_task */
 }
 
 /**

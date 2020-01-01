@@ -74,100 +74,98 @@ int fill_internal_frame(uint8_t *buffer, uint8_t slot_id, uint8_t cmd,
 
 int parse_internal_frame(struct internal_frame *frm, uint8_t const *byte)
 {
-    static uint8_t state = 0;
-    static uint8_t datalen = 0;
-    static uint8_t received_crc[2] = {0};
-    /* static uint8_t *offset_for_crc = NULL; */
-    static uint8_t buffer_for_crc[24] = { 0 };
+	static uint8_t state = 0;
+	static uint8_t datalen = 0;
+	static uint8_t received_crc[2] = {0};
+	static uint8_t buffer_for_crc[24] = { 0 };
 
-    if (!frm || !byte) return 0;
+	if (!frm || !byte) return 0;
 
-    switch (state) {
-    case 0: { /* starting preamble */
-        if (*byte == 0xFE) {
-            datalen = 0;
-            received_crc[0] = 0;
-	    received_crc[1] = 0;
-            ++state;
-        }
-        break;
-    }
+	switch (state) {
+	case 0: { /* starting preamble */
+		if (*byte == 0xFE) {
+			datalen = 0;
+			received_crc[0] = 0;
+			received_crc[1] = 0;
+			++state;
+		}
+		break;
+	}
 
-    case 1: { /* slot_id */
-        frm->slot_id = *byte;
-	buffer_for_crc[0] = *byte;
-	/* offset_for_crc = (uint8_t *) byte; */
-        ++state;
-        break;
-    }
+	case 1: { /* slot_id */
+		frm->slot_id = *byte;
+		buffer_for_crc[0] = *byte;
+		++state;
+		break;
+	}
 
-    case 2: { /* cmd */
-        frm->cmd = *byte;
-	buffer_for_crc[1] = *byte;
-        ++state;
-        break;
-    }
+	case 2: { /* cmd */
+		frm->cmd = *byte;
+		buffer_for_crc[1] = *byte;
+		++state;
+		break;
+	}
 
-    case 3: { /* datalen */
-        frm->datalen = *byte;
-	buffer_for_crc[2] = *byte;
-        ++state;
-        if (frm->datalen == 0)
-            ++state;
-        else if (frm->datalen > 0xFF)
-            state = 0;
-        else {
-            datalen = frm->datalen;
-            frm->data = calloc(1, sizeof(datalen));
-            if (!frm->data) {
-                DBG_LOG("%s calloc error\n", __func__);
-                state = 0;
-                return 0;
-            }
-        }
-        break;
-    }
+	case 3: { /* datalen */
+		frm->datalen = *byte;
+		buffer_for_crc[2] = *byte;
+		++state;
+		if (frm->datalen == 0)
+			++state;
+		else if (frm->datalen > 0xFF)
+			state = 0;
+		else {
+			datalen = frm->datalen;
+			/* frm->data = calloc(1, sizeof(datalen)); */
+			/* if (!frm->data) { */
+			/* 	DBG_LOG("%s calloc error\n", __func__); */
+			/* 	state = 0; */
+			/* 	return 0; */
+			/* } */
+		}
+		break;
+	}
 
-    case 4: { /* data */
-        frm->data[frm->datalen - datalen] = *byte;
-	buffer_for_crc[3 + frm->datalen - datalen] = *byte;
-        if (--datalen == 0) {
-            ++state;
-        }
-        break;
-    }
+	case 4: { /* data */
+		frm->rx_data[frm->datalen - datalen] = *byte;
+		buffer_for_crc[3 + frm->datalen - datalen] = *byte;
+		if (--datalen == 0) {
+			++state;
+		}
+		break;
+	}
 
-    case 5: { /* crc msb */
-        received_crc[0] = *byte;
-        ++state;
-        break;
-    }
+	case 5: { /* crc msb */
+		received_crc[0] = *byte;
+		++state;
+		break;
+	}
 
-    case 6: { /* crc lsb */
-        received_crc[1] = *byte;
-        /* uint16_t calculated_crc = crc16_ccitt(offset_for_crc, frm->datalen + 3); */
-        /* if (*((uint16_t *)&received_crc) != calculated_crc) { */
-        /* 	state = 0; */
-        /* 	if (frm->data) { */
-        /* 	  free(frm->data);  */
-        /* 	  frm->data = NULL; */
-        /* 	} */
-        /* 	return 0; */
-        /* } */
-        ++state;
-        break;
-    }
+	case 6: { /* crc lsb */
+		received_crc[1] = *byte;
+		/* uint16_t calculated_crc = crc16_ccitt(offset_for_crc, frm->datalen + 3); */
+		/* if (*((uint16_t *)&received_crc) != calculated_crc) { */
+		/* 	state = 0; */
+		/* 	if (frm->data) { */
+		/* 	  free(frm->data);  */
+		/* 	  frm->data = NULL; */
+		/* 	} */
+		/* 	return 0; */
+		/* } */
+		++state;
+		break;
+	}
 
-    case 7: { /* ending preamble */
-        if (*byte != 0xFD) {
-            state = 0;
-            return 0;
-        }
-	/* DBG_DUMP(buffer_for_crc, frm->datalen + 4); */
-        state = 0;
-        return 1;
-    }
-    }
+	case 7: { /* ending preamble */
+		if (*byte != 0xFD) {
+			state = 0;
+			return 0;
+		}
+		/* DBG_DUMP(buffer_for_crc, frm->datalen + 4); */
+		state = 0;
+		return 1;
+	}
+	}
 
-    return 0;
+	return 0;
 }
