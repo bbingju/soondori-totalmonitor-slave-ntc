@@ -62,12 +62,8 @@ DMA_HandleTypeDef hdma_usart1_tx;
 
 PCD_HandleTypeDef hpcd_USB_FS;
 
-/* osThreadId sensorTaskHandle; */
-/* osThreadId displayTaskHandle; */
-osThreadId uartTaskHandle;
 osSemaphoreId myAdcBinarySemHandle;
-/* osSemaphoreId BinarySemUartTxHandle; */
-/* osSemaphoreId CountingSemUartRxHandle; */
+
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 SYSTEM_STRUCT SysProperties;
@@ -82,9 +78,6 @@ static void MX_ADC1_Init(void);
 static void MX_ADC2_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USB_PCD_Init(void);
-void StartSensorTask(void const * argument);
-void StartDisplayTask(void const * argument);
-/* void StartUartTask(void const * argument); */
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -205,28 +198,17 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
+
+  /* USER CODE BEGIN RTOS_THREADS */
+	/* add threads, ... */
   osThreadDef(JobTask, job_task, osPriorityAboveNormal, 0, 128);
   osThreadCreate(osThread(JobTask), NULL);
 
   osThreadDef(RoutineTask, routine_task, osPriorityNormal, 0, 128);
   osThreadCreate(osThread(RoutineTask), NULL);
 
-  /* definition and creation of sensorTask */
-  /* osThreadDef(sensorTask, StartSensorTask, osPriorityNormal, 0, 128); */
-  /* sensorTaskHandle = osThreadCreate(osThread(sensorTask), NULL); */
-
-  /* definition and creation of displayTask */
-  /* osThreadDef(displayTask, StartDisplayTask, osPriorityNormal, 0, 128); */
-  /* displayTaskHandle = osThreadCreate(osThread(displayTask), NULL); */
-
-  /* definition and creation of uartTask */
-  /* osThreadDef(uartTask, StartUartTask, osPriorityAboveNormal, 0, 200); */
-  /* uartTaskHandle = osThreadCreate(osThread(uartTask), NULL); */
   osThreadDef(UartRxTask, uart_rx_task, osPriorityNormal, 0, 128);
   osThreadCreate(osThread(UartRxTask), NULL);
-
-  /* USER CODE BEGIN RTOS_THREADS */
-	/* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */

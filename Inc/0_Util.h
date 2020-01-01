@@ -18,12 +18,11 @@
 
 #define DATA_FULL_LENGTH 	6
 
-typedef unsigned int	UINT;
-typedef unsigned char	BYTE;
+/* typedef unsigned int	UINT; */
+/* typedef unsigned char	BYTE; */
 
 
 float ByteArrayToFloat(uint8_t *byteArray);
-void print_bytes(uint8_t *stream, int len);
 uint8_t CopyToArray(uint8_t* TagetArray, uint8_t* OriginalString, uint8_t CopyLength, uint8_t TotalLength);
 void doMakeSendData(uint8_t* SendData, uint8_t Command, uint8_t* Data, uint8_t DataLength, uint8_t BufferLength);
 void doMakeSendSlotData(uint8_t* SendData, uint8_t SlotNumber, uint8_t Command, uint8_t* Data, uint8_t  DataLength,	uint8_t BufferLength);
