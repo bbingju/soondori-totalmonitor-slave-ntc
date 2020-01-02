@@ -147,39 +147,36 @@ void doNOP(uint16_t count)
                 asm("NOP");
 }
 
-uint32_t midADC(uint32_t * inData) /* using Bubble sort */
+uint32_t sortData[101];
+
+__STATIC_INLINE void swap(uint32_t *a, uint32_t *b)
 {
-    uint8_t         i, j;
-    uint32_t	sortData[11];
-
-    sortData[0]     = *(inData++);
-    sortData[1]     = *(inData++);
-    sortData[2]     = *(inData++);
-    sortData[3]     = *(inData++);
-    sortData[4]     = *(inData++);
-    sortData[5]     = *(inData++);
-    sortData[6]     = *(inData++);
-    sortData[7]     = *(inData++);
-    sortData[8]     = *(inData++);
-    sortData[9]     = *(inData++);
-    sortData[10]	= *(inData);
-
-    for(i = 0; i < 11 - 1; ++i)
-    {
-        for(j = 11 - 1; i < j; --j)
-        {
-            if(sortData[j - 1] > sortData[j])
-                swap(&sortData[j - 1], &sortData[j]);
-        }
-    }
-    return sortData[6];
+	register uint32_t tmp = *a;
+	*a = *b;
+	*b = tmp;
 }
 
-void swap(uint32_t *a, uint32_t *b)
+/**
+ * using Bubble sort
+ */
+uint32_t midADC(uint32_t * inData, int nbr)
 {
-    uint32_t tmp = *a;
-    *a = *b;
-    *b = tmp;
+	memcpy(sortData, inData, nbr * sizeof(uint32_t));
+
+	for (int i = 0; i < nbr; ++i) {
+		for (int j = nbr; i < j; --j) {
+			if (sortData[j - 1] > sortData[j])
+				swap(&sortData[j - 1], &sortData[j]);
+		}
+	}
+
+	/* for (int i = 0; i < nbr / 5; i++) { */
+	/* 	DBG_LOG("%u %u %u %u %u\n", sortData[i * 5 + 0], */
+	/* 		sortData[i * 5 + 1], sortData[i * 5 + 2], */
+	/* 		sortData[i * 5 + 3], sortData[i * 5 + 4]); */
+	/* } */
+
+	return sortData[nbr / 2];
 }
 
 void doLedDisplay(uint8_t channel, uint8_t state)

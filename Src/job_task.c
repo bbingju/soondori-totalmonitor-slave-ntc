@@ -14,7 +14,7 @@ struct job_s {
 	struct internal_frame internal;
 };
 
-static osMailQDef(job_pool_q, 24, struct job_s);
+static osMailQDef(job_pool_q, 28, struct job_s);
 static osMailQId(job_pool_q_id);
 
 static void job_handler(struct job_s *job);

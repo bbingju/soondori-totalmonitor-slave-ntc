@@ -13,7 +13,9 @@ static void doMuxAddressSet(uint8_t add);
 
 TEST_DATA TestData;
 
-uint32_t	adc_value[11];
+#define ADC_SAMPLE_NBR 100
+
+uint32_t	adc_value[ADC_SAMPLE_NBR + 1];
 uint8_t         adc_count = 0;
 uint8_t		adc_delay_break = FALSE;
 uint8_t         adcNumber;
@@ -41,13 +43,13 @@ void routine_task(void const *arg)
 	while (1) {
 
 		if (osKernelSysTick() - tick_1 > 1) {
-			post_job(JOB_TYPE_ROUTINE_MEASURE_TEMPERATURE, NULL, 0);
 			tick_1 = osKernelSysTick();
+			post_job(JOB_TYPE_ROUTINE_MEASURE_TEMPERATURE, NULL, 0);
 		}
 
 		if (osKernelSysTick() - tick_2 > 49) {
-			post_job(JOB_TYPE_ROUTINE_CHECK_TEMP_OVER, NULL, 0);
 			tick_2 = osKernelSysTick();
+			post_job(JOB_TYPE_ROUTINE_CHECK_TEMP_OVER, NULL, 0);
 		}
 	}
 }
@@ -171,22 +173,25 @@ void read_sensors(void)
 	HAL_GPIO_WritePin(MUX_EN[mux_enable], MUX_EN_PIN[mux_enable], GPIO_PIN_RESET);	// enable
 
 	doMuxAddressSet(mux_add);
-	//osDelay(1);
-	//HAL_Delay(1);
 
 	HAL_ADC_Start_IT(adc[mux_enable]);
 	HAL_GPIO_WritePin(MUX_EN[0], MUX_EN_PIN[0], GPIO_PIN_SET);	// disable
 	HAL_GPIO_WritePin(MUX_EN[1], MUX_EN_PIN[1], GPIO_PIN_SET);	// disable
 
 	adc_value[adc_count] = HAL_ADC_GetValue(adc[mux_enable]);
-	adc_count++;
 
-	if(adc_count < 11)
+	/* static uint32_t tick_for_measure = 0; */
+	/* if (adc_count == 0) */
+	/* 	tick_for_measure = osKernelSysTick(); */
+
+	if (++adc_count < ADC_SAMPLE_NBR + 1)
 		return;
 	else
 		adc_count = 0;
 
-	midAdc = midADC(adc_value);	// ADC 중간값 저장
+	/* DBG_LOG("ADC Elapsed tick: %u\n", osKernelSysTick() - tick_for_measure); */
+
+	midAdc = midADC(adc_value, ADC_SAMPLE_NBR); // ADC 중간값 저장
 	calAdc = Calc_Temp_NTC(midAdc);	// ADC로 계산된 온도값 저장
 
 	if((calAdc >= -10) && (calAdc <= 150))
