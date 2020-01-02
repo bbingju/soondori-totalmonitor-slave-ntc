@@ -202,7 +202,7 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of JobTask */
-  osThreadStaticDef(JobTask, job_task, osPriorityNormal, 0, 128, JobTaskBuffer, &JobTaskControlBlock);
+  osThreadStaticDef(JobTask, job_task, osPriorityHigh, 0, 128, JobTaskBuffer, &JobTaskControlBlock);
   JobTaskHandle = osThreadCreate(osThread(JobTask), NULL);
 
   /* definition and creation of RoutineTask */
@@ -210,7 +210,7 @@ int main(void)
   RoutineTaskHandle = osThreadCreate(osThread(RoutineTask), NULL);
 
   /* definition and creation of UartRxTask */
-  osThreadStaticDef(UartRxTask, uart_rx_task, osPriorityNormal, 0, 128, UartRxTaskBuffer, &UartRxTaskControlBlock);
+  osThreadStaticDef(UartRxTask, uart_rx_task, osPriorityAboveNormal, 0, 128, UartRxTaskBuffer, &UartRxTaskControlBlock);
   UartRxTaskHandle = osThreadCreate(osThread(UartRxTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
