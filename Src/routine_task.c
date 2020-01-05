@@ -13,7 +13,7 @@ static void doMuxAddressSet(uint8_t add);
 
 TEST_DATA TestData;
 
-#define ADC_SAMPLE_NBR 100
+#define ADC_SAMPLE_NBR 30
 
 uint32_t	adc_value[ADC_SAMPLE_NBR + 1];
 uint8_t         adc_count = 0;
@@ -42,8 +42,9 @@ void routine_task(void const *arg)
 
 	while (1) {
 
-		if (osKernelSysTick() - tick_1 > 1) {
+		if (osKernelSysTick() - tick_1 > 0) {
 			tick_1 = osKernelSysTick();
+			/* read_sensors(); */
 			post_job(JOB_TYPE_ROUTINE_MEASURE_TEMPERATURE, NULL, 0);
 		}
 
@@ -180,16 +181,16 @@ void read_sensors(void)
 
 	adc_value[adc_count] = HAL_ADC_GetValue(adc[mux_enable]);
 
-	/* static uint32_t tick_for_measure = 0; */
-	/* if (adc_count == 0) */
-	/* 	tick_for_measure = osKernelSysTick(); */
+	static uint32_t tick_for_measure = 0;
+	if (adc_count == 0)
+		tick_for_measure = osKernelSysTick();
 
 	if (++adc_count < ADC_SAMPLE_NBR + 1)
 		return;
 	else
 		adc_count = 0;
 
-	/* DBG_LOG("ADC Elapsed tick: %u\n", osKernelSysTick() - tick_for_measure); */
+	DBG_LOG("ADC Elapsed tick: %u\n", osKernelSysTick() - tick_for_measure);
 
 	midAdc = midADC(adc_value, ADC_SAMPLE_NBR); // ADC 중간값 저장
 	calAdc = Calc_Temp_NTC(midAdc);	// ADC로 계산된 온도값 저장
