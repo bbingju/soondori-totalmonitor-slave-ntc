@@ -14,12 +14,14 @@ struct job_s {
 	struct internal_frame internal;
 };
 
-static osMailQDef(job_pool_q, 28, struct job_s);
+static osMailQDef(job_pool_q, 16, struct job_s);
 static osMailQId(job_pool_q_id);
 
+static int tx_completed = 1;
+
 static void job_handler(struct job_s *job);
-static void handle_to_internal(struct internal_frame *frm);
-static void handle_from_internal(struct internal_frame *frm);
+static void receive_from(struct internal_frame *frm);
+static void response_to(struct internal_frame *frm);
 
 static void response_board_type_req(struct internal_frame *);
 static void response_slot_id_req(struct internal_frame *);
@@ -31,6 +33,8 @@ static void doRevisionApplySet(struct internal_frame *);
 static void doRevisionConstantSet(struct internal_frame *);
 static void doRevisionApplyReq(struct internal_frame *);
 static void doRevisionConstantReq(struct internal_frame *);
+static void doRevisionTRConstSet(struct internal_frame *);
+static void doRevisionTRConstReq(struct internal_frame *);
 static void doCalibrationNTCTableCal(struct internal_frame *);
 static void doCalibrationNTCConstantSet(struct internal_frame *);
 static void doCalibrationNTCTableReq(struct internal_frame *);
@@ -46,7 +50,7 @@ extern UART_HandleTypeDef huart1;
 int post_job(JOB_TYPE_E type, void const *data, size_t datalen)
 {
 	struct job_s *job;
-	job = (struct job_s *)osMailAlloc(job_pool_q_id, osWaitForever);
+	job = (struct job_s *)osMailCAlloc(job_pool_q_id, osWaitForever);
 	if (!job) {
 		DBG_LOG("%s: mail allocation failed\n", __func__);
 		return -1;
@@ -90,10 +94,10 @@ static void job_handler(struct job_s *job)
 {
 	switch (job->type) {
 	case JOB_TYPE_TO_INTERNAL:
-		handle_to_internal(&job->internal);
+		response_to(&job->internal);
 		break;
 	case JOB_TYPE_FROM_INTERNAL:
-		handle_from_internal(&job->internal);
+		receive_from(&job->internal);
 		break;
 	case JOB_TYPE_ROUTINE_MEASURE_TEMPERATURE:
 		read_sensors();
@@ -106,21 +110,27 @@ static void job_handler(struct job_s *job)
 	}
 }
 
-static void handle_to_internal(struct internal_frame *frm)
+static void response_to(struct internal_frame *frm)
 {
 	size_t frame_size = 0;
 	static uint8_t buffer[255 + 7] = {0};
 
-	frame_size = fill_internal_frame(buffer, frm->slot_id, frm->cmd,
-					frm->datalen, frm->tx_data);
-	DBG_LOG("JOB_TYPE_TO_INTERNAL:");
-	DBG_DUMP(buffer, frame_size);
+	if (tx_completed) {
+		frame_size = fill_internal_frame(buffer, frm->slot_id, frm->cmd,
+						frm->datalen, &frm->data);
+		DBG_LOG("JOB_TYPE_TO: cmd %d\r\n", frm->cmd);
+		DBG_DUMP(buffer, frame_size);
 
-	HAL_GPIO_WritePin(UART1_TX_EN_GPIO_Port, UART1_TX_EN_Pin, GPIO_PIN_SET);
-	HAL_UART_Transmit_DMA(&huart1, buffer, frame_size);
+		tx_completed = 0;
+		HAL_GPIO_WritePin(UART1_TX_EN_GPIO_Port, UART1_TX_EN_Pin, GPIO_PIN_SET);
+		HAL_UART_Transmit_DMA(&huart1, buffer, frame_size);
+
+		while (tx_completed == 0)
+			__NOP();
+	}
 }
 
-static void handle_from_internal(struct internal_frame *frm)
+static void receive_from(struct internal_frame *frm)
 {
 	DBG_LOG("JOB_TYPE_FROM:");
 	DBG_LOG("slot id: %d, cmd: 0x%02X, datalen: %d\n", frm->slot_id, frm->cmd,
@@ -154,10 +164,10 @@ static void handle_from_internal(struct internal_frame *frm)
 		break;
 	case INTERNAL_CMD_RELAY_SET:
 		break;
-	case INTERNAL_CMD_REVISION_CONSTANT_REQ:
+	case INTERNAL_CMD_REVISION_CONST_REQ:
 		doRevisionConstantReq(frm);
 		break;
-	case INTERNAL_CMD_REVISION_CONSTANT_SET:
+	case INTERNAL_CMD_REVISION_CONST_SET:
 		doRevisionConstantSet(frm);
 		break;
 	case INTERNAL_CMD_REVISION_APPLY_REQ:
@@ -166,16 +176,22 @@ static void handle_from_internal(struct internal_frame *frm)
 	case INTERNAL_CMD_REVISION_APPLY_SET:
 		doRevisionApplySet(frm);
 		break;
-	case INTERNAL_CMD_CALIBRATION_NTC_CON_TABLE_CAL:
+	case INTERNAL_CMD_REVISION_TR_CONST_REQ:
+		doRevisionTRConstReq(frm);
+		break;
+	case INTERNAL_CMD_REVISION_TR_CONST_SET:
+		doRevisionTRConstSet(frm);
+		break;
+	case INTERNAL_CMD_CALIBRATION_NTC_TABLE_CAL:
 		doCalibrationNTCTableCal(frm);
 		break;
-	case INTERNAL_CMD_CALIBRATION_NTC_CON_TABLE_REQ:
+	case INTERNAL_CMD_CALIBRATION_NTC_TABLE_REQ:
 		doCalibrationNTCTableReq(frm);
 		break;
-	case INTERNAL_CMD_CALIBRATION_NTC_CONSTANT_REQ:
+	case INTERNAL_CMD_CALIBRATION_NTC_CONST_REQ:
 		doCalibrationNTCConstantReq(frm);
 		break;
-	case INTERNAL_CMD_CALIBRATION_NTC_CONSTANT_SET:
+	case INTERNAL_CMD_CALIBRATION_NTC_CONST_SET:
 		doCalibrationNTCConstantSet(frm);
 		break;
 	}
@@ -185,42 +201,42 @@ static void response_board_type_req(struct internal_frame *frm)
 {
 	static uint8_t board_type = 1; /* NTC */
 
-	frm->datalen = 1;
-	frm->tx_data = &board_type;
+	frm->board_type.v = board_type;
+	frm->datalen = sizeof(frm->board_type);
 
-	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(struct internal_frame));
+	post_job(JOB_TYPE_TO_INTERNAL, frm, frm->datalen + 3);
 }
 
 static void response_slot_id_req(struct internal_frame *frm)
 {
-	frm->datalen = 1;
-	frm->tx_data = &SysProperties.boardID;
+	frm->slot.id = SysProperties.boardID;
+	frm->datalen = sizeof(frm->slot);
 
-	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(struct internal_frame));
+	post_job(JOB_TYPE_TO_INTERNAL, frm, frm->datalen + 3);
 }
 
 static void response_temperature_req(struct internal_frame *frm)
 {
-	frm->datalen = sizeof(float) * 32;
-	frm->tx_data = &TestData.Temperature[0][0].Float;
+	frm->datalen = sizeof(frm->temperatures);
+	memcpy(&frm->temperatures, TestData.temperatures, frm->datalen);
 
-	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(struct internal_frame));
+	post_job(JOB_TYPE_TO_INTERNAL, frm, frm->datalen + 3);
 }
 
 static void response_temperature_state_req(struct internal_frame *frm)
 {
-	frm->datalen = 16;
-	frm->tx_data = TestData.displayModeFlag;
+	frm->datalen = sizeof(frm->channel_status);
+	memcpy(&frm->channel_status, TestData.displayModeFlag, frm->datalen);
 
-	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(struct internal_frame));
+	post_job(JOB_TYPE_TO_INTERNAL, frm, frm->datalen + 3);
 }
 
 static void response_threshold_req(struct internal_frame *frm)
 {
-	frm->datalen = sizeof(float) * 32;
-	frm->tx_data = &TestData.Threshold[0][0].UI8[0];
+	frm->datalen = sizeof(frm->thresholds);
+	memcpy(&frm->thresholds, TestData.thresholds, frm->datalen);
 
-	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(struct internal_frame));
+	post_job(JOB_TYPE_TO_INTERNAL, frm, frm->datalen + 3);
 }
 
 static void doTresholdSet(struct internal_frame *frm)
@@ -231,102 +247,124 @@ static void doTresholdSet(struct internal_frame *frm)
 	if (channel == 0xFF) {
 		for (int j = 0; j < 2; j++) {
 			for (int i = 0; i < 16; i++) {
-				TestData.Threshold[j][i].Float = to_set;
+				TestData.thresholds[j][i] = to_set;
 			}
 		}
 	} else {
-		TestData.Threshold[0][channel].Float = to_set;
+		TestData.thresholds[0][channel] = to_set;
 	}
 
-	frm->datalen = sizeof(float) * 32;
-	frm->tx_data = &TestData.Threshold[0][0].UI8[0];
-
-	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(struct internal_frame));
+	frm->datalen  = sizeof(frm->thresholds);
+	/* for (int j = 0; j < 2; j++) { */
+	/* 	for (int i = 0; i < 16; i++) { */
+	/* 		frm->thresholds.v[j][i] = TestData.thresholds[j][i]; */
+	/* 	} */
+	/* } */
+	memcpy(&frm->thresholds, TestData.thresholds, frm->datalen);
+	/* DBG_DUMP(frm, frm->datalen + 3); */
+	post_job(JOB_TYPE_TO_INTERNAL, frm, frm->datalen + 3);
 
 	doFlashWriteRevision();
 }
 
 static void doRevisionApplySet(struct internal_frame *frm)
 {
-	TestData.revisionApplyFlag = *((uint8_t *) &frm->rx_data[0]);
+	TestData.revision_applied = frm->revision_apply.enabled;
 
-	frm->datalen = 1;
-	frm->tx_data = &TestData.revisionApplyFlag;
-	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(struct internal_frame));
+	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(frm->revision_apply) + 3);
 
 	doFlashWriteRevision();
 }
 
 static void doRevisionConstantSet(struct internal_frame *frm)
 {
-	TestData.revisionConstant.Float = *((float *) frm->rx_data);
+	TestData.revision_const = frm->revision_const.v;
 
-	frm->datalen = sizeof(float);
-	frm->tx_data = &TestData.revisionConstant.UI8[0];
-	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(struct internal_frame));
+	/* frm->datalen = sizeof(float); */
+	/* frm->revision_constant_set = TestData.revisionConstant; */
+	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(frm->revision_const) + 3);
 
 	doFlashWriteRevision();
 }
 
 static void doRevisionApplyReq(struct internal_frame *frm)
 {
-	frm->datalen = 1;
-	frm->tx_data = &TestData.revisionApplyFlag;
-	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(struct internal_frame));
+	frm->datalen = sizeof(frm->revision_apply);
+	frm->revision_apply.enabled = TestData.revision_applied;
+	post_job(JOB_TYPE_TO_INTERNAL, frm, frm->datalen + 3);
 }
 
 static void doRevisionConstantReq(struct internal_frame *frm)
 {
-	frm->datalen = sizeof(float);
-	frm->tx_data = &TestData.revisionConstant.Float;
-	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(struct internal_frame));
+	frm->datalen = sizeof(frm->revision_const);
+	frm->revision_const.v = TestData.revision_const;
+	post_job(JOB_TYPE_TO_INTERNAL, frm, frm->datalen + 3);
+}
+
+static void doRevisionTRConstReq(struct internal_frame *frm)
+{
+	frm->revision_tr_const.r1 = TestData.revision_tr1;
+	frm->revision_tr_const.r2 = TestData.revision_tr2;
+	frm->datalen = 8;
+	post_job(JOB_TYPE_TO_INTERNAL, frm, frm->datalen + 3);
+
+	doFlashWriteRevision();
+}
+
+static void doRevisionTRConstSet(struct internal_frame *frm)
+{
+	frm->revision_tr_const.r1 = TestData.revision_tr1;
+	frm->revision_tr_const.r2 = TestData.revision_tr2;
+	frm->datalen = 8;
+	post_job(JOB_TYPE_TO_INTERNAL, frm, frm->datalen + 3);
 }
 
 static void doCalibrationNTCTableCal(struct internal_frame *frm)
 {
 	float rtd_temp = *((float *) frm->rx_data);
 
-	for (int j = 0; j < 2; j++) {
-		for (int i = 0; i < 16; i++) {
-			if (TestData.Temperature[j][i].Float != 0) {
-				TestData.ntcCalibrationTable[j][i].Float = rtd_temp - TestData.Temperature[j][i].Float;
+	for (int j = 0; j < CHANNELS_TYPE_NBR; j++) {
+		for (int i = 0; i < CHANNELS; i++) {
+			if (TestData.temperatures[j][i] != 0.f) {
+				TestData.ntc_correction_tbl[j][i] = rtd_temp - TestData.temperatures[j][i];
 			}
 		}
 	}
 
-	frm->datalen = 64;
-	frm->tx_data = &TestData.ntcCalibrationTable[0][0].UI8[0];
-	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(struct internal_frame));
+	frm->datalen = sizeof(TestData.ntc_correction_tbl);
+	memcpy(&frm->ntc_correction_tbl, TestData.ntc_correction_tbl, frm->datalen);
+	post_job(JOB_TYPE_TO_INTERNAL, frm, frm->datalen + 3);
 
 	doFlashWriteRevision();
 }
 
 static void doCalibrationNTCConstantSet(struct internal_frame *frm)
 {
-	TestData.ntcCalibrationConstant.Float = *((float *) frm->rx_data);
+	TestData.ntcCalibrationConstant = *((float *) frm->rx_data);
 
 	frm->datalen = sizeof(float);
-	frm->tx_data = &TestData.ntcCalibrationConstant.UI8[0];
-	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(struct internal_frame));
+	frm->ntc_correction_const.v = TestData.ntcCalibrationConstant;
+	post_job(JOB_TYPE_TO_INTERNAL, frm, frm->datalen + 3);
 
         doFlashWriteRevision();
 }
 
 static void doCalibrationNTCTableReq(struct internal_frame *frm)
 {
-	frm->datalen = sizeof(float) * 16;
-	frm->tx_data = &TestData.ntcCalibrationTable[0][0].UI8[0];
-	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(struct internal_frame));
+	frm->datalen = sizeof(TestData.ntc_correction_tbl);
+	memcpy(&frm->ntc_correction_tbl, TestData.ntc_correction_tbl, frm->datalen);
+	post_job(JOB_TYPE_TO_INTERNAL, frm, frm->datalen + 3);
 }
 
 static void doCalibrationNTCConstantReq(struct internal_frame *frm)
 {
 	frm->datalen = sizeof(float);
-	frm->tx_data = &TestData.ntcCalibrationConstant.UI8[0];
-	post_job(JOB_TYPE_TO_INTERNAL, frm, sizeof(struct internal_frame));
+	frm->ntc_correction_const.v = TestData.ntcCalibrationConstant;
+	post_job(JOB_TYPE_TO_INTERNAL, frm, frm->datalen + 3);
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-    HAL_GPIO_WritePin(UART1_TX_EN_GPIO_Port, UART1_TX_EN_Pin, GPIO_PIN_RESET); //TX 완료후 스위치IC OFF
+	HAL_GPIO_WritePin(UART1_TX_EN_GPIO_Port, UART1_TX_EN_Pin, GPIO_PIN_RESET); //TX 완료후 스위치IC OFF
+	tx_completed = 1;
 }

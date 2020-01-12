@@ -100,40 +100,61 @@ typedef enum {
 	RAF_DISAPPLY
 }REVISION_APPLY_FLAG;
 
+#define OBJ_CHANNELS 0
+#define ENV_CHANNELS 1
+#define CHANNELS_TYPE_NBR 2
+#define CHANNELS 16
+
 typedef struct
 {
-	uni4Byte				Temperature[2][16];					// adc 완료후 온도값으로 환산된 값, 0 : 피대상물 온도, 1 : 환경온도 , 0~15채널
-	uni4Byte				AdcMidValue[2][16];					// 컨버팅 완료된 ADC 값중 중간 값,  0 : 피대상물 온도, 1 : 환경온도, 0~15채널
-	uni4Byte				Threshold[2][16];						// 경고 온도 저장
-	TEMP_MODE				overTempFlag[16];
-	LED_DIPLAY_MODE		displayModeFlag[16]; // LED 표시 방법을 바꾸기 전에 상태가 바뀌는 것은 3번 체크해서 그 이상 같은 상태로 반복될때 변경
-	uni4Byte				ntcCalibrationTable[2][16];			// NTC 교정상수 , RTD - NTC
-	uni4Byte				ntcCalibrationConstant;				// NTC + ntcCalibrationTable(교정상수) + 증감상수(ntcCalibrationConstant)
-	uint8_t					displayModeChangeCount[16];			// 위 플래그 사용을 위한 카운터
-	uint8_t					revisionApplyFlag;					// 보정 적용 플래그, 1: 표면온도모드(보정 적용) 0 : 측정온도 모드(보정 미적용)
-	uni4Byte				revisionConstant;					// 보정용 접촉상수
-}TEST_DATA;
+	/**
+	 * ADC 측정값을 실제 온도로 변환한 값
+	 * 0 : 피대상물 온도,
+	 * 1 : 환경온도
+	 */
+	float temperatures[CHANNELS_TYPE_NBR][CHANNELS];
+
+        /**
+	 * 컨버팅 완료된 ADC 값중 중간 값
+	 * 0 : 피대상물 온도
+	 * 1 : 환경온도
+	 */
+	uint32_t AdcMidValue[CHANNELS_TYPE_NBR][CHANNELS];
+
+	float thresholds[CHANNELS_TYPE_NBR][CHANNELS];
+
+	TEMP_MODE overTempFlag[CHANNELS];
+
+	/* LED 표시 방법을 바꾸기 전에 상태가 바뀌는 것은 3번 체크해서
+	 * 그 이상 같은 상태로 반복될때 변경 */
+	LED_DIPLAY_MODE displayModeFlag[CHANNELS];
+
+	/**
+	 * NTC 교정상수
+	 * RTD - NTC
+	 */
+	float ntc_correction_tbl[CHANNELS_TYPE_NBR][CHANNELS];
+
+	/* NTC + ntcCalibrationTable(교정상수) + 증감상수(ntcCalibrationConstant) */
+	float ntcCalibrationConstant;
+
+	/* 위 플래그 사용을 위한 카운터 */
+	uint8_t	displayModeChangeCount[CHANNELS];
+
+	/**
+	 * 보정 적용 플래그,
+	 * 1: 표면온도모드(보정 적용)
+	 * 0 : 측정온도 모드(보정 미적용)
+	 */
+	uint8_t revision_applied;
+
+	/* 보정용 접촉상수 */
+	float revision_const;
+	float revision_tr1;
+	float revision_tr2;
+
+} TEST_DATA;
 extern TEST_DATA TestData;
-
-typedef struct
-{
-	uint16_t	size;
-	uint16_t	head;
-	uint16_t	tail;
-	uint16_t	count;
-	uint8_t	    ar[UART_RX_BUF_MAX];
-}RX_QUEUE_STRUCT;
-extern RX_QUEUE_STRUCT UartRxQueue;
-
-typedef struct
-{
-	uint16_t	size;
-	uint16_t	head;
-	uint16_t	tail;
-	uint16_t	count;
-	uint8_t	    ar[UART_TX_BUF_MAX];
-}TX_QUEUE_STRUCT;
-extern TX_QUEUE_STRUCT UartTxQueue;
 
 /*********************************************************************
 *	System Properties
@@ -142,13 +163,10 @@ extern TX_QUEUE_STRUCT UartTxQueue;
 typedef enum {
 	DPM_NORMAL = 0,
 	DPM_SETTING
-}DISPLAYMODE;
+} DISPLAYMODE;
 
 typedef struct {
     uint8_t boardID;
-    uint8_t bootingWate[4]; //각 바이트에 Task별 부팅 완료를 표시 한다.
-			    // 0 : DiaplayTask, 1 : SensorTask, 2 : UartTask, 3
-			    // : ParsingTask
     SENSORBOARDTYPE boardType[1]; // SENSORBOARDTYPE 사용 해서 선택, sensor board 종류 기록
     uint8_t boardEnable;
     uniChar hwVersion[5];

@@ -15,10 +15,10 @@ TEST_DATA TestData;
 
 #define ADC_SAMPLE_NBR 30
 
-uint32_t	adc_value[ADC_SAMPLE_NBR + 1];
-uint8_t         adc_count = 0;
-uint8_t		adc_delay_break = FALSE;
-uint8_t         adcNumber;
+uint32_t  adc_value[ADC_SAMPLE_NBR + 1];
+uint8_t   adc_count = 0;
+uint8_t   adc_delay_break = FALSE;
+__IO int adc_read_completed = 1;
 
 ADC_HandleTypeDef * adc[2] = {&hadc1, &hadc2};
 
@@ -30,7 +30,7 @@ uint16_t      MUX_ADD_PIN[4] = { MUX_ADD0_Pin, MUX_ADD1_Pin, MUX_ADD2_Pin,
 GPIO_TypeDef *MUX_EN[2] = { MUX_EN0_GPIO_Port, MUX_EN1_GPIO_Port };
 uint16_t MUX_EN_PIN[2] = { MUX_EN0_Pin, MUX_EN1_Pin };
 
-uint8_t mux_enable;
+/* uint8_t mux_enable; */
 
 void routine_task(void const *arg)
 {
@@ -44,8 +44,8 @@ void routine_task(void const *arg)
 
 		if (osKernelSysTick() - tick_1 > 0) {
 			tick_1 = osKernelSysTick();
-			/* read_sensors(); */
-			post_job(JOB_TYPE_ROUTINE_MEASURE_TEMPERATURE, NULL, 0);
+			read_sensors();
+			/* post_job(JOB_TYPE_ROUTINE_MEASURE_TEMPERATURE, NULL, 0); */
 		}
 
 		if (osKernelSysTick() - tick_2 > 49) {
@@ -63,7 +63,7 @@ void check_temperature_over_n_flick_led(void)
 	for (int i = 0; i < 16; i++) {
 		//센서 연결됨
 		if (TestData.overTempFlag[i] == TM_NORMAL_TEMP) {
-			if (TestData.AdcMidValue[0][i].UI32 > 3500) //센서 연결 안됨
+			if (TestData.AdcMidValue[0][i] > 3500) //센서 연결 안됨
 			{
 				if (TestData.displayModeFlag[i] == LDM_DONOT_CONNECT) {
 					doLedDisplay(i, _LED_ON);
@@ -75,7 +75,7 @@ void check_temperature_over_n_flick_led(void)
 						doLedDisplay(i, _LED_ON);
 					}
 				}
-			} else if (TestData.AdcMidValue[0][i].UI32 < 10) { //센서 쇼트됨
+			} else if (TestData.AdcMidValue[0][i] < 10) { //센서 쇼트됨
 				if (TestData.displayModeFlag[i] == LDM_SENSOR_CLOSE) {
 					flick_led(i, (overTempDisplay % 4), 2); // led 고속 점멸
 				} else {
@@ -128,7 +128,7 @@ static void check_temperature_over(void)
 	uint8_t overTemp = 0;
 
 	for (int i = 0; i < 16; i++) {
-		if (TestData.Temperature[0][i].Float > TestData.Threshold[0][i].Float) {
+		if (TestData.temperatures[0][i] > TestData.thresholds[0][i]) {
 			TestData.overTempFlag[i] = TM_OVER_TEMP;
 			overTemp++;
 		} else {
@@ -150,35 +150,33 @@ static void sensor_init()
         HAL_ADCEx_Calibration_Start(&hadc1);
         HAL_ADCEx_Calibration_Start(&hadc2);
 
-        HAL_GPIO_WritePin(MUX_EN[0], MUX_EN_PIN[0], GPIO_PIN_SET);	// disable
-        HAL_GPIO_WritePin(MUX_EN[1], MUX_EN_PIN[1], GPIO_PIN_SET);	// disable
+        HAL_GPIO_WritePin(MUX_EN[0], MUX_EN_PIN[0], GPIO_PIN_SET); // disable
+        HAL_GPIO_WritePin(MUX_EN[1], MUX_EN_PIN[1], GPIO_PIN_SET); // disable
 
         adc_count = 0;
-
 }
 
 void read_sensors(void)
 {
-	uint8_t         channel;
-	uint8_t         mux_add;
-	uint8_t         inout;
-	uint32_t        midAdc;
-	float           calAdc;
-	float		beforeRevision;
+	static uint8_t adc_number = 0;
+	static uint8_t mux_enable = 0;
 
-	mux_enable = adcNumber / 16;
-	mux_add    = adcNumber % 16;
-	inout      = adcNumber % 2;
-	channel    = adcNumber / 2;
+	__IO float bare_temperature = 0.f;
+	__IO uint8_t mux_add    = adc_number % 16;
+	__IO uint8_t inout      = adc_number % 2;
+	__IO uint8_t channel    = adc_number / 2;
+	mux_enable = adc_number / 16;
 
 	HAL_GPIO_WritePin(MUX_EN[mux_enable], MUX_EN_PIN[mux_enable], GPIO_PIN_RESET);	// enable
 
 	doMuxAddressSet(mux_add);
 
+	adc_read_completed = 0;
 	HAL_ADC_Start_IT(adc[mux_enable]);
 	HAL_GPIO_WritePin(MUX_EN[0], MUX_EN_PIN[0], GPIO_PIN_SET);	// disable
 	HAL_GPIO_WritePin(MUX_EN[1], MUX_EN_PIN[1], GPIO_PIN_SET);	// disable
-
+	/* while (adc_read_completed) */
+	/* 	__NOP(); */
 	adc_value[adc_count] = HAL_ADC_GetValue(adc[mux_enable]);
 
 	static uint32_t tick_for_measure = 0;
@@ -190,43 +188,49 @@ void read_sensors(void)
 	else
 		adc_count = 0;
 
-	DBG_LOG("ADC Elapsed tick: %u\n", osKernelSysTick() - tick_for_measure);
+	__IO uint32_t midAdc = midADC(adc_value, ADC_SAMPLE_NBR); // ADC 중간값 저장
+	if (mux_enable == 0 && (mux_add == 0 || mux_add == 1)) {
+	/* if (mux_enable == 0 && mux_add == 0) { */
+		DBG_LOG("ADC Elapsed tick: %u, mid value: %u, mux_add: %d\r\n",
+			osKernelSysTick() - tick_for_measure, midAdc, mux_add);
+	/* 	/\* for (int i = 0; i < 30 / 5; i++) { *\/ */
+	/* 	/\* 	DBG_LOG("%u %u %u %u %u\n", adc_value[i * 5 + 0], *\/ */
+	/* 	/\* 		adc_value[i * 5 + 1], adc_value[i * 5 + 2], *\/ */
+	/* 	/\* 		adc_value[i * 5 + 3], adc_value[i * 5 + 4]); *\/ */
+	/* 	/\* } *\/ */
+	}
+	__IO float calAdc = Calc_Temp_NTC(midAdc); // ADC로 계산된 온도값 저장
 
-	midAdc = midADC(adc_value, ADC_SAMPLE_NBR); // ADC 중간값 저장
-	calAdc = Calc_Temp_NTC(midAdc);	// ADC로 계산된 온도값 저장
-
-	if((calAdc >= -10) && (calAdc <= 150))
+	if ((calAdc >= -10) && (calAdc <= 150))
 	{
-		TestData.AdcMidValue[inout][channel].UI32       = midAdc;
+		TestData.AdcMidValue[inout][channel] = midAdc;
 
 		//교정 과정 실행
-		beforeRevision = calAdc + TestData.ntcCalibrationTable[inout][channel].Float    //RTD - NTC 로 계산된 보정 상수
-			+ TestData.ntcCalibrationConstant.Float; //사용자가 임의로 추가한 증감 상수
+		bare_temperature = calAdc + TestData.ntc_correction_tbl[inout][channel]	//RTD - NTC 로 계산된 보정 상수
+			+ TestData.ntcCalibrationConstant; //사용자가 임의로 추가한 증감 상수
 
-		if (TestData.revisionApplyFlag == TRUE)	{ //보정 적용 상태
+		if (TestData.revision_applied)	{ //보정 적용 상태
 			if (inout == 0)	{ //접촉온도 위치에 보정온도를 삽입
-				TestData.Temperature[inout][channel].Float = DoRevisionTemperature(TestData.Temperature[0][channel].Float,
-												TestData.Temperature[1][channel].Float);
+				TestData.temperatures[inout][channel] = DoRevisionTemperature(TestData.temperatures[0][channel], TestData.temperatures[1][channel]);
 			}
 			else	//환경온도 위치는 환경온도 고정
 			{
-				TestData.Temperature[inout][channel].Float = beforeRevision;
+				TestData.temperatures[inout][channel] = bare_temperature;
 			}
 		}
 		else {		//보정 미적용 상태
-			TestData.Temperature[inout][channel].Float = beforeRevision;
+			TestData.temperatures[inout][channel] = bare_temperature;
 		}
 	}
-	adcNumber++;
-	if (adcNumber > 31) {
-		adcNumber = 0;
+	if (++adc_number > 31) {
+		adc_number = 0;
 	}
 }
 
 static float DoRevisionTemperature(float beforeRevision, float environmentTemp)
 {
-        if (TestData.revisionConstant.Float == 0) {
-                return (beforeRevision - TestData.revisionConstant.Float * environmentTemp)/(1 - TestData.revisionConstant.Float);
+        if (TestData.revision_const == 0) {
+                return (beforeRevision - TestData.revision_const * environmentTemp)/(1 - TestData.revision_const);
         }
         else {
                 return beforeRevision;
@@ -249,6 +253,7 @@ static void doMuxAddressSet(uint8_t add)
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
+	adc_read_completed = 1;
 	/* //adc_delay_break = TRUE; */
 	/* osSemaphoreRelease(myAdcBinarySemHandle); */
 }

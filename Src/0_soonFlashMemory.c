@@ -78,21 +78,22 @@ HAL_StatusTypeDef EraseFlash(uint32_t startAdd, uint32_t pages)
 
 uint32_t doFlashWriteRevision(void)
 {
-        uint32_t        flashError = 0;
+        uint32_t flashError = 0;
 
         EraseFlash(FLASH_SAVE_CHK, 1);
 
-        for(int i = 0; i < 16; i++)
-        {
-                WriteFlash(FLASH_ADD_THRESHOLD_TEMP + (i * 4), TestData.Threshold[0][i].UI32, &flashError);
-                WriteFlash(FLASH_ADD_THRESHOLD_TEMP1 + (i * 4), TestData.Threshold[1][i].UI32, &flashError);
-                WriteFlash(FLASH_ADD_NTC_CALIBRATION_TABLE + (i * 4), TestData.ntcCalibrationTable[0][i].UI32, &flashError);
-                WriteFlash(FLASH_ADD_NTC_CALIBRATION_TABLE1 + (i * 4), TestData.ntcCalibrationTable[1][i].UI32, &flashError);
+        for (int i = 0; i < 16; i++) {
+                WriteFlash(FLASH_ADD_THRESHOLD_TEMP + (i * 4), TestData.thresholds[0][i], &flashError);
+                WriteFlash(FLASH_ADD_THRESHOLD_TEMP1 + (i * 4), TestData.thresholds[1][i], &flashError);
+                WriteFlash(FLASH_ADD_NTC_CALIBRATION_TABLE + (i * 4), TestData.ntc_correction_tbl[0][i], &flashError);
+                WriteFlash(FLASH_ADD_NTC_CALIBRATION_TABLE1 + (i * 4), TestData.ntc_correction_tbl[1][i], &flashError);
         }
 
-        WriteFlash(FLASH_ADD_NTC_CALIBRATION_CONSTANT,  TestData.ntcCalibrationConstant.UI32, &flashError);
-        WriteFlash(FLASH_ADD_REVISION_APPLY, (uint32_t)TestData.revisionApplyFlag, &flashError);
-        WriteFlash(FLASH_ADD_REVISION_CONSTANT, TestData.revisionConstant.UI32, &flashError);
+        WriteFlash(FLASH_ADD_NTC_CALIBRATION_CONSTANT,  TestData.ntcCalibrationConstant, &flashError);
+        WriteFlash(FLASH_ADD_REVISION_APPLY, (uint32_t)TestData.revision_applied, &flashError);
+        WriteFlash(FLASH_ADD_REVISION_CONSTANT, TestData.revision_const, &flashError);
+	WriteFlash(FLASH_ADD_REVISION_TR1, TestData.revision_tr1, &flashError);
+	WriteFlash(FLASH_ADD_REVISION_TR2, TestData.revision_tr2, &flashError);
 
         WriteFlash(FLASH_SAVE_CHK, FLASH_SAVE_FLAG, &flashError);
 
@@ -158,27 +159,32 @@ HAL_StatusTypeDef DisableWriteProtect(uint32_t add)
 
 void DoValueFormating(void)
 {
-	for(int i = 0; i < 16; i++)
-	{
-		TestData.Threshold[0][i].Float            = (float)50.0;  //경고 온도 테이블
-		TestData.Threshold[1][i].Float            = (float)50.0;
-		TestData.ntcCalibrationTable[0][i].Float  = (float)0.0;   //NTC 교정 테이블
-		TestData.ntcCalibrationTable[1][i].Float  = (float)0.0;
+	for(int i = 0; i < 16; i++) {
+		TestData.thresholds[0][i] = 50.f; //경고 온도 테이블
+		TestData.thresholds[1][i] = 50.f;
+		TestData.ntc_correction_tbl[0][i] = 0.f; //NTC 교정 테이블
+		TestData.ntc_correction_tbl[1][i] = 0.f;
 	}
-	TestData.ntcCalibrationConstant.Float = (float)0.0; //NTC 증감상수
-	TestData.revisionConstant.Float = (float)0.3672;    //보정상수
-	TestData.revisionApplyFlag = 0;	//보정 선택
+	TestData.ntcCalibrationConstant = 0.0f; // NTC 증감상수
+	TestData.revision_const = 0.3672f;	// 보정상수
+	TestData.revision_applied = 0;		// 보정 선택
+	TestData.revision_tr1 = 1.f;		// 보정 선택
+	TestData.revision_tr2 = 2.f;		// 보정 선택
 }
 
 void DoLoadFlash(void)
 {
+	TEST_DATA *d = &TestData;
+
 	for (int i = 0; i < 16; i++) {
-		TestData.Threshold[0][i].UI32           = ReadFlash(FLASH_ADD_THRESHOLD_TEMP + (i * 4));
-		TestData.Threshold[1][i].UI32           = ReadFlash(FLASH_ADD_THRESHOLD_TEMP1 + (i * 4));
-		TestData.ntcCalibrationTable[0][i].UI32 = ReadFlash(FLASH_ADD_NTC_CALIBRATION_TABLE + (i * 4));
-		TestData.ntcCalibrationTable[1][i].UI32 = ReadFlash(FLASH_ADD_NTC_CALIBRATION_TABLE1 + (i * 4));
+		d->thresholds[0][i] = ReadFlash(FLASH_ADD_THRESHOLD_TEMP + (i * 4));
+		d->thresholds[1][i] = ReadFlash(FLASH_ADD_THRESHOLD_TEMP1 + (i * 4));
+		d->ntc_correction_tbl[0][i] = ReadFlash(FLASH_ADD_NTC_CALIBRATION_TABLE + (i * 4));
+		d->ntc_correction_tbl[1][i] = ReadFlash(FLASH_ADD_NTC_CALIBRATION_TABLE1 + (i * 4));
 	}
-	TestData.ntcCalibrationConstant.UI32        = ReadFlash(FLASH_ADD_NTC_CALIBRATION_CONSTANT);
-	TestData.revisionApplyFlag                  = (uint8_t)ReadFlash(FLASH_ADD_REVISION_APPLY);
-	TestData.revisionConstant.Float             = ReadFlash(FLASH_ADD_REVISION_CONSTANT);
+	d->ntcCalibrationConstant = ReadFlash(FLASH_ADD_NTC_CALIBRATION_CONSTANT);
+	d->revision_applied       = (uint8_t)ReadFlash(FLASH_ADD_REVISION_APPLY);
+	d->revision_const         = ReadFlash(FLASH_ADD_REVISION_CONSTANT);
+	d->revision_tr1           = ReadFlash(FLASH_ADD_REVISION_TR1);
+	d->revision_tr2           = ReadFlash(FLASH_ADD_REVISION_TR2);
 }

@@ -44,7 +44,6 @@ BUILD_DIR = build
 APP_C_SOURCES = \
 Src/0_SensorCal.c \
 Src/0_soonFlashMemory.c \
-Src/0_soonQueue.c \
 Src/0_Util.c \
 Src/job_task.c \
 Src/routine_task.c \

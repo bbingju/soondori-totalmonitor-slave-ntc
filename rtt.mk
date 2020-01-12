@@ -7,4 +7,3 @@ Lib/Syscalls/SEGGER_RTT_Syscalls_GCC.c
 
 RTT_C_INCLUDES = \
 -ILib/RTT
-

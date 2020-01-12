@@ -67,7 +67,7 @@ static uint16_t crc16_modbus_update(uint16_t crc, uint8_t a)
 }
 
 int fill_internal_frame(uint8_t *buffer, uint8_t slot_id, uint8_t cmd,
-                        uint8_t datalen, uint8_t *data)
+                        uint8_t datalen, void *data)
 {
 	if (!buffer)
 		return 0;
